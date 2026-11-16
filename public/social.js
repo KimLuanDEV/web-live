@@ -184,14 +184,19 @@ if (isAdminUser(auth.uid)) {
 
 
 
-if (auth.uid) {
-  socket.emit("auth-login", { uid: auth.uid });
 
-  // keep-alive mỗi 20s để không bị rớt online
+
+if (auth.uid) {
   setInterval(() => {
-    socket.emit("auth-ping", { uid: auth.uid });
+    if (socket.connected) {
+      socket.emit("auth-ping", {
+        uid: auth.uid
+      });
+    }
   }, 20000);
 }
+
+
 
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
@@ -552,11 +557,37 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, like
 });
 
 
-// ===== ADMIN DELETE POST REALTIME =====
-socket.on("social-update", ({ type, postId }) => {
-  if(type === "post-deleted"){
-    const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
-    if(el) el.remove();
+
+/* =====================================
+   ADMIN SOCIAL REALTIME UPDATES
+===================================== */
+
+socket.on("social-update", ({
+  type,
+  postId,
+  commentId,
+  replyId
+}) => {
+
+  if (type === "post-deleted") {
+    const el = [...document.querySelectorAll(".lp-post")]
+      .find(p => p.dataset.id === String(postId));
+
+    if (el) el.remove();
+
+    if (window.lpPostMap) {
+      delete window.lpPostMap[postId];
+    }
+
+    return;
+  }
+
+  // Lấy lại bài và bình luận chính xác từ server
+  if (
+    type === "comment-deleted" ||
+    type === "reply-deleted"
+  ) {
+    requestSocialFeed();
   }
 });
 
@@ -576,38 +607,13 @@ socket.on("lp-delete-reply", ({ postId, commentIndex, replyId })=>{
 
 
 
-socket.on("lp-delete-comment", ({ postId, index })=>{
-  const wrap = document.getElementById("cm_"+postId);
-  if(!wrap) return;
 
-  const list = wrap.querySelector(".lp-comment-list");
-  if(!list) return;
-
-  const el = list.children[index];
-  if(el) el.remove();
-
-  // 🔥 TRỪ SỐ COMMENT
-  const countEl = document.getElementById("c_"+postId);
-  if(countEl){
-    const cur = Number(countEl.textContent || 0);
-    countEl.textContent = Math.max(0, cur - 1);
-  }
-
-  // 🔥 CẬP NHẬT LẠI INDEX ĐỂ KHÔNG LỆCH
-  [...list.children].forEach((c,i)=>{
-    c.dataset.index = i;
-    const replyBtn = c.querySelector(".lp-cm-actions span");
-    if(replyBtn) replyBtn.setAttribute("onclick", `openReply('${postId}',${i})`);
-
-    const del = c.querySelector(".cm-del");
-    if(del) del.setAttribute("onclick", `deleteComment('${postId}',${i})`);
-
-    const like = c.querySelector(".cm-like b");
-    if(like) like.id = `cl_${postId}_${i}`;
-
-  });
-
+socket.on("lp-delete-comment", ({ postId, index }) => {
+  // Đồng bộ lại bài và toàn bộ bình luận từ server.
+  // Tránh lệch index của reply, like và nút xóa.
+  requestSocialFeed();
 });
+
 
 
 socket.on("lp-like-comment", ({ postId, index, likes })=>{
@@ -651,7 +657,11 @@ ${reply.text}
   ? `<span class="cm-del"
       onclick="${
         isAdminUser(auth.uid) && reply.uid !== auth.uid
-          ? `adminDeleteReply('${postId}','${commentIndex}','${reply.id}')`
+          ? `adminDeleteReply(
+  '${postId}',
+  '${window.lpPostMap?.[postId]?.comments?.[commentIndex]?.id || ""}',
+  '${reply.id}'
+)`
           : `deleteReply('${postId}',${commentIndex},'${reply.id}')`
       }"
     >🗑</span>`
@@ -673,6 +683,21 @@ ${reply.text}
 
 
 socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
+
+
+
+const cachedPost = window.lpPostMap?.[postId];
+
+if (cachedPost) {
+  cachedPost.comments ||= [];
+
+  if (!cachedPost.comments.some(
+    c => c.id && c.id === comment.id
+  )) {
+    cachedPost.comments.push(comment);
+  }
+}
+
 
   const countEl = document.getElementById("c_"+postId);
   if(countEl) countEl.textContent = count;
@@ -799,14 +824,71 @@ socket.emit("lp-post", {
 
 
 
-let lpInited = false;
+
+
+/* =====================================
+   SOCIAL FEED - FRIENDS ONLY
+===================================== */
+
+function requestSocialFeed() {
+  if (!auth.uid) return;
+
+  socket.emit("lp-request-feed");
+}
 
 socket.on("lp-init", list => {
-  if (lpInited) return;   // ⛔ không init lại
-  lpInited = true;
+  if (!Array.isArray(list)) return;
 
-  list.forEach(p => renderPost(p, false));
+  // Xóa feed cũ
+  feed.replaceChildren();
+
+  // Reset dữ liệu cache
+  window.lpPostMap = {};
+
+  // Hiển thị bài được phép xem
+  list.forEach(post => {
+    renderPost(post, false);
+  });
+
+  refreshPostBadges();
+  refreshCommentBadges();
 });
+
+/* =====================================
+   REFRESH ON SOCKET CONNECTION
+===================================== */
+
+socket.on("connect", () => {
+  if (!auth.uid) return;
+
+  socket.emit("auth-login", {
+    uid: auth.uid
+  });
+
+  requestSocialFeed();
+});
+
+
+
+
+/* ==========================================
+   DAILY SOCIAL MISSION NOTIFICATION
+========================================== */
+
+socket.on("daily-social-reward", data => {
+
+  const amount = Number(data?.amount || 0);
+
+  if (amount !== 100) return;
+
+  showToast(
+    "Daily mission completed! +100 Diamonds",
+    "success",
+    4500
+  );
+
+});
+
 
 
 
@@ -1201,7 +1283,7 @@ ${p.gifts?.byUser ? `
       const name = u?.name || uid;
       const avatar = u?.avatar
         ? fixMedia(u.avatar)
-        : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+        : "https://i.ibb.co/GvJWn19q/icon-192.png" +
           encodeURIComponent(name);
 
       return `
@@ -1320,8 +1402,20 @@ if(p.comments && p.comments.length){
     ❤️ <b id="rl_${p.id}_${idx}_${r.id}">${r.likes?.length||0}</b>
   </span>
   <span onclick="openReplyChild('${p.id}',${idx},'${r.id}')">💬</span>
-  ${(r.uid === auth.uid || p.uid === auth.uid) ? 
-    `<span class="cm-del" onclick="deleteReply('${p.id}',${idx},'${r.id}')">🗑</span>` : ``}
+
+${
+  r.uid === auth.uid ||
+  p.uid === auth.uid ||
+  isAdminUser(auth.uid)
+    ? `<span class="cm-del"
+        onclick="${
+          isAdminUser(auth.uid) && r.uid !== auth.uid
+            ? `adminDeleteReply('${p.id}','${comment.id || ""}','${r.id}')`
+            : `deleteReply('${p.id}',${idx},'${r.id}')`
+        }">🗑</span>`
+    : ``
+}
+
 </div>
 
 
@@ -1368,17 +1462,19 @@ ${child.text}
         </b>
       </span>
 
-     ${
-  child.uid === auth.uid || isAdminUser(auth.uid)
-  ? `<span class="cm-del"
-      onclick="${
-        isAdminUser(auth.uid) && child.uid !== auth.uid
-          ? `adminDeleteReply('${p.id}','${idx}','${child.id}')`
-          : `deleteReplyChild('${p.id}',${idx},'${r.id}','${child.id}')`
-      }"
-    >🗑</span>`
-  : ``
+     
+${
+  child.uid === auth.uid
+    ? `<span class="cm-del"
+         onclick="deleteReplyChild(
+           '${p.id}',
+           ${idx},
+           '${r.id}',
+           '${child.id}'
+         )">🗑</span>`
+    : ``
 }
+
     </div>
   </div>
 `;
@@ -1683,20 +1779,32 @@ function hidePreview(){
   previewVideo.classList.add("hidden");
 }
 
-function clearComposeMedia(){
+
+function clearComposeMedia() {
   composeImages = [];
 
+  // Chỉ xóa danh sách ảnh tạo động
+  previewBox.querySelector(".lp-preview-grid")?.remove();
+
+  // Giữ các phần tử HTML cố định
+  previewImage.classList.add("hidden");
+  previewImage.removeAttribute("src");
+
+  previewVideo.pause();
+  previewVideo.removeAttribute("src");
+  previewVideo.load();
+  previewVideo.classList.add("hidden");
+
   previewBox.classList.add("hidden");
-  previewBox.innerHTML = "";
 
   modalImage.value = "";
   modalVideo.value = "";
-
   postImage.value = "";
   postVideo.value = "";
 
   updateCenterMode();
 }
+
 
 
 /* ===== IMAGE PREVIEW ===== */
@@ -1753,16 +1861,7 @@ modalImage?.addEventListener("change", () => {
   setTimeout(updateCenterMode, 50);
 });
 
-/* khi xoá ảnh */
-function clearComposeMedia(){
-  hidePreview();
-  modalImage.value = "";
-  modalVideo.value = "";
-  postImage.value = "";
-  postVideo.value = "";
 
-  updateCenterMode();
-}
 
 
 modal.addEventListener("touchmove", e => {
@@ -1782,7 +1881,7 @@ document.addEventListener("touchmove", e => {
 
 function renderImagePreview(){
   previewBox.classList.remove("hidden");
-  previewBox.innerHTML = "";
+  previewBox.querySelector(".lp-preview-grid")?.remove();
 
   const grid = document.createElement("div");
   grid.className = "lp-preview-grid";

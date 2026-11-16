@@ -376,60 +376,988 @@ video {
 }
 
 
+
+/* ==========================================
+   MILITARY LIVE
+   PREMIUM FULLSCREEN VIEWER
+========================================== */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  font-family: system-ui, sans-serif;
+  overscroll-behavior: none;
+}
+
+/* FULLSCREEN LAYOUT */
+
+#liveViewer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+  background: #000;
+  overflow: hidden;
+}
+
+/* REMOVE OLD PAGE ELEMENTS */
+
+header,
+.note {
+  display: none !important;
+}
+
+/* GAME SCREEN */
+
+#liveViewer .video-wrap {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  max-width: none;
+  height: 100%;
+
+  aspect-ratio: auto;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  overflow: hidden;
+  background: #000;
+}
+
+/* FILL ENTIRE VIEWPORT */
+
+#liveViewer #screen,
+#liveViewer #screenFrame {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  object-fit: fill;
+  object-position: center;
+
+  border: none;
+  border-radius: 0;
+
+  background: #000;
+}
+
+#liveViewer #screenFrame[hidden] {
+  display: none !important;
+}
+
+/* FLOATING CONNECTION STATUS */
+
+#status {
+  position: fixed;
+
+  top: calc(12px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+
+  z-index: 50;
+
+  width: max-content;
+  max-width: calc(100% - 40px);
+
+  padding: 9px 16px;
+
+  background: rgba(8, 13, 10, .75);
+  border: 1px solid rgba(209, 185, 119, .28);
+  border-radius: 30px;
+
+  color: #eee5cb;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .45px;
+
+  text-align: center;
+  line-height: 1.45;
+
+  box-shadow: 0 5px 22px rgba(0, 0, 0, .25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  pointer-events: none;
+}
+
+/* SMALL FULLSCREEN CONTROL */
+
+#liveViewer .fullscreen-btn {
+  position: fixed;
+
+  left: calc(14px + env(safe-area-inset-left));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+
+  z-index: 60;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  padding: 0;
+
+  background: rgba(10, 16, 12, .68);
+  border: 1px solid rgba(214, 192, 134, .3);
+  border-radius: 13px;
+
+  color: #f4e5bf;
+  font-size: 23px;
+  font-weight: 400;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, .25);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  cursor: pointer;
+}
+
+#liveViewer .fullscreen-btn:active {
+  transform: scale(.94);
+}
+
+/* FLOATING CHAT BUTTON */
+
+.w8-chat-toggle {
+  position: fixed;
+
+  right: calc(14px + env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+
+  z-index: 200;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 68px;
+  height: 44px;
+
+  background: rgba(10, 16, 12, .78);
+  border: 1px solid rgba(214, 192, 134, .4);
+  border-radius: 13px;
+
+  color: #f1e4be;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, .3);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  transition: transform .18s ease;
+}
+
+.w8-chat-toggle.active {
+  background: rgba(49, 33, 27, .9);
+  border-color: rgba(214, 192, 134, .5);
+}
+
+#w8ChatIcon {
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 1px;
+}
+
+/* PREMIUM FLOATING COMMENTS */
+
+.w8-viewer-chat {
+  position: fixed;
+
+  left: auto;
+  right: 12px;
+
+  bottom: calc(72px + env(safe-area-inset-bottom));
+
+  transform: none;
+
+  width: min(390px, calc(100% - 24px));
+  max-height: min(65dvh, 540px);
+
+  z-index: 190;
+
+  padding: 16px;
+
+  background: rgba(13, 20, 16, .97);
+  border: 1px solid rgba(199, 172, 112, .4);
+  border-radius: 18px;
+
+  box-shadow: 0 15px 55px rgba(0, 0, 0, .55);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  overflow-y: auto;
+
+  animation: w8PanelRise .2s ease-out;
+}
+
+.w8-viewer-chat[hidden] {
+  display: none !important;
+}
+
+@keyframes w8PanelRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CHAT HEADER */
+
+.w8-chat-header {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid rgba(255,255,255,.09);
+
+  color: #e7d3a0;
+  font-size: 12px;
+  letter-spacing: .7px;
+}
+
+/* COMMENT LIST */
+
+.w8-comment-list {
+  max-height: 180px;
+  gap: 8px;
+}
+
+.w8-viewer-comment {
+  padding: 9px 11px;
+
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 9px;
+
+  font-size: 12px;
+}
+
+/* CHAT INPUTS */
+
+#w8CommentName,
+#w8CommentInput {
+  height: 42px;
+
+  background: #172019;
+  border: 1px solid #39473a;
+  border-radius: 9px;
+
+  color: #fff;
+  font-size: 16px;
+
+  outline: none;
+}
+
+#w8CommentName:focus,
+#w8CommentInput:focus {
+  border-color: #bba36a;
+}
+
+/* SEND BUTTON */
+
+.w8-comment-send-row button {
+  background: linear-gradient(
+    145deg,
+    #d6bb7e,
+    #9c7b40
+  );
+
+  border: none;
+  border-radius: 9px;
+
+  color: #17150f;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* SMALL MOBILE SCREENS */
+
+@media (max-width: 380px) {
+  #status {
+    top: calc(8px + env(safe-area-inset-top));
+    font-size: 10px;
+  }
+
+  .w8-viewer-chat {
+    padding: 12px;
+  }
+}
+
+
+
+
+/* ==========================================
+   MILITARY LIVE - PREMIUM CHAT UI
+========================================== */
+
+/* FLOATING CHAT BUTTON */
+
+#w8ChatToggle {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+
+  left: auto;
+  top: auto;
+
+  z-index: 250;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  width: auto;
+  min-width: 88px;
+  height: 43px;
+  padding: 0 17px;
+
+  background: rgba(22, 32, 25, .92);
+  border: 1px solid rgba(204, 181, 126, .52);
+  border-radius: 999px;
+
+  color: #f0e2c2;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+
+  box-shadow:
+    0 6px 22px rgba(0, 0, 0, .3),
+    inset 0 1px 0 rgba(255,255,255,.07);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  cursor: pointer;
+
+  transition:
+    background .2s ease,
+    transform .2s ease,
+    border-color .2s ease;
+}
+
+#w8ChatToggle:active {
+  transform: scale(.96);
+}
+
+#w8ChatToggle.active {
+  background: #374638;
+  border-color: #cfb784;
+}
+
+/* BUTTON LIVE INDICATOR */
+
+.w8-chat-indicator {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+
+  background: #a4ca90;
+  border-radius: 50%;
+
+  box-shadow: 0 0 8px rgba(164,202,144,.45);
+}
+
+#w8ChatIcon {
+  color: #eddfc0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+/* UNREAD BADGE */
+
+#w8ChatUnread {
+  position: absolute;
+  top: -7px;
+  right: -6px;
+
+  min-width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 5px;
+
+  background: #c0a273;
+  border: 2px solid #18211b;
+  border-radius: 20px;
+
+  color: #1b1b15;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+#w8ChatUnread[hidden] {
+  display: none !important;
+}
+
+/* MAIN FLOATING PANEL */
+
+#w8ViewerChat {
+  position: fixed;
+
+  top: auto;
+  left: auto;
+  right: 12px;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+
+  transform: none;
+
+  z-index: 240;
+
+  display: flex;
+  flex-direction: column;
+
+  width: min(410px, calc(100% - 24px));
+  height: auto;
+  max-height: min(64dvh, 510px);
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      155deg,
+      rgba(28, 39, 30, .98),
+      rgba(12, 19, 15, .98)
+    );
+
+  border: 1px solid rgba(196,174,126,.38);
+  border-radius: 18px;
+
+  box-shadow:
+    0 18px 60px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(255,255,255,.07);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  animation: w8PremiumChatIn .22s ease-out both;
+}
+
+#w8ViewerChat[hidden] {
+  display: none !important;
+}
+
+@keyframes w8PremiumChatIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* PANEL HEADER */
+
+#w8ViewerChat .w8-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  flex-shrink: 0;
+
+  margin: 0;
+  padding: 17px 17px 15px;
+
+  background: transparent;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.w8-chat-heading {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.w8-chat-eyebrow {
+  color: #a99b76;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.w8-chat-title {
+  margin: 0;
+
+  color: #f1e8d7;
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -.35px;
+  line-height: 1.2;
+}
+
+.w8-chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* LIVE BADGE */
+
+#w8ViewerChat .w8-chat-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 9px;
+
+  background: rgba(132,177,118,.1);
+  border: 1px solid rgba(145,190,129,.2);
+  border-radius: 30px;
+
+  color: #b7d7aa;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.w8-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9cc78b;
+}
+
+/* CLOSE BUTTON */
+
+.w8-chat-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 29px;
+  height: 29px;
+  padding: 0;
+
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+
+  color: #c7c9bc;
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.w8-chat-close:active {
+  background: rgba(255,255,255,.13);
+}
+
+/* SCROLLABLE COMMENT FEED */
+
+.w8-chat-feed {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  scrollbar-width: thin;
+  scrollbar-color: #53604f transparent;
+}
+
+#w8CommentList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  min-height: 110px;
+  max-height: none;
+
+  margin: 0;
+  padding: 17px;
+
+  overflow: visible;
+}
+
+/* EMPTY CHAT STATE */
+
+#w8CommentList:empty::before {
+  content: "No comments yet. Start the conversation.";
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 76px;
+
+  color: #819084;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* INDIVIDUAL COMMENTS */
+
+#w8ViewerChat .w8-viewer-comment {
+  display: block;
+
+  margin: 0;
+  padding: 0;
+
+  background: transparent;
+  border: none;
+  border-radius: 0;
+
+  box-shadow: none;
+
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+#w8ViewerChat .w8-viewer-comment-name {
+  color: #d5bc87;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+#w8ViewerChat .w8-viewer-comment-text {
+  color: #e4e9e0;
+
+  margin-left: 6px;
+
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* COMPOSER AREA */
+
+#w8CommentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  flex-shrink: 0;
+
+  padding: 13px 14px 14px;
+
+  background: rgba(0,0,0,.17);
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+/* INPUT FIELDS */
+
+#w8CommentName,
+#w8CommentInput {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  height: 43px;
+
+  margin: 0;
+  padding: 0 13px;
+
+  background: rgba(41,53,43,.65);
+  border: 1px solid rgba(134,151,128,.25);
+  border-radius: 10px;
+
+  color: #f3f2ed;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+
+  outline: none;
+  box-shadow: none;
+
+  user-select: text;
+  -webkit-user-select: text;
+
+  transition:
+    border-color .18s ease,
+    background .18s ease;
+}
+
+#w8CommentName::placeholder,
+#w8CommentInput::placeholder {
+  color: #8e9a8d;
+}
+
+#w8CommentName:focus,
+#w8CommentInput:focus {
+  background: #29372d;
+  border-color: #c2ab7c;
+}
+
+/* MESSAGE INPUT + SEND */
+
+#w8ViewerChat .w8-comment-send-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+
+  width: 100%;
+  min-width: 0;
+}
+
+#w8CommentInput {
+  flex: 1;
+}
+
+#w8CommentSend {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  min-width: 72px;
+  height: 43px;
+  padding: 0 13px;
+
+  background: linear-gradient(
+    145deg,
+    #dbc492,
+    #af915d
+  );
+
+  border: 1px solid rgba(255,236,186,.2);
+  border-radius: 10px;
+
+  color: #1f221a;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .5px;
+
+  cursor: pointer;
+
+  transition: filter .18s ease;
+}
+
+#w8CommentSend:active {
+  filter: brightness(.9);
+}
+
+#w8CommentSend:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* FORM STATUS */
+
+#w8CommentStatus {
+  min-height: 0;
+  margin: 0;
+
+  color: #d6bb87;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+#w8CommentStatus:empty {
+  display: none;
+}
+
+/* MOBILE OPTIMIZATION */
+
+@media (max-width: 430px) {
+
+  #w8ViewerChat {
+    right: 10px;
+    width: calc(100% - 20px);
+    max-height: min(62dvh, 490px);
+    border-radius: 16px;
+  }
+
+  #w8ViewerChat .w8-chat-header {
+    padding: 15px;
+  }
+
+  #w8CommentList {
+    padding: 15px;
+  }
+
+  #w8CommentForm {
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #w8ViewerChat {
+    animation: none;
+  }
+}
+
+
+
+/* ==================================
+   MILITARY LIVE - EXIT BUTTON
+================================== */
+
+#w8ExitViewer[hidden] {
+  display: none !important;
+}
+
+#w8ExitViewer {
+  position: fixed;
+
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  left: calc(14px + env(safe-area-inset-left, 0px));
+
+  z-index: 300;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 74px;
+  height: 40px;
+
+  padding: 0 17px;
+
+  border: 1px solid rgba(216, 188, 126, .55);
+  border-radius: 11px;
+
+  background: rgba(18, 26, 19, .92);
+
+  color: #f0ddad;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 1.1px;
+
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .35);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#w8ExitViewer:active {
+  transform: scale(.96);
+  background: rgba(58, 71, 49, .95);
+}
+
+
+
 </style>
 </head>
 
+
 <body>
 
-<header>
-  <div class="logo">★ MILITARY LIVE ★</div>
-</header>
+<!-- =====================================
+     MILITARY LIVE - FULL SCREEN VIEWER
+===================================== -->
 
-<main>
-
-<div id="status">
-  Connecting...
-</div>
+<main id="liveViewer">
 
   <div class="video-wrap">
+
+    <!-- WEBRTC STREAM -->
     <video
       id="screen"
       autoplay
       muted
       playsinline
-      controls>
+      disablepictureinpicture>
     </video>
 
-<img
-  id="screenFrame"
-  alt="Shared game screen"
-  hidden>
-
+    <!-- MOBILE FRAME STREAM -->
+    <img
+      id="screenFrame"
+      alt="Shared game screen"
+      hidden>
 
   </div>
 
-<button class="fullscreen-btn"
-        onclick="fullScreen()">
-  ⛶ FULL SCREEN
+  <!-- FLOATING LIVE STATUS -->
+  <div id="status" role="status" aria-live="polite">
+    Connecting...
+  </div>
+
+
+
+<!-- RETURN TO GAME -->
+<button
+  id="w8ExitViewer"
+  class="w8-exit-viewer"
+  type="button"
+  onclick="w8ExitToGame()"
+  aria-label="Exit and return to game"
+  hidden>
+  <span>EXIT</span>
 </button>
 
-<div class="note">
-  You are watching a live screen share.
-  View-only mode. You cannot control the game.
-</div>
 
 
+  <!-- OPTIONAL NATIVE FULLSCREEN -->
+  <button
+    class="fullscreen-btn"
+    type="button"
+    onclick="fullScreen()"
+    aria-label="Enter fullscreen"
+    title="Fullscreen">
+    ⛶
+  </button>
 
 </main>
 
 
 
-<!-- ==================================
-     LIVE VIEWER CHAT
-================================== -->
 
 
-<!-- OPEN / CLOSE COMMENTS -->
+
+<!-- ==========================================
+     MILITARY LIVE - PREMIUM CHAT
+========================================== -->
+
+<!-- FLOATING CHAT BUTTON -->
 <button
   id="w8ChatToggle"
   class="w8-chat-toggle"
@@ -439,7 +1367,9 @@ video {
   aria-expanded="false"
   aria-label="Open comments">
 
-  <span id="w8ChatIcon">💬</span>
+  <span class="w8-chat-indicator"></span>
+
+  <span id="w8ChatIcon">CHAT</span>
 
   <span
     id="w8ChatUnread"
@@ -448,60 +1378,153 @@ video {
 
 </button>
 
-<!-- COMMENT PANEL HIDDEN BY DEFAULT -->
-<div
+
+<!-- FLOATING CHAT PANEL -->
+<section
   id="w8ViewerChat"
   class="w8-viewer-chat"
+  aria-label="Live comments"
   hidden>
 
+  <!-- HEADER -->
   <div class="w8-chat-header">
-    <span>💬 LIVE COMMENTS</span>
-    <span class="w8-chat-live">● LIVE</span>
+
+    <div class="w8-chat-heading">
+
+      <span class="w8-chat-eyebrow">
+        MILITARY LIVE
+      </span>
+
+      <h2 class="w8-chat-title">
+        Live Comments
+      </h2>
+
+    </div>
+
+    <div class="w8-chat-header-actions">
+
+      <span class="w8-chat-live">
+        <span class="w8-live-dot"></span>
+        LIVE
+      </span>
+
+      <button
+        type="button"
+        class="w8-chat-close"
+        onclick="w8ToggleChat()"
+        aria-label="Close comments">
+        &times;
+      </button>
+
+    </div>
+
   </div>
 
-  <div
-    id="w8CommentList"
-    class="w8-comment-list">
+
+  <!-- COMMENT FEED -->
+  <div class="w8-chat-feed">
+
+    <div
+      id="w8CommentList"
+      class="w8-comment-list"
+      role="log"
+      aria-label="Recent live comments"
+      aria-live="polite">
+    </div>
+
   </div>
 
-  <form id="w8CommentForm" autocomplete="off">
 
-<input
-  id="w8CommentName"
-  type="text"
-  maxlength="20"
-  placeholder="Display name"
-  aria-label="Display name">
+  <!-- COMMENT COMPOSER -->
+  <form
+    id="w8CommentForm"
+    class="w8-chat-composer"
+    autocomplete="off">
 
-<div class="w8-comment-send-row">
+    <input
+      id="w8CommentName"
+      type="text"
+      maxlength="20"
+      placeholder="Your display name"
+      aria-label="Display name">
 
-  <input
-    id="w8CommentInput"
-    type="text"
-    maxlength="120"
-    placeholder="Write a comment..."
-    aria-label="Comment"
-    required>
+    <div class="w8-comment-send-row">
 
-  <button
-    id="w8CommentSend"
-    type="submit">
-    ➤ SEND
-  </button>
+      <input
+        id="w8CommentInput"
+        type="text"
+        maxlength="120"
+        placeholder="Write a comment..."
+        aria-label="Comment"
+        required>
 
+      <button
+        id="w8CommentSend"
+        type="submit">
+        SEND
+      </button>
+
+    </div>
+
+    <div
+      id="w8CommentStatus"
+      role="status"
+      aria-live="polite">
     </div>
 
   </form>
 
-  <div id="w8CommentStatus" aria-live="polite"></div>
-
-</div>
-
+</section>
 
 
 <script>
 const params = new URLSearchParams(location.search);
 const token = params.get("room") || "";
+
+
+
+/* =====================================
+   EXIT VIEWER - RETURN TO GAME
+===================================== */
+
+const w8FromSettings =
+  params.get("entry") === "settings";
+
+const w8ExitButton =
+  document.getElementById("w8ExitViewer");
+
+// Chỉ hiển thị khi vào từ Settings
+if (w8ExitButton) {
+  w8ExitButton.hidden = !w8FromSettings;
+}
+
+function w8ExitToGame() {
+
+  // Thoát chế độ fullscreen nếu đang bật
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+
+  // Giải phóng kết nối xem
+  closePeer();
+
+  if (socket.connected) {
+    socket.disconnect();
+  }
+
+  // Đóng tab xem để quay lại tab game gốc
+  window.close();
+
+  // Dự phòng nếu trình duyệt không cho đóng tab
+  setTimeout(() => {
+    if (!window.closed) {
+      window.location.replace("/game-military.html");
+    }
+  }, 350);
+
+}
+
+
 
 const video = document.getElementById("screen");
 const status = document.getElementById("status");
@@ -585,13 +1608,23 @@ socket.on("connect", async () => {
     (err, reply) => {
 
 if (err || !reply?.ok) {
+
   setStatus(
     reply?.error || "Unable to join the viewing room."
   );
+
+} else if (reply.paused) {
+
+  setStatus(
+    "Broadcaster temporarily offline. Waiting for LIVE..."
+  );
+
 } else {
+
   setStatus(
     "Connected. Waiting for the video stream..."
   );
+
 }
 
     }
@@ -726,23 +1759,78 @@ socket.on("disconnect", () => {
 
 });
 
+
+// The broadcaster temporarily left the game.
+socket.on("w8share:paused", () => {
+
+  closePeer();
+
+  setStatus(
+    "LIVE temporarily paused. Waiting for broadcaster..."
+  );
+
+});
+
+// The broadcaster has returned.
+socket.on("w8share:resumed", () => {
+
+  setStatus(
+    "Broadcaster reconnected. Restoring LIVE..."
+  );
+
+});
+
+// Resume pending connection after returning to this tab.
+document.addEventListener("visibilitychange", () => {
+
+  if (document.hidden) return;
+
+  if (!socket.connected && !socket.active) {
+    socket.connect();
+  }
+
+});
+
+
+
+
 // Fullscreen
-function fullScreen() {
 
-  const frame = document.getElementById("screenFrame");
+async function fullScreen() {
+
+  const target = document.documentElement;
+
+  try {
+
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      return;
+    }
+
+    if (target.requestFullscreen) {
+      await target.requestFullscreen();
+      return;
+    }
+
+    if (target.webkitRequestFullscreen) {
+      target.webkitRequestFullscreen();
+      return;
+    }
+
+  } catch (error) {
+    console.warn("Fullscreen unavailable:", error);
+  }
+
+  // Fallback for supported iOS video fullscreen.
   const video = document.getElementById("screen");
+  const frame = document.getElementById("screenFrame");
 
-  const target = frame.hidden
-    ? video
-    : document.querySelector(".video-wrap");
-
-  if (target.requestFullscreen) {
-    target.requestFullscreen();
-  } else if (target.webkitEnterFullscreen) {
-    target.webkitEnterFullscreen();
+  if (frame.hidden && video.webkitEnterFullscreen) {
+    video.webkitEnterFullscreen();
   }
 
 }
+
 
 
 // Receive game screen frames from mobile devices
@@ -830,7 +1918,7 @@ button.setAttribute(
   opening ? "Close comments" : "Open comments"
 );
 
-  icon.textContent = opening ? "✕" : "💬";
+  icon.textContent = opening ? "CLOSE" : "CHAT";
 
   	// Mark comments as read when opening the chat
   if (opening) {

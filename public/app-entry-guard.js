@@ -1,18 +1,24 @@
 
 /* ==========================================
    LIVESTREAM PRO
-   APP ENTRY GUARD - FIX REDIRECT
+   APP ENTRY GUARD - STABLE VERSION
+
+   - Index is the app launch page
+   - No redirect to Index during navigation
+   - Keep authenticated pages accessible
 ========================================== */
 
 (function () {
   "use strict";
 
-  const HOME = "/social.html";
   const LOGIN = "/login.html";
 
-  const path = location.pathname.toLowerCase();
+  const path = window.location.pathname.toLowerCase();
 
-  // Các trang có thể truy cập trước đăng nhập.
+  /* ======================================
+     PUBLIC PAGES
+  ====================================== */
+
   const PUBLIC_PAGES = new Set([
     "/",
     "/index.html",
@@ -20,40 +26,50 @@
     "/register.html"
   ]);
 
-  // Đánh dấu ứng dụng đang hoạt động.
-  sessionStorage.setItem("app_alive", "1");
-
-  // Không ép trang hiện tại về Social.
-  // Mỗi trang được điều hướng theo đúng chức năng.
-
+  // Public pages are always accessible.
   if (PUBLIC_PAGES.has(path)) {
     return;
   }
 
-  // Kiểm tra dữ liệu đăng nhập hiện có.
-  let auth = null;
+  /* ======================================
+     AUTHENTICATION STATE
+  ====================================== */
+
+  let profile = null;
 
   try {
-    auth = JSON.parse(
+    profile = JSON.parse(
       localStorage.getItem("user_profile") || "null"
     );
   } catch (error) {
-    auth = null;
+    profile = null;
   }
 
-  const isLoggedIn =
-    auth &&
-    typeof auth.uid === "string" &&
-    auth.uid.trim() !== "" &&
-    !auth.uid.toLowerCase().startsWith("guest");
+  const uid = String(profile?.uid || "").trim();
 
-  // Chưa đăng nhập: chuyển về trang Login.
-  if (!isLoggedIn) {
-    location.replace(LOGIN);
+  const hasLocalProfile =
+    uid.length > 0 &&
+    !uid.toLowerCase().startsWith("guest");
+
+  /* ======================================
+     NOT LOGGED IN
+  ====================================== */
+
+  if (!hasLocalProfile) {
+
+    // Prevent redirect loops on Login.
+    if (path !== LOGIN) {
+      window.location.replace(LOGIN);
+    }
+
     return;
   }
 
-  // Đã đăng nhập: giữ nguyên trang hiện tại.
-  // Không tự động đưa về /social.html.
+  /* ======================================
+     ALREADY LOGGED IN
+  ====================================== */
+
+  // Keep the current page.
+  // Do not redirect to Index or Social.
 
 })();

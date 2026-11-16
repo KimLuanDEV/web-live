@@ -111,100 +111,6 @@ body{
 
 /* HEADER PRO */
 
-/* ================= GLASS NEON HEADER LEVEL 2 ================= */
-
-.tr-header{
-  position:absolute;
-  top:-95px;
-  left:-35px;
-  right:0;
-  height:184px;
-  width:500px;
-  background:
-    url("/assets/time-race/header-panel.png")
-    center top / cover no-repeat;
-
-  z-index:300;
-}
-
-
-
-.tr-back{
-  position:absolute;
-  left:47px;
-  top:117px;
-
-  width:27px;
-  height:35px;
-
-  background:transparent;
-  border:none;
-  cursor:pointer;
-}
-
-.tr-head-center{
-  position:absolute;
-  left:50%;
-  top:42px;
-  transform:translateX(-50%);
-  text-align:center;
-}
-
-.tr-title{
-  font-size:20px;
-  font-weight:900;
-}
-
-.tr-sub{
-  font-size:13px;
-  opacity:.9;
-
-  display:flex;
-  gap:6px;
-  align-items:center;
-  justify-content:center;
-}
-
-
-.round-label{
-  position: absolute;
-  opacity:.7;
-  top: 112px;
-  left:-47px;
-}
-
-
-.tr-right{
-  position:absolute;
-  right:18px;
-  top:38px;
-}
-
-/* COIN BALANCE */
-.tr-coins{
-  position:absolute;
-
-  top:88px;
-  right:30px;
-
-  display:flex;
-  align-items:center;
-  gap:0px;
-
-  font-size:14px;
-  font-weight:900;
-
-  color:#00f0ff;
-}
-
-.coin-icon{
-  position: absolute;
-  width:44px;
-  height:36px;
-  right:36px;
-  filter:
-    drop-shadow(0 0 6px #00f0ff);
-}
 
 .tr-timer-badge{
   background:#007bff;
@@ -218,7 +124,7 @@ body{
 /* CENTER */
 .tr-center{
   position:absolute;
-  top:45%;
+  top:42%;
   left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
@@ -527,136 +433,9 @@ body{
   font-weight:800;
 }
 
-/* ROUND TODAY */
-#roundToday{
-  position:absolute;
-
-  top:110px;     /* chỉnh lên xuống */
-  left:28px;   /* chỉnh trái phải */
-
-  transform:translateX(-50%);
-
-  font-size:17px;
-  font-weight:800;
-
-  color:#00f0ff;
-  text-shadow:0 0 10px #00f0ff;
-  
-}
 
 
 
-
-/* ================= CYBER ROUND HISTORY ================= */
-
-.tr-history-wrap{
-  position:absolute;
-
-  top:75px;
-  left:-54px;
-  right:0;
-  height:112px;
-  width: 542px;
-
-  padding:13px 16px 10px;
-
-  background:
-    url("/assets/time-race/history-panel.png")
-    center / cover no-repeat;
-
-  z-index:290;
-}
-
-/* title */
-.history-title{
-  position:absolute;
-
-  top:14px;
-  left:50%;
-  transform:translateX(-50%);
-
-  font-size:12px;
-  font-weight:800;
-
-  letter-spacing:2px;
-
-  color:#00f0ff;
-
-  text-shadow:
-    0 0 10px #00f0ff,
-    0 0 20px rgba(0,255,255,.6);
-}
-
-/* bar */
-.tr-history-bar{
-  position:absolute;
-
-  bottom:31px;
-  left:92px;
-  right:16px;
-  width: 358px;
-  display:flex;
-  gap:2px;
-
-  overflow-x:auto;
-}
-
-.tr-history-bar::-webkit-scrollbar{
-  display:none;
-}
-
-/* item */
-.tr-history-item{
-  min-width:58px;
-  padding:8px 0;
-  border-radius:22px;
-
-  font-size:13px;
-  font-weight:800;
-  text-align:center;
-
-  backdrop-filter:blur(10px);
-
-  border:1px solid rgba(255,255,255,.08);
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.05),
-      rgba(0,0,0,.4)
-    );
-
-  box-shadow:
-    inset 0 0 12px rgba(0,255,255,.05);
-
-  transition:.2s;
-}
-
-/* LOW (<2x) */
-.tr-history-item.low{
-  color:#ff2d2d;
-
-}
-
-/* MID (2-5x) */
-.tr-history-item.mid{
-  color:#ff9900;
-
-}
-
-/* HIGH (>5x) */
-.tr-history-item.high{
-  color:#00f0ff;
-}
-
-
-
-/* hover effect */
-.tr-history-item:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 0 25px rgba(0,255,255,.8);
-}
 
 
 /* STOP dưới bomb */
@@ -946,89 +725,427 @@ body.crash-dark{
 
 
 
+/* ==========================================
+   TIME RACE - PREMIUM HISTORY SHEET
+   CYBER TITANIUM EDITION
+========================================== */
 
-.tr-sheet{
-  position:fixed;
-  inset:0;
-  z-index:500;
+/* FULL SCREEN OVERLAY */
+
+.tr-sheet {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 900;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  overflow: hidden;
+  font-family: system-ui, sans-serif;
 }
 
-.tr-sheet.hidden{
-  display:none;
+.tr-sheet.hidden {
+  display: none !important;
 }
 
-.tr-sheet-backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.6);
+/* BACKDROP */
+
+.tr-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(1, 8, 17, .82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  animation: trBackdropIn .25s ease both;
 }
 
-.tr-sheet-panel{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
+@keyframes trBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
-  max-height:75%;
-  overflow-y:auto;
+/* MAIN PANEL */
 
-  padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+.tr-sheet-panel {
+  position: relative;
 
-  background:linear-gradient(
-    180deg,
-    rgba(10,10,25,.98),
-    rgba(0,0,0,1)
-  );
+  width: 100%;
+  height: auto;
+  max-height: 79%;
 
-  border-top-left-radius:20px;
-  border-top-right-radius:20px;
+  box-sizing: border-box;
+  padding: 14px 17px 22px;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(15, 89, 123, .20),
+      transparent 48%
+    ),
+    linear-gradient(
+      180deg,
+      #0c2234 0%,
+      #071827 42%,
+      #040e19 100%
+    );
+
+  border: 1px solid rgba(93, 211, 243, .32);
+  border-bottom: none;
+
+  border-radius: 24px 24px 0 0;
 
   box-shadow:
-    0 -10px 40px rgba(0,255,255,.2);
+    0 -16px 50px rgba(0, 0, 0, .55),
+    0 -2px 25px rgba(0, 211, 255, .12),
+    inset 0 1px 0 rgba(255,255,255,.08);
 
-  animation:slideUp .25s ease;
+  animation: trHistorySlideUp .35s
+    cubic-bezier(.22,1,.36,1) both;
 }
 
-@keyframes slideUp{
-  from{ transform:translateY(100%); }
-  to{ transform:translateY(0); }
+@keyframes trHistorySlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: .6;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.tr-sheet-handle{
-  width:50px;
-  height:5px;
-  background:rgba(255,255,255,.3);
-  border-radius:5px;
-  margin:0 auto 16px;
+/* HANDLE */
+
+.tr-sheet-handle {
+  width: 45px;
+  height: 4px;
+
+  flex-shrink: 0;
+  margin: 0 auto 19px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    90deg,
+    #34566b,
+    #7faec3,
+    #34566b
+  );
 }
 
-.tr-sheet-title{
-  font-size:16px;
-  font-weight:800;
-  text-align:center;
-  margin-bottom:16px;
+/* HEADER */
+
+.tr-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+
+  margin-bottom: 19px;
 }
 
-.tr-history-list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+.tr-sheet-heading {
+  min-width: 0;
 }
 
+.tr-sheet-eyebrow {
+  margin-bottom: 7px;
 
-
-.tr-history-item-card{
-  padding:12px;
-  border-radius:14px;
-
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(0,255,255,.2);
-
-  font-size:13px;
-
-  display:flex;
-  justify-content:space-between;
+  color: #55d7ed;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
 }
+
+.tr-sheet-title {
+  margin: 0 0 6px;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  text-align: left;
+
+  color: #f3fbff;
+  text-shadow: 0 0 16px rgba(0,220,255,.2);
+}
+
+.tr-sheet-subtitle {
+  color: #89aabc;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* CLOSE BUTTON */
+
+.tr-sheet-close {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(98,183,219,.35);
+  border-radius: 11px;
+
+  background: linear-gradient(
+    145deg,
+    #173449,
+    #0a1d2d
+  );
+
+  color: #c0e8f4;
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 1;
+
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.tr-sheet-close:active {
+  transform: scale(.92);
+}
+
+/* SUMMARY */
+
+.tr-history-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+
+  flex-shrink: 0;
+  margin-bottom: 20px;
+
+  padding: 15px 6px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(22,60,83,.70),
+    rgba(8,28,44,.90)
+  );
+
+  border: 1px solid rgba(75,157,189,.23);
+  border-radius: 15px;
+}
+
+.tr-summary-item {
+  min-width: 0;
+  text-align: center;
+}
+
+.tr-summary-item + .tr-summary-item {
+  border-left: 1px solid rgba(98,151,175,.24);
+}
+
+.tr-summary-label {
+  margin-bottom: 8px;
+
+  color: #8baabf;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .6px;
+}
+
+.tr-summary-value {
+  font-family: "Orbitron", sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+  color: #f1fbff;
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-summary-value.win {
+  color: #73f0cf;
+}
+
+.tr-summary-value.loss {
+  color: #ff8e9c;
+}
+
+/* SHARED TABLE GRID */
+
+.tr-history-table-head,
+.tr-history-item-card {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.12fr)
+    minmax(0, .95fr)
+    minmax(0, .90fr)
+    minmax(0, 1.12fr);
+  align-items: center;
+  column-gap: 5px;
+}
+
+/* TABLE HEAD */
+
+.tr-history-table-head {
+  flex-shrink: 0;
+  padding: 0 5px 12px;
+
+  border-bottom: 1px solid rgba(82,169,198,.25);
+
+  color: #84a5b8;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  text-align: center;
+}
+
+/* RECORDS SCROLL */
+
+.tr-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  flex: 1 1 auto;
+  min-height: 110px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 12px 0 7px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #32647c transparent;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tr-history-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.tr-history-list::-webkit-scrollbar-thumb {
+  background: #32647c;
+  border-radius: 10px;
+}
+
+/* HISTORY RECORD */
+
+.tr-history-item-card {
+  flex-shrink: 0;
+  min-height: 51px;
+  box-sizing: border-box;
+
+  padding: 8px 5px;
+
+  background: linear-gradient(
+    140deg,
+    rgba(20,56,77,.74),
+    rgba(7,24,39,.96)
+  );
+
+  border: 1px solid rgba(76,144,172,.25);
+  border-radius: 11px;
+
+  color: #dfedf6;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-history-item-card > div {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tr-history-item-card > div:nth-child(3) {
+  color: #75dff5;
+}
+
+.tr-history-item-card.is-win {
+  border-left: 2px solid #59ddba;
+}
+
+.tr-history-item-card.is-loss {
+  border-left: 2px solid #e57486;
+}
+
+/* RESULT STATUS */
+
+.tr-record-result {
+  padding: 8px 2px;
+  border-radius: 7px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.tr-record-result.win {
+  color: #74ebca;
+  background: rgba(30,140,110,.15);
+}
+
+.tr-record-result.loss {
+  color: #ff97a3;
+  background: rgba(194,55,77,.15);
+}
+
+/* EMPTY STATE */
+
+.tr-history-empty {
+  padding: 55px 12px;
+  text-align: center;
+
+  color: #91acbb;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* FOOTER */
+
+.tr-sheet-footer {
+  flex-shrink: 0;
+
+  padding-top: 15px;
+  margin-top: 5px;
+
+  border-top: 1px solid rgba(83,149,176,.19);
+
+  text-align: center;
+  color: #547a90;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+/* ACCESSIBILITY */
+
+.tr-sheet-close:focus-visible {
+  outline: 2px solid #79eaff;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-sheet-panel,
+  .tr-sheet-backdrop {
+    animation: none;
+  }
+}
+
 
 
 .bet-history-floating{
@@ -1036,7 +1153,7 @@ body.crash-dark{
   right:-8px;
 
   /* nằm ngay trên bet bar */
-  bottom:calc(600px + env(safe-area-inset-bottom));
+  bottom:calc(560px + env(safe-area-inset-bottom));
 
   z-index:210;
 }
@@ -1047,101 +1164,443 @@ body.crash-dark{
 
 /* ================= WIN MODAL ================= */
 
-.tr-win-modal{
-  position:fixed;
-  inset:0;
-  z-index:999;
+
+
+/* ==========================================
+   TIME RACE - CYBER TITANIUM VICTORY
+   GAME CANVAS: 430 x 870
+========================================== */
+
+/* FULL SCREEN MODAL */
+
+.tr-win-modal {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1500;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+  isolation: isolate;
 }
 
-.tr-win-modal.hidden{
-  display:none;
+.tr-win-modal.hidden {
+  display: none !important;
 }
 
-.tr-win-backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  backdrop-filter:blur(8px);
+/* DARK BLURRED BACKDROP */
+
+.tr-win-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(1, 9, 19, .86);
+
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+
+  animation: trWinBackdrop .3s ease both;
 }
 
-.tr-win-box{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%) scale(.8);
-
-  width:320px;
-  text-align:center;
+@keyframes trWinBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
+/* ==========================================
+   MAIN VICTORY PANEL
+========================================== */
 
+.tr-win-box {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
 
+  width: 356px;
+  max-width: calc(100% - 36px);
+  max-height: calc(100% - 32px);
 
-/* frame image */
+  box-sizing: border-box;
+  padding: 28px 22px 22px;
 
-.tr-win-frame{
-  width:100%;
-  height:auto;
-  display:block;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  text-align: center;
+  border-radius: 23px;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(34, 151, 175, .20),
+      transparent 57%
+    ),
+    linear-gradient(
+      160deg,
+      #10334a 0%,
+      #091d30 42%,
+      #040f1c 100%
+    );
+
+  border: 1px solid rgba(92, 217, 246, .44);
+
+  box-shadow:
+    0 20px 80px rgba(0, 0, 0, .7),
+    0 0 45px rgba(0, 204, 255, .14),
+    inset 0 1px 0 rgba(255,255,255,.10);
+
+  animation: trVictoryEntrance .5s
+    cubic-bezier(.2,1,.3,1) both;
 }
 
-/* content overlay */
+@keyframes trVictoryEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(.88);
+  }
 
-.tr-win-content{
-  position:absolute;
-  inset:0;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  gap:10px;
-  pointer-events:none;
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* title */
+/* TOP CYAN DETAIL */
 
-.tr-win-title{
-  font-size:20px;
-  font-weight:900;
+.tr-win-topline {
+  position: absolute;
+  top: 0;
+  left: 50%;
 
-  color:#00f0ff;
+  width: 64%;
+  height: 3px;
+
+  transform: translateX(-50%);
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #72f5ff,
+    transparent
+  );
+
+  box-shadow: 0 0 17px rgba(0,235,255,.65);
+}
+
+/* CLOSE BUTTON */
+
+.tr-win-close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  cursor: pointer;
+
+  background: rgba(20,58,78,.75);
+  border: 1px solid rgba(105,185,213,.35);
+  border-radius: 9px;
+
+  color: #bce9f3;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.tr-win-close:active {
+  transform: scale(.94);
+}
+
+/* ==========================================
+   VICTORY EMBLEM
+========================================== */
+
+.tr-win-emblem {
+  position: relative;
+
+  width: 76px;
+  height: 76px;
+
+  margin: 7px auto 21px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  color: #a0fff0;
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      #246d80,
+      #0c3447 65%,
+      #071d30
+    );
+
+  border: 1px solid rgba(94,245,223,.6);
+
+  box-shadow:
+    0 0 26px rgba(55,234,224,.22),
+    inset 0 0 20px rgba(18,158,174,.2);
+
+  animation: trEmblemGlow 2.5s ease-in-out infinite;
+}
+
+.tr-win-emblem svg {
+  width: 43px;
+  height: 43px;
+  filter: drop-shadow(0 0 7px rgba(101,245,230,.35));
+}
+
+@keyframes trEmblemGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(55,234,224,.14),
+      inset 0 0 20px rgba(18,158,174,.2);
+  }
+
+  50% {
+    box-shadow:
+      0 0 38px rgba(55,234,224,.35),
+      inset 0 0 25px rgba(18,158,174,.3);
+  }
+}
+
+/* ==========================================
+   TITLES
+========================================== */
+
+.tr-win-caption {
+  margin-bottom: 8px;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+
+  color: #62d9e9;
+}
+
+.tr-win-title {
+  margin: 0;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 29px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  line-height: 1.3;
+
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #b3fbff 55%,
+    #57d5ef 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  filter: drop-shadow(0 0 12px rgba(46,205,243,.25));
+}
+
+.tr-win-subtitle {
+  margin-top: 6px;
+  margin-bottom: 25px;
+
+  color: #91b6c7;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ==========================================
+   REWARD INFORMATION PANEL
+========================================== */
+
+.tr-win-reward {
+  padding: 20px 14px 22px;
+
+  background: linear-gradient(
+    150deg,
+    rgba(18,60,82,.85),
+    rgba(7,27,44,.95)
+  );
+
+  border: 1px solid rgba(84,177,205,.32);
+  border-radius: 16px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.tr-win-label {
+  font-family: system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+
+  color: #91b2c2;
+}
+
+/* MULTIPLIER */
+
+.tr-win-multiplier {
+  margin-top: 11px;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1.25;
+
+  color: #78efff;
 
   text-shadow:
-    0 0 15px #00f0ff,
-    0 0 35px rgba(0,255,255,.7);
+    0 0 16px rgba(0,235,255,.45);
 }
 
-/* multiplier */
+/* DIVIDER */
 
-.tr-win-multiplier{
-  font-size:38px;
-  font-weight:900;
+.tr-win-divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 20px 0;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(91,195,225,.4),
+    transparent
+  );
 }
 
-/* amount */
+/* WINNING AMOUNT */
 
-.tr-win-amount{
-  font-size:24px;
-  font-weight:900;
-  color:#00f0ff;
+.tr-win-amount {
+  margin-top: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  color: #a1f8dc;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 27px;
+  font-weight: 900;
+  line-height: 1.35;
+
+  text-shadow: 0 0 17px rgba(85,237,185,.24);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 
-/* OK button */
+.tr-win-diamond {
+  width: 30px;
+  height: 30px;
 
-.tr-win-btn{
-  margin-top:6px;
-  padding:6px 22px;
+  flex-shrink: 0;
+  object-fit: contain;
 
+  filter: drop-shadow(0 0 8px rgba(0,235,255,.45));
+}
 
-  pointer-events:auto;
-  cursor:pointer;
+/* ==========================================
+   CONTINUE BUTTON
+========================================== */
 
-  position: absolute;
-  bottom:49px;
-  color:#fff;
-  font-weight: bold;
+.tr-win-btn {
+  position: relative;
+  bottom: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 51px;
+
+  box-sizing: border-box;
+  margin-top: 22px;
+  padding: 0 15px;
+
+  border: 1px solid rgba(125,245,255,.6);
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #116783,
+    #1599aa 50%,
+    #106d83
+  );
+
+  box-shadow:
+    0 5px 18px rgba(0,152,196,.22),
+    inset 0 1px 0 rgba(255,255,255,.2);
+
+  color: #f2ffff;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+
+  cursor: pointer;
+  pointer-events: auto;
+  transition: filter .2s ease, transform .2s ease;
+}
+
+.tr-win-btn:hover {
+  filter: brightness(1.12);
+}
+
+.tr-win-btn:active {
+  transform: scale(.97);
+}
+
+.tr-win-btn:focus-visible,
+.tr-win-close:focus-visible {
+  outline: 2px solid #9efbff;
+  outline-offset: 3px;
+}
+
+/* FOOTER */
+
+.tr-win-footer {
+  margin-top: 18px;
+
+  color: #5d8397;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+
+/* REDUCED MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-win-backdrop,
+  .tr-win-box,
+  .tr-win-emblem {
+    animation: none;
+  }
 }
 
 
@@ -1165,142 +1624,113 @@ body.crash-dark{
 
 
 
-/* ================= TIME RACE LOADING ================= */
+/* =====================================
+   TIME RACE - FULL IMAGE LOADING
+   Design resolution: 430 x 870
+===================================== */
 
-.tr-loading{
-  position:fixed;
-  inset:0;
-  z-index:9999;
+.tr-loading {
+  position: absolute;
+  inset: 0;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width: 430px;
+  height: 870px;
 
-  background:#000;
-}
-
-.tr-loading-bg{
-  position:absolute;
-  inset:0;
+  z-index: 9999;
+  overflow: hidden;
 
   background:
-    radial-gradient(circle at 50% 40%,
-      rgba(0,255,255,.2),
-      rgba(0,0,0,.95) 70%
-    );
+    #031324
+    url("/assets/time-race/time-race-loading-full.png")
+    center center / 100% 100% no-repeat;
 
-  animation:loadingBgMove 10s linear infinite;
+  opacity: 1;
+  transition: opacity .6s ease;
 }
 
-@keyframes loadingBgMove{
-  0%{ transform:scale(1); }
-  50%{ transform:scale(1.1); }
-  100%{ transform:scale(1); }
+/* =====================================
+   PROGRESS BAR HITBOX
+   Positioned over background track
+===================================== */
+
+.tr-loading-bar {
+  position: absolute;
+
+  left: 50%;
+  top: 64.5%;
+
+  transform: translateX(-50%);
+
+  width: 68%;
+  height: 2.2%;
+
+  padding: 3px;
+  box-sizing: border-box;
+
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+
+  overflow: hidden;
 }
 
-.tr-loading-center{
-  position:relative;
-  text-align:center;
-  z-index:2;
-}
+/* DYNAMIC PROGRESS FILL */
 
-.tr-loading-logo{
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:2px;
+.tr-loading-progress {
+  width: 0%;
+  height: 100%;
 
-  background:linear-gradient(
+  border-radius: 5px;
+
+  background: linear-gradient(
     90deg,
-    #00f0ff,
-    #ffffff,
-    #00f0ff
+    #007bff 0%,
+    #00dfff 60%,
+    #b5ffff 100%
   );
 
-  background-size:200%;
-  background-clip:text;
-  -webkit-background-clip:text;
+  box-shadow:
+    0 0 10px rgba(0,240,255,.8),
+    0 0 22px rgba(0,240,255,.5);
 
-  color:transparent;
-
-  animation:logoShine 3s linear infinite;
+  transition: width .3s ease;
 }
 
-@keyframes logoShine{
-  from{ background-position:0%; }
-  to{ background-position:200%; }
+/* =====================================
+   DYNAMIC STATUS TEXT
+===================================== */
+
+.tr-loading-text {
+  position: absolute;
+
+  left: 50%;
+  top: 69%;
+
+  transform: translateX(-50%);
+
+  width: 85%;
+  margin: 0;
+
+  text-align: center;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+
+  color: #c6f9ff;
+
+  text-shadow:
+    0 0 10px rgba(0,240,255,.7);
 }
 
-.tr-loading-bomb{
-  font-size:70px;
-  margin:20px 0;
+/* FADE OUT */
 
-  animation:bombPulse 1.2s ease-in-out infinite;
+.tr-loading.tr-loading-hide {
+  opacity: 0;
+  pointer-events: none;
 }
 
-@keyframes bombPulse{
-  0%,100%{
-    transform:scale(1);
-    filter:drop-shadow(0 0 10px #00f0ff);
-  }
-  50%{
-    transform:scale(1.15);
-    filter:drop-shadow(0 0 25px #00f0ff);
-  }
-}
-
-.tr-loading-bar{
-  width:220px;
-  height:6px;
-  background:#111;
-  border-radius:6px;
-  overflow:hidden;
-  margin:0 auto;
-}
-
-.tr-loading-progress{
-  height:100%;
-  width:0%;
-
-  background:linear-gradient(
-    90deg,
-    #007bff,
-    #00f0ff
-  );
-
-  box-shadow:0 0 15px #00f0ff;
-
-  transition:width .3s;
-}
-
-.tr-loading-text{
-  margin-top:14px;
-  font-size:13px;
-  opacity:.8;
-}
-
-
-.tr-loading-bomb img{
-  width:90px;
-  height:auto;
-
-  filter:
-    drop-shadow(0 0 10px #00f0ff)
-    drop-shadow(0 0 30px #00f0ff);
-
-  animation:bombPulse 1.2s ease-in-out infinite;
-}
-
-@keyframes bombPulse{
-
-  0%,100%{
-    transform:scale(1);
-  }
-
-  50%{
-    transform:scale(1.12);
-  }
-
-}
 
 
 
@@ -1428,62 +1858,1334 @@ body.crash-dark{
 
 
 
-.history-btn-img{
 
-  width:100px;
-  height:auto;
-
-  cursor:pointer;
-
-  transition:.15s;
-
+.history-btn-img {
+  display: block;
+  width: 100px;
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform .2s ease, filter .2s ease;
+  filter: drop-shadow(0 0 8px rgba(0, 220, 255, .3));
 }
 
-/* hover */
-.history-btn-img:hover{
-  transform:scale(1.08);
+.history-btn-img:hover {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 14px rgba(0, 220, 255, .65));
 }
 
-/* click */
-.history-btn-img:active{
-  transform:scale(.9);
-}
-
-
-
-
-.bet-list-box{
-  position:absolute;
-  right:240px;
-  top:-70px;
-
-  width:100px;
-  max-height:300px;
-  overflow:hidden;
-
-  padding:10px;
-
-
-  font-size:9px;
-  z-index:250;
-}
-
-.bet-user{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  padding:4px 6px;
-  margin-bottom:4px;
-
-  border-radius:6px;
-
-  background:rgba(255,255,255,.05);
-
-  font-weight:700;
+.history-btn-img:active {
+  transform: scale(.94);
 }
 
 
+
+
+
+
+/* ==========================================
+   TIME RACE - CYBER TITANIUM HEADER
+   BASE SCREEN: 430 x 870
+========================================== */
+
+.tr-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 430px;
+  height: 88px;
+  box-sizing: border-box;
+
+  z-index: 300;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(5,19,33,.99),
+      rgba(8,35,52,.97) 75%,
+      rgba(4,22,36,.94)
+    );
+
+  border-bottom: 1px solid rgba(77,207,244,.35);
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.35),
+    0 1px 12px rgba(0,225,255,.14);
+}
+
+.tr-header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38%;
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #38dfff,
+    transparent
+  );
+
+  pointer-events: none;
+}
+
+/* BACK BUTTON */
+
+.tr-back {
+  position: absolute;
+  left: 14px;
+  top: 25px;
+
+  width: 42px;
+  height: 42px;
+
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #b8f6ff;
+
+  background: linear-gradient(
+    145deg,
+    #17384e,
+    #071a2a
+  );
+
+  border: 1px solid rgba(105,218,248,.45);
+  border-radius: 12px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.09),
+    0 3px 10px rgba(0,0,0,.35);
+
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.tr-back svg {
+  width: 21px;
+  height: 21px;
+}
+
+.tr-back:active {
+  transform: scale(.94);
+}
+
+/* CENTER TITLE */
+
+.tr-head-center {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 165px;
+  text-align: center;
+}
+
+.tr-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: 1.1px;
+
+  color: #e9fbff;
+
+  text-shadow:
+    0 0 12px rgba(0,220,255,.35);
+}
+
+.tr-head-caption {
+  margin-top: 5px;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+
+  color: #60dff0;
+}
+
+/* RIGHT WALLET */
+
+.tr-right {
+  position: absolute;
+  right: 13px;
+  top: 29px;
+}
+
+.tr-coins {
+  position: relative;
+  top: auto;
+  right: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 106px;
+  max-width: 136px;
+  height: 36px;
+
+  box-sizing: border-box;
+  padding: 0 10px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(14,57,76,.98),
+    rgba(5,22,38,.98)
+  );
+
+  border: 1px solid rgba(84,224,255,.4);
+  border-radius: 11px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 3px 14px rgba(0,0,0,.3);
+
+  color: #e9fdff;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.coin-icon {
+  position: static;
+  flex-shrink: 0;
+
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+
+  margin-right: 5px;
+
+  filter:
+    drop-shadow(0 0 5px rgba(46,215,255,.5));
+}
+
+#coinBalance {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ==========================================
+   PREMIUM ROUND HISTORY PANEL
+========================================== */
+
+.tr-history-wrap {
+  position: absolute;
+
+  top: 100px;
+  left: 12px;
+  right: auto;
+
+  width: 406px;
+  height: 121px;
+
+  padding: 13px 14px;
+  box-sizing: border-box;
+
+  z-index: 290;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(10,36,55,.97),
+      rgba(4,17,30,.98)
+    );
+
+  border: 1px solid rgba(80,194,226,.36);
+  border-radius: 17px;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+/* TOP INFORMATION */
+
+.tr-history-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 35px;
+  gap: 12px;
+
+  border-bottom: 1px solid rgba(94,194,225,.16);
+}
+
+/* CURRENT ROUND */
+
+.tr-sub {
+  position: static;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  opacity: 1;
+}
+
+.round-label {
+  position: static;
+  top: auto;
+  left: auto;
+
+  font-family: system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .5px;
+
+  color: #8eafc1;
+  opacity: 1;
+}
+
+#roundToday {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+
+  color: #69eaff;
+  text-shadow: 0 0 10px rgba(0,220,255,.3);
+}
+
+/* HISTORY TITLE */
+
+.tr-history-wrap .history-title {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin: 0;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .5px;
+
+  color: #bce5f1;
+  white-space: nowrap;
+  text-shadow: none;
+}
+
+.history-live-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+  background: #48e1f2;
+
+  box-shadow: 0 0 9px rgba(0,240,255,.7);
+}
+
+/* HISTORY LIST */
+
+.tr-history-bar {
+  position: static;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  width: 100%;
+  height: 62px;
+
+  padding: 0 0 1px;
+  box-sizing: border-box;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tr-history-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* RESULT ITEM */
+
+.tr-history-item {
+  flex: 0 0 65px;
+  min-width: 65px;
+  box-sizing: border-box;
+
+  padding: 11px 3px;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+
+  border-radius: 10px;
+  border: 1px solid rgba(80,148,177,.26);
+
+  background: linear-gradient(
+    160deg,
+    rgba(27,67,88,.55),
+    rgba(4,18,31,.9)
+  );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05);
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease;
+
+  white-space: nowrap;
+}
+
+/* LOW: BELOW 2X */
+
+.tr-history-item.low {
+  color: #ff677b;
+  border-color: rgba(255,85,105,.23);
+}
+
+/* MID: 2X TO BELOW 5X */
+
+.tr-history-item.mid {
+  color: #ffbf69;
+  border-color: rgba(255,175,74,.24);
+}
+
+/* HIGH: 5X AND ABOVE */
+
+.tr-history-item.high {
+  color: #72f5f5;
+  border-color: rgba(51,230,241,.35);
+}
+
+/* RESULT INTERACTION */
+
+.tr-history-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(95,225,248,.7);
+  box-shadow: 0 0 12px rgba(0,220,255,.15);
+}
+
+
+
+
+/* ==========================================
+   TIME RACE - CYBER LIVE BETS
+   Designed for 430 x 870
+========================================== */
+
+.bet-list-box {
+  position: absolute;
+
+  left: -83px;
+  top: 189px;
+  right: auto;
+
+  width: 125px;
+  height: 152px;
+  max-height: none;
+
+  box-sizing: border-box;
+  padding: 10px 8px;
+
+  display: flex;
+  flex-direction: column;
+
+  z-index: 250;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      160deg,
+      rgba(12,43,62,.96),
+      rgba(4,17,30,.96)
+    );
+
+  border: 1px solid rgba(91,207,235,.38);
+  border-radius: 13px;
+
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.08);
+
+  font-family: system-ui, sans-serif;
+}
+
+/* HEADER */
+
+.tr-bets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3px;
+
+  padding-bottom: 9px;
+  margin-bottom: 7px;
+
+  border-bottom: 1px solid rgba(102,188,216,.18);
+}
+
+.tr-bets-heading {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #dff9ff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .45px;
+  white-space: nowrap;
+}
+
+.tr-bets-live-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+
+  background: #59ebec;
+  border-radius: 50%;
+
+  box-shadow: 0 0 8px rgba(53,241,241,.65);
+}
+
+.tr-bets-count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #81afc0;
+}
+
+#trBetsCount {
+  color: #68e6f1;
+  font-size: 11px;
+}
+
+/* SCROLL AREA */
+
+.tr-bets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  flex: 1;
+  min-height: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+}
+
+.tr-bets-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* PLAYER ROW */
+
+.bet-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+
+  min-height: 30px;
+  flex-shrink: 0;
+
+  padding: 4px 5px;
+  margin: 0;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(23,66,86,.65),
+      rgba(8,31,47,.9)
+    );
+
+  border: 1px solid rgba(91,166,194,.19);
+  border-radius: 7px;
+
+  color: #d8f0fa;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* FIRST PLAYER */
+
+.bet-user.top {
+  border-color: rgba(77,220,239,.48);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(25,89,109,.72),
+      rgba(7,37,55,.95)
+    );
+}
+
+/* PLAYER NUMBER */
+
+.tr-bet-rank {
+  width: 17px;
+  height: 19px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 5px;
+  background: rgba(77,170,198,.14);
+
+  color: #8ddde9;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+/* PLAYER NAME */
+
+.tr-bet-player {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  flex: 1;
+  min-width: 0;
+}
+
+.tr-bet-name {
+  flex: 1;
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* DIAMOND AMOUNT */
+
+.tr-bet-amount {
+  flex-shrink: 0;
+
+  color: #80e7f3;
+  font-size: 9px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tr-bet-amount img {
+  width: 10px;
+  height: 10px;
+  object-fit: contain;
+  vertical-align: -1px;
+}
+
+/* EMPTY STATE */
+
+.tr-bets-empty {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #7399aa;
+  font-size: 9px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* FOOTER */
+
+.tr-bets-footer {
+  margin-top: 7px;
+  padding-top: 7px;
+
+  flex-shrink: 0;
+
+  border-top: 1px solid rgba(102,188,216,.16);
+
+  color: #628fa3;
+  text-align: center;
+
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .5px;
+}
+
+
+
+
+/* ==========================================
+   TIME RACE - CYBER TITANIUM BET PANEL
+   BASE SCREEN: 430 x 870
+========================================== */
+
+.tr-bottom {
+  position: absolute;
+  left: 0;
+  right: auto;
+  bottom: 0;
+
+  width: 430px;
+  height: 292px;
+
+  padding: 17px 16px 16px;
+  box-sizing: border-box;
+
+  z-index: 200;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(19, 119, 150, .21),
+      transparent 65%
+    ),
+    linear-gradient(
+      180deg,
+      #102f43 0%,
+      #081c2c 40%,
+      #04111e 100%
+    );
+
+  border-top: 1px solid rgba(97, 224, 246, .52);
+  border-radius: 21px 21px 0 0;
+
+  box-shadow:
+    0 -15px 38px rgba(0, 0, 0, .46),
+    0 -2px 18px rgba(24, 197, 233, .12),
+    inset 0 1px 0 rgba(255, 255, 255, .07);
+
+  font-family: system-ui, sans-serif;
+  color: #f1fbff;
+  overflow: hidden;
+}
+
+.tr-bottom::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+
+  width: 55%;
+  height: 2px;
+
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #78ecff,
+    transparent
+  );
+
+  pointer-events: none;
+}
+
+/* ==========================================
+   PANEL HEADER
+========================================== */
+
+.tr-bet-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+  height: 48px;
+  margin-bottom: 11px;
+}
+
+.tr-bet-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.tr-bet-caption {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.25px;
+  color: #6acadb;
+}
+
+.tr-bet-heading-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: .4px;
+
+  color: #e9fbff;
+  white-space: nowrap;
+}
+
+/* SELECTED BET */
+
+.tr-bottom .selected-bet-bar {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+
+  flex: 0 0 auto;
+  min-width: 107px;
+  max-width: 174px;
+  height: 45px;
+
+  box-sizing: border-box;
+  padding: 5px 10px;
+
+  border: 1px solid rgba(75, 168, 201, .35);
+  border-radius: 10px;
+
+  background: linear-gradient(
+    145deg,
+    #12344b,
+    #081d2e
+  );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.tr-selected-label {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #86aabb;
+}
+
+.tr-selected-amount {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+
+  width: 100%;
+  min-width: 0;
+  margin-top: 3px;
+
+  color: #edfaff;
+  font-family: "Orbitron", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.tr-selected-diamond {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+#selectedBetValue {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-bottom .selected-bet-bar.active {
+  border-color: rgba(105, 238, 249, .8);
+
+  box-shadow:
+    0 0 13px rgba(0, 224, 255, .13),
+    inset 0 1px 0 rgba(255,255,255,.09);
+}
+
+/* ==========================================
+   HITBOX CONTAINER
+========================================== */
+
+.tr-bottom .bet-panel-hitbox {
+  position: relative;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
+/* SECTION LABELS */
+
+.tr-bet-section-label {
+  margin: 0 0 6px 2px;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.05px;
+
+  color: #7ea8ba;
+}
+
+/* ==========================================
+   QUICK SELECT BUTTONS
+========================================== */
+
+.tr-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+
+  margin-bottom: 10px;
+}
+
+.tr-bottom .tr-quick-grid .hit {
+  position: static;
+
+  width: 100%;
+  height: 32px;
+
+  padding: 0 4px;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid rgba(78, 159, 193, .36);
+  border-radius: 8px;
+
+  background: linear-gradient(
+    145deg,
+    #173e56,
+    #0c283b
+  );
+
+  color: #bdeef6;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition:
+    background .16s ease,
+    border-color .16s ease;
+}
+
+.tr-bottom .tr-quick-grid .quickAll {
+  background: linear-gradient(
+    135deg,
+    #145b6e,
+    #0b3e53
+  );
+
+  border-color: rgba(91, 225, 235, .49);
+  color: #b6faff;
+}
+
+/* ==========================================
+   BET AMOUNT BUTTONS
+========================================== */
+
+.tr-amount-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+
+  margin-bottom: 11px;
+}
+
+.tr-bottom .tr-amount-grid .hit {
+  position: static;
+
+  width: 100%;
+  height: 39px;
+
+  box-sizing: border-box;
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    150deg,
+    #133247,
+    #0a2133
+  );
+
+  border: 1px solid rgba(68, 142, 174, .34);
+  border-radius: 9px;
+
+  color: #eafaff;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tr-bottom .tr-amount-grid .hit.active {
+  background: linear-gradient(
+    135deg,
+    #145d76,
+    #0c4257
+  );
+
+  border-color: #70eaff;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 0 10px rgba(24, 219, 246, .16);
+}
+
+/* ==========================================
+   CONFIRM BUTTON
+========================================== */
+
+.tr-bottom .bet-panel-hitbox #betBtn {
+  position: static;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 40px;
+
+  box-sizing: border-box;
+  padding: 0;
+
+  transform: none;
+  margin: 0;
+
+  border: 1px solid rgba(140, 246, 255, .65);
+  border-radius: 10px;
+
+  background: linear-gradient(
+    120deg,
+    #115a78,
+    #1598ad 50%,
+    #116680
+  );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    0 5px 15px rgba(0, 178, 219, .17);
+
+  color: #ffffff;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.tr-bottom .bet-panel-hitbox #betBtn:active {
+  filter: brightness(.85);
+}
+
+.tr-bottom .bet-panel-hitbox #betBtn:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.tr-bottom .hit:focus-visible {
+  outline: 2px solid #89efff;
+  outline-offset: 2px;
+}
+
+/* Preserve old locked behavior */
+
+.tr-bottom.locked {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+
+/* ==========================================
+   TIME RACE - PREMIUM BOMB CONTROLS
+   BASE CANVAS: 430 x 870
+========================================== */
+
+/* BOMB AREA */
+
+.tr-center .bomb-wrap {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 0 auto;
+  isolation: isolate;
+}
+
+.tr-center .bomb-img {
+  width: 260px;
+  height: auto;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 2;
+
+  filter:
+    drop-shadow(0 12px 18px rgba(0,0,0,.48))
+    drop-shadow(0 0 15px rgba(29,199,241,.19));
+}
+
+/* SOFT REACTOR GLOW */
+
+.tr-center .bomb-core-glow {
+  position: absolute;
+  inset: -15px;
+  z-index: 0;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(24,178,214,.22),
+    rgba(8,77,111,.10) 45%,
+    transparent 72%
+  );
+
+  filter: blur(20px);
+  pointer-events: none;
+
+  animation: trBombGlow 3s ease-in-out infinite;
+}
+
+@keyframes trBombGlow {
+  0%, 100% {
+    opacity: .55;
+    transform: scale(.96);
+  }
+
+  50% {
+    opacity: .9;
+    transform: scale(1.04);
+  }
+}
+
+/* TIMER - OVER ORIGINAL BOMB */
+
+.tr-center .bomb-timer {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -60%);
+  z-index: 5;
+
+  font-family: "Orbitron", sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+
+  color: #f1fbff;
+
+  text-shadow:
+    0 2px 5px rgba(0,0,0,.85),
+    0 0 12px rgba(85,231,255,.55);
+
+  font-variant-numeric: tabular-nums;
+}
+
+/* MULTIPLIER */
+
+.tr-center .bomb-multi {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 1px;
+
+  text-shadow: 0 0 18px rgba(0,220,255,.45);
+}
+
+/* Preserve crash styling */
+
+.tr-center .bomb-multi.crash-red {
+  font-size: 19px;
+}
+
+/* ==========================================
+   STOP BUTTON POSITION
+========================================== */
+
+.tr-center .stop-wrap {
+  position: absolute;
+
+  top: 286px;
+  left: 50%;
+  bottom: auto;
+
+  width: 150px;
+  height: 100px;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 25;
+  pointer-events: none;
+}
+
+.tr-center .stop-btn-img {
+  width: 140px;
+  height: auto;
+
+  max-width: 100%;
+
+  cursor: pointer;
+  pointer-events: auto;
+
+  object-fit: contain;
+
+  filter: drop-shadow(
+    0 7px 14px rgba(0,0,0,.45)
+  );
+
+  transition:
+    transform .15s ease,
+    filter .15s ease,
+    opacity .15s ease;
+}
+
+.tr-center .stop-btn-img:active {
+  transform: scale(.94);
+}
+
+.tr-center .stop-btn-img.disabled {
+  filter: grayscale(.55);
+}
+
+/* ==========================================
+   HISTORY BUTTON
+========================================== */
+
+.bet-history-floating {
+  position: absolute;
+
+  top: 236px;
+  left: 12px;
+
+  right: auto;
+  bottom: auto;
+
+  z-index: 310;
+}
+
+.bet-history-floating .history-btn-img {
+  display: block;
+
+  width: 88px;
+  height: auto;
+
+  object-fit: contain;
+  cursor: pointer;
+
+  filter:
+    drop-shadow(0 6px 12px rgba(0,0,0,.45));
+
+  transition:
+    transform .15s ease,
+    filter .15s ease;
+}
+
+.bet-history-floating .history-btn-img:active {
+  transform: scale(.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-center .bomb-core-glow {
+    animation: none;
+  }
+}
+
+
+
+/* ==========================================
+   INSTANT BET V2 - TOUCH OPTIMIZATION
+========================================== */
+
+.tr-bottom .tr-quick-grid .hit,
+.tr-bottom .tr-amount-grid .hit,
+.tr-bottom #betBtn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: pointer;
+}
+
+.tr-bottom .tr-quick-grid .hit,
+.tr-bottom .tr-amount-grid .hit {
+  transition:
+    background-color .1s ease,
+    border-color .1s ease;
+}
+
+.tr-bottom .hit.tr-fast-tap {
+  animation: trInstantTap .12s ease-out;
+}
+
+@keyframes trInstantTap {
+  0% {
+    filter: brightness(1.5);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-bottom .hit.tr-fast-tap {
+    animation: none;
+  }
+}
 
 
 
@@ -1498,7 +3200,7 @@ body.crash-dark{
 <!-- ===== GAME SOUNDS ===== -->
 
 
-<audio id="betSound" src="/assets/time-race/sounds/bet.mp3"></audio>
+
 
 <audio id="tickSound" src="/assets/time-race/sounds/tick.mp3"></audio>
 
@@ -1514,69 +3216,118 @@ body.crash-dark{
 
 
 
+
 <!-- ================= TIME RACE LOADING ================= -->
+
 <div id="loadingOverlay" class="tr-loading">
 
-  <div class="tr-loading-bg"></div>
-
-  <div class="tr-loading-center">
-
-    <div class="tr-loading-logo">
-      CRASH
+  <!-- THANH TIẾN TRÌNH KHỚP VỚI ẢNH NỀN -->
+  <div class="tr-loading-bar">
+    <div
+      id="loadingProgress"
+      class="tr-loading-progress">
     </div>
+  </div>
 
-<div class="tr-loading-bomb">
-  <img src="/assets/time-race/bomb-icon.png">
-</div>
-
-    <div class="tr-loading-bar">
-      <div id="loadingProgress" class="tr-loading-progress"></div>
-    </div>
-
-    <div id="loadingText" class="tr-loading-text">
-      Connecting to server...
-    </div>
-
+  <!-- TRẠNG THÁI LOAD ĐỘNG -->
+  <div
+    id="loadingText"
+    class="tr-loading-text">
+    Initializing engine...
   </div>
 
 </div>
 
 
+
+
+<!-- ==========================================
+     TIME RACE - PREMIUM CYBER HEADER
+========================================== -->
 
 <div class="tr-header">
 
-  <button class="tr-back" onclick="location.href='/invest.html'"></button>
+  <!-- BACK BUTTON -->
+  <button
+    class="tr-back"
+    type="button"
+    onclick="location.href='/invest.html'"
+    aria-label="Exit Time Race">
 
+    <svg viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2.5"
+         stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+
+  </button>
+
+  <!-- GAME TITLE -->
   <div class="tr-head-center">
-    <div class="tr-title"></div>
 
-<div class="tr-sub">
-  <span class="round-label">Round</span>
-  <span id="roundToday"></span>
-</div>
+    <div class="tr-title">
+      TIME RACE
+    </div>
+
+    <div class="tr-head-caption">
+      CRASH ARENA
+    </div>
 
   </div>
 
+  <!-- DIAMOND BALANCE -->
   <div class="tr-right">
 
-<div class="tr-coins">
-  <img src="/assets/time-race/diamond-icon.png" class="coin-icon">
-  <span id="coinBalance"></span>
-</div>
+    <div class="tr-coins">
+
+      <img
+        src="/assets/time-race/diamond-icon.png"
+        class="coin-icon"
+        alt="Diamond">
+
+      <span id="coinBalance">0</span>
+
+    </div>
 
   </div>
 
 </div>
+
+
+<!-- ==========================================
+     ROUND + HISTORY PANEL
+========================================== -->
 
 <div class="tr-history-wrap">
-  <div class="history-title">
+
+  <!-- INFORMATION ROW -->
+  <div class="tr-history-top">
+
+    <div class="tr-sub">
+
+      <span class="round-label">
+        CURRENT ROUND
+      </span>
+
+      <span id="roundToday">--</span>
+
+    </div>
+
+    <div class="history-title">
+      <span class="history-live-dot"></span>
+      ROUND HISTORY
+    </div>
+
   </div>
 
-  <div class="tr-history-bar"
-       id="timeRaceHistoryBar">
+  <!-- HISTORY ITEMS -->
+  <div
+    class="tr-history-bar"
+    id="timeRaceHistoryBar">
   </div>
-  
+
 </div>
+
 
 
 
@@ -1585,7 +3336,36 @@ body.crash-dark{
 <div class="tr-center">
 
 
-<div id="betListBox" class="bet-list-box"></div>
+
+<!-- ==========================================
+     TIME RACE - LIVE BETTING PANEL
+========================================== -->
+
+<div id="betListBox" class="bet-list-box">
+
+  <div class="tr-bets-header">
+
+    <div class="tr-bets-heading">
+      <span class="tr-bets-live-dot"></span>
+      <span>LIVE BETS</span>
+    </div>
+
+    <div class="tr-bets-count">
+      <span id="trBetsCount">0</span>
+      <span>PLAYERS</span>
+    </div>
+
+  </div>
+
+  <div id="trBetsList" class="tr-bets-list"></div>
+
+  <div class="tr-bets-footer">
+    LIVE BETTING ACTIVITY
+  </div>
+
+</div>
+
+
 
 
 <div class="bomb-wrap">
@@ -1631,57 +3411,234 @@ body.crash-dark{
 </div>
 
 
+
+
+<!-- ==========================================
+     TIME RACE - PREMIUM BET CONTROL
+========================================== -->
+
 <div class="tr-bottom">
 
-  <div class="selected-bet-bar">
-    BET: 
-  <span id="selectedBetValue">0</span> 💎
+  <!-- TOP INFORMATION -->
+  <div class="tr-bet-header">
+
+    <div class="tr-bet-heading">
+      <span class="tr-bet-caption">
+        TIME RACE / BET CONTROL
+      </span>
+
+      <span class="tr-bet-heading-title">
+        PLACE YOUR BET
+      </span>
+    </div>
+
+    <!-- SELECTED AMOUNT -->
+    <div class="selected-bet-bar">
+
+      <span class="tr-selected-label">
+        SELECTED
+      </span>
+
+      <div class="tr-selected-amount">
+        <img
+          src="/assets/time-race/diamond-icon.png"
+          alt=""
+          class="tr-selected-diamond">
+
+        <span id="selectedBetValue">0</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- BET BUTTONS -->
+  <div class="bet-panel-hitbox">
+
+    <!-- QUICK SELECT -->
+    <div class="tr-bet-section-label">
+      QUICK SELECT
+    </div>
+
+    <div class="tr-quick-grid">
+
+      <button
+        type="button"
+        class="hit quick25"
+        data-type="25">
+        25%
+      </button>
+
+      <button
+        type="button"
+        class="hit quick50"
+        data-type="50">
+        50%
+      </button>
+
+      <button
+        type="button"
+        class="hit quickAll"
+        data-type="all">
+        ALL IN
+      </button>
+
+    </div>
+
+    <!-- BET AMOUNTS -->
+    <div class="tr-bet-section-label">
+      BET AMOUNT
+    </div>
+
+    <div class="tr-amount-grid">
+
+      <button type="button"
+              class="hit bet10"
+              data-bet="10">10</button>
+
+      <button type="button"
+              class="hit bet50"
+              data-bet="50">50</button>
+
+      <button type="button"
+              class="hit bet100"
+              data-bet="100">100</button>
+
+      <button type="button"
+              class="hit bet500"
+              data-bet="500">500</button>
+
+      <button type="button"
+              class="hit bet1000"
+              data-bet="1000">1,000</button>
+
+      <button type="button"
+              class="hit bet5000"
+              data-bet="5000">5,000</button>
+
+    </div>
+
+    <!-- CONFIRM -->
+    <button
+      id="betBtn"
+      type="button"
+      class="hit confirm">
+      CONFIRM BET
+    </button>
+
+  </div>
+
 </div>
 
-<div class="bet-panel-hitbox">
-
-  <!-- QUICK -->
-  <button class="hit quick25" data-type="25"></button>
-  <button class="hit quick50" data-type="50"></button>
-  <button class="hit quickAll" data-type="all"></button>
-
-  <!-- BET -->
-  <button class="hit bet10" data-bet="10"></button>
-  <button class="hit bet50" data-bet="50"></button>
-  <button class="hit bet100" data-bet="100"></button>
-
-  <button class="hit bet500" data-bet="500"></button>
-  <button class="hit bet1000" data-bet="1000"></button>
-  <button class="hit bet5000" data-bet="5000"></button>
-
-  <!-- CONFIRM -->
-  <button id="betBtn" class="hit confirm"></button>
-
-</div>
-
-
-</div>
 
 
 
 
 
-<!-- ================= TIME RACE HISTORY SHEET ================= -->
-<div id="timeRaceHistorySheet" class="tr-sheet hidden">
 
+<!-- ==========================================
+     TIME RACE - PREMIUM BET HISTORY
+========================================== -->
+
+<div id="timeRaceHistorySheet"
+     class="tr-sheet hidden"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="trHistoryTitle">
+
+  <!-- BACKDROP -->
   <div class="tr-sheet-backdrop"
-       onclick="closeTimeRaceHistory()"></div>
+       onclick="closeTimeRaceHistory()">
+  </div>
 
+  <!-- HISTORY PANEL -->
   <div class="tr-sheet-panel">
 
     <div class="tr-sheet-handle"></div>
 
-    <div class="tr-sheet-title">
-      Bet History
+    <!-- HEADER -->
+    <div class="tr-sheet-header">
+
+      <div class="tr-sheet-heading">
+
+        <div class="tr-sheet-eyebrow">
+          TIME RACE / RECORDS
+        </div>
+
+        <div class="tr-sheet-title"
+             id="trHistoryTitle">
+          BET HISTORY
+        </div>
+
+        <div class="tr-sheet-subtitle">
+          Your recent game transactions
+        </div>
+
+      </div>
+
+      <button class="tr-sheet-close"
+              type="button"
+              onclick="closeTimeRaceHistory()"
+              aria-label="Close history">
+        &times;
+      </button>
+
     </div>
 
+    <!-- SUMMARY -->
+    <div class="tr-history-summary">
+
+      <div class="tr-summary-item">
+        <div class="tr-summary-label">
+          RECENT BETS
+        </div>
+        <div id="trTotalBets"
+             class="tr-summary-value">
+          0
+        </div>
+      </div>
+
+      <div class="tr-summary-item">
+        <div class="tr-summary-label">
+          WINS
+        </div>
+        <div id="trTotalWins"
+             class="tr-summary-value win">
+          0
+        </div>
+      </div>
+
+      <div class="tr-summary-item">
+        <div class="tr-summary-label">
+          LOSSES
+        </div>
+        <div id="trTotalLosses"
+             class="tr-summary-value loss">
+          0
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABLE HEADER -->
+    <div class="tr-history-table-head">
+      <span>ROUND</span>
+      <span>BET</span>
+      <span>MULTI</span>
+      <span>RESULT</span>
+    </div>
+
+    <!-- REAL-TIME RECORDS -->
     <div id="timeRaceHistoryList"
          class="tr-history-list">
+      <div class="tr-history-empty">
+        Loading history...
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="tr-sheet-footer">
+      TIME RACE · BET RECORDS
     </div>
 
   </div>
@@ -1691,35 +3648,113 @@ body.crash-dark{
 
 
 
-<!-- ================= WIN MODAL ================= -->
-<div id="timeRaceWinModal" class="tr-win-modal hidden">
 
+<!-- ==========================================
+     TIME RACE - CYBER TITANIUM VICTORY
+========================================== -->
+
+<div id="timeRaceWinModal"
+     class="tr-win-modal hidden"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="trWinTitle">
+
+  <!-- DARK BACKDROP -->
   <div class="tr-win-backdrop"
-       onclick="closeTimeRaceWinModal()"></div>
+       onclick="closeTimeRaceWinModal()">
+  </div>
 
-<div class="tr-win-box">
+  <!-- VICTORY BOX -->
+  <div class="tr-win-box">
 
-  <img 
-    src="/assets/time-race/win-frame.png"
-    class="tr-win-frame">
+    <div class="tr-win-topline"></div>
 
-  <div class="tr-win-content">
+    <!-- CLOSE -->
+    <button
+      class="tr-win-close"
+      type="button"
+      onclick="closeTimeRaceWinModal()"
+      aria-label="Close victory window">
+      &times;
+    </button>
 
-    <div class="tr-win-title">
+    <!-- VICTORY ICON -->
+    <div class="tr-win-emblem">
+
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.5"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+
+        <path d="M8 21h8"/>
+        <path d="M12 17v4"/>
+        <path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"/>
+        <path d="M7 6H4v2a4 4 0 0 0 4 4"/>
+        <path d="M17 6h3v2a4 4 0 0 1-4 4"/>
+        <path d="m12 6 .7 1.5 1.6.2-1.2 1.1.3 1.6-1.4-.8-1.4.8.3-1.6-1.2-1.1 1.6-.2L12 6Z"/>
+
+      </svg>
+
+    </div>
+
+    <!-- TITLE -->
+    <div class="tr-win-caption">
+      TIME RACE · VICTORY
+    </div>
+
+    <div id="trWinTitle" class="tr-win-title">
       YOU WON!
     </div>
 
-    <div class="tr-win-multiplier">
-      x<span id="winMultiplier">1.00</span>
+    <div class="tr-win-subtitle">
+      Successful cash out
     </div>
 
-    <div class="tr-win-amount">
-      +<span id="winAmount">0</span> 💎
+    <!-- REWARD PANEL -->
+    <div class="tr-win-reward">
+
+      <div class="tr-win-label">
+        CASH OUT MULTIPLIER
+      </div>
+
+      <div class="tr-win-multiplier">
+        x<span id="winMultiplier">1.00</span>
+      </div>
+
+      <div class="tr-win-divider"></div>
+
+      <div class="tr-win-label">
+        TOTAL WINNINGS
+      </div>
+
+      <div class="tr-win-amount">
+
+        <img
+          src="/assets/time-race/diamond-icon.png"
+          alt=""
+          class="tr-win-diamond">
+
+        <span>
+          +<span id="winAmount">0</span>
+        </span>
+
+      </div>
+
     </div>
 
-    <div class="tr-win-btn"
-         onclick="closeTimeRaceWinModal()">
-      OK
+    <!-- CONTINUE BUTTON -->
+    <button
+      class="tr-win-btn"
+      type="button"
+      onclick="closeTimeRaceWinModal()">
+      CONTINUE
+    </button>
+
+    <div class="tr-win-footer">
+      TIME RACE · CRASH ARENA
     </div>
 
   </div>
@@ -1740,7 +3775,7 @@ body.crash-dark{
   
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 
-const betSound = document.getElementById("betSound");
+
 const tickSound = document.getElementById("tickSound");
 const raceSound = document.getElementById("raceSound");
 const crashSound = document.getElementById("crashSound");
@@ -1844,83 +3879,123 @@ function serverTime(){
 
 
 
-function updateSelectedBetDisplay(){
-  selectedBetEl.textContent = selectedBet.toLocaleString();
 
-  if(selectedBet > 0){
-    selectedBetBar.classList.add("active");
-  }else{
-    selectedBetBar.classList.remove("active");
-  }
+/* ==========================================
+   TIME RACE - INSTANT BET CONTROL V2
+========================================== */
+
+const trAmountButtons = [
+  ...document.querySelectorAll("[data-bet]")
+];
+
+const trQuickButtons = [
+  ...document.querySelectorAll("[data-type]")
+];
+
+
+
+function updateSelectedBetDisplay() {
+  selectedBetEl.textContent =
+    selectedBet.toLocaleString("en-US");
+
+  selectedBetBar.classList.toggle(
+    "active",
+    selectedBet > 0
+  );
 }
 
+function trFlashButton(btn) {
+  btn.classList.remove("tr-fast-tap");
 
-document.querySelectorAll("[data-type]").forEach(btn=>{
-  btn.onclick = ()=>{
+  // Restart lightweight CSS animation
+  void btn.offsetWidth;
 
-    betSound.currentTime = 0;
-    betSound.play().catch(()=>{})
+  btn.classList.add("tr-fast-tap");
+}
 
-    if(!currentCoins) return;
+function trSetSelectedBet(amount) {
+  const balance = Math.max(
+    0,
+    Math.floor(Number(currentCoins) || 0)
+  );
 
-    const type = btn.dataset.type;
-    let bet = 0;
+  selectedBet = Math.min(
+    balance,
+    Math.max(0, Math.floor(Number(amount) || 0))
+  );
 
-    if(type === "25"){
-      bet = Math.floor(currentCoins * 0.25);
-    }
-    else if(type === "50"){
-      bet = Math.floor(currentCoins * 0.5);
-    }
-    else if(type === "all"){
-      bet = currentCoins;
-    }
+  updateSelectedBetDisplay();
+}
 
-    // highlight chip tương ứng nếu trùng
-   document.querySelectorAll("[data-bet]")
-      .forEach(b=>b.classList.remove("active"));
-
-    selectedBet = bet;
-    updateSelectedBetDisplay();
-
-    // hiệu ứng nháy nhẹ
-    btn.animate([
-      { transform:"scale(1)" },
-      { transform:"scale(1.08)" },
-      { transform:"scale(1)" }
-    ],{ duration:200 });
-
-  };
-});
-
-
-
-document.querySelectorAll("[data-bet]").forEach(btn=>{
-  btn.onclick = ()=>{
+trAmountButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (
+      hasBet ||
+      betBtn.disabled ||
+      document.querySelector(".tr-bottom")
+        ?.classList.contains("locked")
+    ) return;
 
     const value = Number(btn.dataset.bet);
 
-    // 🔥 cộng dồn chip
-    selectedBet += value;
-
-    // 🔒 không cho cược quá số coin
-    if(selectedBet > currentCoins){
-      selectedBet = currentCoins;
+    if (!Number.isFinite(value) || value <= 0) {
+      return;
     }
 
-    updateSelectedBetDisplay();
+    trSetSelectedBet(selectedBet + value);
 
-    // hiệu ứng chip
-    btn.animate([
-      {transform:"scale(1)"},
-      {transform:"scale(1.15)"},
-      {transform:"scale(1)"}
-    ],{duration:150});
+    // Highlight last selected denomination
+    trAmountButtons.forEach(b => {
+      b.classList.toggle("active", b === btn);
+    });
 
-    betSound.currentTime = 0;
-    betSound.play().catch(()=>{})
-  };
+trFlashButton(btn);
+  });
 });
+
+trQuickButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (
+      hasBet ||
+      betBtn.disabled ||
+      document.querySelector(".tr-bottom")
+        ?.classList.contains("locked")
+    ) return;
+
+    const balance = Math.max(
+      0,
+      Math.floor(Number(currentCoins) || 0)
+    );
+
+    let amount = 0;
+
+    switch (btn.dataset.type) {
+      case "25":
+        amount = Math.floor(balance * 0.25);
+        break;
+
+      case "50":
+        amount = Math.floor(balance * 0.5);
+        break;
+
+      case "all":
+        amount = balance;
+        break;
+
+      default:
+        return;
+    }
+
+    trSetSelectedBet(amount);
+
+    trAmountButtons.forEach(b => {
+      b.classList.remove("active");
+    });
+
+trFlashButton(btn);
+  });
+});
+
 
 
 document.addEventListener("click",(e)=>{
@@ -1996,7 +4071,14 @@ if(msLeft > 0){
     betTimer.style.textShadow = "0 0 15px red";
   }else{
     betPanel?.classList.remove("locked");
-    betBtn.disabled = false;
+
+
+if (!trBetPending && socket.connected) {
+  betBtn.disabled = false;
+} else {
+  betBtn.disabled = true;
+}
+
 
     betTimer.style.color = "";
     betTimer.style.textShadow = "";
@@ -2008,7 +4090,7 @@ if(msLeft > 0){
   }
 }
 
-setInterval(updateTimer,16);
+setInterval(updateTimer, 50);
 
 
 
@@ -2080,77 +4162,220 @@ socket.on("time-race-my-history", list=>{
   renderMyHistory(list);
 });
 
-function renderMyHistory(list){
 
-  const wrap =
-    document.getElementById("timeRaceHistoryList");
+/* ==========================================
+   TIME RACE - PREMIUM HISTORY RENDER
+========================================== */
 
-  if(!wrap) return;
+function renderMyHistory(list) {
 
-  wrap.innerHTML = "";
+  const wrap = document.getElementById("timeRaceHistoryList");
 
-  if(!list.length){
-    wrap.innerHTML =
-      "<div style='opacity:.6;text-align:center'>No history yet</div>";
+  if (!wrap) return;
+
+  const records = Array.isArray(list) ? list : [];
+
+  // SUMMARY
+  const total = records.length;
+
+  const wins = records.filter(
+    h => h.result === "win"
+  ).length;
+
+  const losses = records.filter(
+    h => h.result !== "win"
+  ).length;
+
+  document.getElementById("trTotalBets").textContent =
+    total.toLocaleString();
+
+  document.getElementById("trTotalWins").textContent =
+    wins.toLocaleString();
+
+  document.getElementById("trTotalLosses").textContent =
+    losses.toLocaleString();
+
+  wrap.replaceChildren();
+
+  // EMPTY HISTORY
+  if (!total) {
+    const empty = document.createElement("div");
+    empty.className = "tr-history-empty";
+    empty.textContent = "No betting history available.";
+    wrap.appendChild(empty);
     return;
   }
 
-  list.forEach(h=>{
+  // HELPERS
+  const formatNumber = value => {
+    const n = Number(value);
+    return Number.isFinite(n)
+      ? n.toLocaleString("en-US", {
+          maximumFractionDigits: 2
+        })
+      : "0";
+  };
+
+  const makeCell = (value, className = "") => {
+    const cell = document.createElement("div");
+    if (className) cell.className = className;
+    cell.textContent = value;
+    return cell;
+  };
+
+  const fragment = document.createDocumentFragment();
+
+  records.forEach(h => {
+
+    const won = h.result === "win";
 
     const item = document.createElement("div");
-    item.className = "tr-history-item-card";
 
-item.innerHTML = `
-  <div>#${h.roundId}</div>
-  <div>${h.bet} 💎</div>
-  <div>x${Number(h.stopMultiplier).toFixed(2)}</div>
-<div style="color:${h.result === 'win' ? '#00f0ff' : '#ff2d2d'};font-weight:700">
-  ${h.result === 'win' ? '✔ +' + h.win : '✖ LOSE'}
-</div>
-`;
+    item.className =
+      "tr-history-item-card " +
+      (won ? "is-win" : "is-loss");
 
-    wrap.appendChild(item);
+    // ROUND
+    item.appendChild(
+      makeCell("#" + String(h.roundId ?? "--"))
+    );
+
+    // BET AMOUNT
+    item.appendChild(
+      makeCell(formatNumber(h.bet))
+    );
+
+    // STOP MULTIPLIER
+    const multiplier = Number(h.stopMultiplier);
+
+    item.appendChild(
+      makeCell(
+        Number.isFinite(multiplier)
+          ? "x" + multiplier.toFixed(2)
+          : "--"
+      )
+    );
+
+    // RESULT
+    const result = makeCell(
+      won
+        ? "+" + formatNumber(h.win)
+        : "LOSE",
+      "tr-record-result " + (won ? "win" : "loss")
+    );
+
+    item.appendChild(result);
+
+    fragment.appendChild(item);
+
   });
+
+  wrap.appendChild(fragment);
 }
 
 
-let lastBetList = ""
+/* ==========================================
+   TIME RACE - LIVE BETTING LIST
+========================================== */
 
-socket.on("time-race-bet-list",(list)=>{
+let lastBetList = "";
 
-  const json = JSON.stringify(list)
-  if(json === lastBetList) return
-  lastBetList = json
+socket.on("time-race-bet-list", (list) => {
 
-  const box = document.getElementById("betListBox")
-  if(!box) return
+  const players = Array.isArray(list) ? list : [];
 
-  box.innerHTML = ""
+  const json = JSON.stringify(players);
 
-  list.slice(0,10).forEach((p,i)=>{
+  if (json === lastBetList) return;
+  lastBetList = json;
 
-    const div = document.createElement("div")
-    div.className = "bet-user"
+  const box = document.getElementById("trBetsList");
+  const count = document.getElementById("trBetsCount");
 
-    if(i === 0){
-      div.classList.add("top")
+  if (!box || !count) return;
+
+  // Đủ chỗ cho 20-30 bot và người chơi thật
+const visiblePlayers = [...players]
+  .sort((a, b) =>
+    Number(b.total ?? b.bet ?? 0) -
+    Number(a.total ?? a.bet ?? 0)
+  )
+  .slice(0, 100);
+
+  count.textContent = visiblePlayers.length;
+
+  box.replaceChildren();
+
+  if (!visiblePlayers.length) {
+    const empty = document.createElement("div");
+
+    empty.className = "tr-bets-empty";
+    empty.textContent = "Waiting for players...";
+
+    box.appendChild(empty);
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  visiblePlayers.forEach((p, i) => {
+
+    const row = document.createElement("div");
+
+    row.className = "bet-user";
+
+    if (i === 0) {
+      row.classList.add("top");
     }
 
- const name =
-  p.uid?.startsWith("bot_")
-    ? "???"
-    : (p.name || "???")
+    const player = document.createElement("div");
+    player.className = "tr-bet-player";
 
-div.innerHTML = `
-  <span>${name}</span>
-  <span>💎 ${Number(p.total || p.bet).toLocaleString()}</span>
-`
+    // RANK
+    const rank = document.createElement("span");
+    rank.className = "tr-bet-rank";
+    rank.textContent = String(i + 1).padStart(2, "0");
 
-    box.appendChild(div)
+    // NAME
+    const name = document.createElement("span");
+    name.className = "tr-bet-name";
 
-  })
+    name.textContent =
+      typeof p.uid === "string" &&
+      p.uid.startsWith("bot_")
+        ? "???"
+        : String(p.name || "???");
 
-})
+    name.title = name.textContent;
+
+    player.append(rank, name);
+
+    // AMOUNT
+    const amount = document.createElement("div");
+    amount.className = "tr-bet-amount";
+
+    const value = Number(p.total ?? p.bet ?? 0);
+
+    amount.textContent =
+      (Number.isFinite(value)
+        ? value.toLocaleString("en-US")
+        : "0") + " ";
+
+    const diamond = document.createElement("img");
+    diamond.src = "/assets/time-race/diamond-icon.png";
+    diamond.alt = "";
+
+    amount.appendChild(diamond);
+
+    row.append(player, amount);
+
+    fragment.appendChild(row);
+
+  });
+
+  box.appendChild(fragment);
+
+});
 
 
 
@@ -2169,6 +4394,9 @@ socket.on("time-race-state",data=>{
 
 socket.on("time-race-new", data => {
 
+trBetPending = false;
+betBtn.textContent = "CONFIRM BET";
+  
   // 🔥 Hiện lại bomb nếu vừa crash
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-img");
@@ -2394,20 +4622,60 @@ setTimeout(()=>{
 
 /* BET */
 
-betBtn.onclick=()=>{
 
-  const bet = selectedBet;
-  if(!bet || bet<=0) return;
+/* ==========================================
+   BET CONFIRM - SINGLE REQUEST GUARD
+========================================== */
+
+let trBetPending = false;
+
+betBtn.onclick = () => {
+  if (trBetPending || hasBet || betBtn.disabled) {
+    return;
+  }
+
+  const bet = Math.floor(Number(selectedBet));
+
+  if (!Number.isFinite(bet) || bet <= 0) {
+    return;
+  }
+
+  if (bet > currentCoins) {
+    return;
+  }
+
+  // Prevent betting during final 3 seconds
+  if (
+    !betEndAt ||
+    raceStarted ||
+    crashed ||
+    betEndAt - serverTime() <= 3000
+  ) {
+    return;
+  }
+
+  if (!socket.connected) {
+    console.warn("Time Race connection unavailable");
+    return;
+  }
+
+  // Lock immediately
+  trBetPending = true;
+  betBtn.disabled = true;
+  betBtn.textContent = "PROCESSING...";
 
   confirmSound.currentTime = 0;
-  confirmSound.play().catch(()=>{});
+  confirmSound.play().catch(() => {});
 
-  socket.emit("time-race-bet",{bet});
+  socket.emit("time-race-bet", { bet });
 };
 
 
 
 socket.on("time-race-bet-ok",()=>{
+  trBetPending = false;
+betBtn.textContent = "CONFIRM BET";
+
   hasBet = true;
 
   const betPanel = document.querySelector(".tr-bottom");
@@ -2423,6 +4691,65 @@ stopBtn.style.opacity = ".6";
 
 });
 /* STOP */
+
+
+
+/* SERVER BET REJECTION */
+
+
+socket.on("time-race-error", data => {
+
+  trBetPending = false;
+
+  const reason = data?.message || "BET_FAILED";
+
+  betBtn.textContent = "CONFIRM BET";
+
+  if (reason === "ALREADY_BET") {
+    hasBet = true;
+
+    document.querySelector(".tr-bottom")
+      ?.classList.add("locked");
+
+    betBtn.disabled = true;
+    return;
+  }
+
+  const remaining = betEndAt - serverTime();
+
+  const canBet =
+    socket.connected &&
+    !hasBet &&
+    !crashed &&
+    !raceStarted &&
+    remaining > 3000;
+
+  betBtn.disabled = !canBet;
+
+  if (!canBet) {
+    document.querySelector(".tr-bottom")
+      ?.classList.add("locked");
+  }
+
+  console.warn("[TIME RACE]", reason);
+
+});
+
+
+/* RESTORE BUTTON AFTER DISCONNECTION */
+
+socket.on("disconnect", () => {
+  betBtn.disabled = true;
+});
+
+socket.on("connect", () => {
+  // A previous request may have reached the server.
+  // Do not automatically retry the same bet.
+  if (trBetPending) {
+    betBtn.textContent = "SYNCING...";
+  }
+});
+
 
 stopBtn.addEventListener("click", ()=>{
 
@@ -2487,11 +4814,15 @@ socket.on("time-race-history-update",
 
 socket.on("time-race-restore", data=>{
 
+  trBetPending = false;
+betBtn.textContent = "CONFIRM BET";
+
   serverOffset = data.serverNow - Date.now();
   betEndAt = data.betEndAt;
   crashed = data.crashed;
   hasBet = data.hasBet;
-
+raceStarted =
+  !crashed && Number(data.multiplier) > 1;
   const currentMultiplier = Number(data.multiplier);
   multiplierEl.textContent =
     "x" + currentMultiplier.toFixed(2);
@@ -2534,38 +4865,36 @@ else{
       stopBtn.style.display = "none";
     }
 
-  }else{
 
-    document
-      .querySelector(".tr-bottom")
-      .classList.remove("locked");
+}else{
 
-    betBtn.disabled = false;
-    stopBtn.style.display = "none";
-  }
+  const betPanel =
+    document.querySelector(".tr-bottom");
+
+  const remaining = betEndAt - serverTime();
+
+  const canBet =
+    socket.connected &&
+    !crashed &&
+    !data.stopped &&
+    Number(data.multiplier) <= 1 &&
+    remaining > 3000;
+
+  betPanel.classList.toggle(
+    "locked",
+    !canBet
+  );
+
+  betBtn.disabled = !canBet;
+
+  stopBtn.style.display = "none";
+
+}
+
 
 });
 
 
-
-// 🔒 Prevent double tap zoom
-let lastTouchEnd = 0;
-
-document.addEventListener("touchend", function (event) {
-
-  const now = Date.now();
-
-  if (now - lastTouchEnd <= 300) {
-
-    if (event.cancelable) {
-      event.preventDefault();
-    }
-
-  }
-
-  lastTouchEnd = now;
-
-}, false);
 
 
 // 🔒 Lock portrait orientation
@@ -2575,12 +4904,14 @@ if (screen.orientation && screen.orientation.lock) {
 
 
 
-/* ================= LOADER ================= */
+/* ================= TIME RACE LOADER ================= */
 
 const progress = document.getElementById("loadingProgress");
-const text = document.getElementById("loadingText");
+const loadingText = document.getElementById("loadingText");
+const loadingOverlay = document.getElementById("loadingOverlay");
 
 let load = 0;
+let loadingFinished = false;
 
 const loadingSteps = [
   "Initializing engine...",
@@ -2590,33 +4921,62 @@ const loadingSteps = [
   "Preparing bomb..."
 ];
 
-const interval = setInterval(()=>{
+function finishTimeRaceLoading() {
+  if (loadingFinished) return;
+  loadingFinished = true;
 
-  load += Math.random()*15;
+  progress.style.width = "100%";
+  loadingText.textContent = "Ready";
 
-  if(load >= 100){
-    load = 100;
-    clearInterval(interval);
+  setTimeout(() => {
+    loadingOverlay.classList.add("tr-loading-hide");
 
-    text.innerText = "Ready";
+    setTimeout(() => {
+      loadingOverlay.remove();
+    }, 600);
 
-    setTimeout(()=>{
-      const overlay = document.getElementById("loadingOverlay");
-      overlay.style.opacity = "0";
+  }, 500);
+}
 
-      setTimeout(()=>{
-        overlay.remove();
-      },600);
+// Đảm bảo ảnh background tải xong
+// trước khi bắt đầu hiệu ứng loading.
 
-    },500);
-  }
+const loadingImage = new Image();
 
-  progress.style.width = load + "%";
+loadingImage.onload = startTimeRaceLoading;
+loadingImage.onerror = startTimeRaceLoading;
 
-  const stepIndex = Math.floor(load / 25);
-  text.innerText = loadingSteps[Math.min(stepIndex, loadingSteps.length-1)];
+loadingImage.src =
+  "/assets/time-race/time-race-loading-full.png";
 
-},400);
+function startTimeRaceLoading() {
+
+  const interval = setInterval(() => {
+
+    if (loadingFinished) {
+      clearInterval(interval);
+      return;
+    }
+
+    load = Math.min(100, load + Math.random() * 15);
+
+    progress.style.width = load + "%";
+
+    if (load >= 100) {
+      clearInterval(interval);
+      finishTimeRaceLoading();
+      return;
+    }
+
+    const stepIndex = Math.min(
+      Math.floor(load / 25),
+      loadingSteps.length - 1
+    );
+
+    loadingText.textContent = loadingSteps[stepIndex];
+
+  }, 400);
+}
 
 
 

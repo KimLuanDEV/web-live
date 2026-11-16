@@ -155,7 +155,7 @@ function getAdminWheel8Data(){
 
 function getTimeRaceBetList(){
 
-  const users = loadUsers()
+ 
   const list = {}
 
   // 👤 PLAYER
@@ -1491,13 +1491,21 @@ function loadSocial(){
   }
 }
 
-function saveSocial(){
-  try{
-    fs.writeFileSync(SOCIAL_FILE, JSON.stringify(lpPosts,null,2));
-  }catch(e){
-    console.error("Save social failed",e);
+
+function saveSocial() {
+  try {
+    fs.writeFileSync(
+      SOCIAL_FILE,
+      JSON.stringify(lpPosts, null, 2)
+    );
+    return true;
+
+  } catch (error) {
+    console.error("Save social failed", error);
+    return false;
   }
 }
+
 
 
 // ================================
@@ -3645,47 +3653,121 @@ function saveTimeRaceRoundCount(data){
 }
 
 
-function startFakeBotFlow(){
+/* ==========================================
+   TIME RACE - RANDOM 20 TO 30 BOTS PER ROUND
+========================================== */
 
-  if(!timeRaceRound) return
+function startFakeBotFlow() {
 
-  const roundId = timeRaceRound.id
-  const betList = [50,100,150,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,3000,3500,4000,4500,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000,19000,20000,50,100,150,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,3000,3500,4000,4500,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000,19000,20000]
+  if (!timeRaceRound) return;
 
-  let botIndex = 0
+  const round = timeRaceRound;
+  const roundId = round.id;
 
-  function spawnOne(){
+  // Mỗi phiên chọn ngẫu nhiên từ 20 đến 30 bot
+  const botCount =
+    Math.floor(Math.random() * 11) + 20;
 
-    // ⛔ nếu đã sang round khác thì dừng
-    if(!timeRaceRound || timeRaceRound.id !== roundId){
-      return
+
+  // Mệnh giá phổ biến xuất hiện nhiều lần hơn
+  const betList = [
+    50, 50, 50,
+    100, 100, 100, 100,
+    200, 200, 200,
+    500, 500, 500, 500,
+    1000, 1000, 1000, 1000,
+    2000, 2000,
+    3000, 3000,
+    4000, 4000,
+    5000, 5000,
+    6000, 6000,
+    10000, 15000, 20000
+  ];
+
+  // Mệnh giá dùng chung cho một nhóm bot trong phiên
+  const sharedBet = betList[
+    Math.floor(Math.random() * betList.length)
+  ];
+
+
+  round.bots = [];
+
+// Chờ 3 giây đầu phiên.
+// Tạo đủ bot trước khi đóng cược 3 giây.
+// Dự phòng 500ms cho bộ hẹn giờ.
+const availableTime = Math.max(
+  1000,
+  round.betEndAt - Date.now() - 6500
+);
+
+  const spawnDelay = Math.floor(
+    availableTime / botCount
+  );
+
+  let botIndex = 0;
+
+  function spawnOne() {
+
+    // Không tạo bot cho phiên đã kết thúc
+    if (timeRaceRound !== round) return;
+    if (timeRaceRound.id !== roundId) return;
+
+    // Dừng khi đã đủ số lượng
+    if (botIndex >= botCount) return;
+
+    // Không tạo bot sau khi đóng cược
+    if (Date.now() >= round.betEndAt - 3000) {
+      return;
     }
 
-    // ⛔ dừng khi còn <= 3s là khóa cược
-    if(timeRaceRound.betEndAt - Date.now() <= 3000){
-      return
+
+const isSharedBet = botIndex % 4 === 0;
+
+const botAmount = isSharedBet
+  ? sharedBet
+  : betList[
+      Math.floor(Math.random() * betList.length)
+    ];
+
+const bot = {
+  uid: "bot_" + roundId + "_" + botIndex,
+  name: "???",
+  total: botAmount,
+  simulated: true
+};
+
+
+    round.bots.push(bot);
+    botIndex++;
+
+    // Gửi danh sách mới cho tất cả người xem
+    io.emit(
+      "time-race-bet-list",
+      getTimeRaceBetList()
+    );
+
+    if (botIndex < botCount) {
+      setTimeout(spawnOne, spawnDelay);
     }
-
-    const bot = {
-      uid: "bot_" + roundId + "_" + botIndex,
-      name: "???",
-      total: betList[Math.floor(Math.random() * betList.length)]
-    }
-
-    timeRaceRound.bots.push(bot)
-    botIndex++
-
-    io.emit("time-race-bet-list", getTimeRaceBetList())
-
-    // delay ngẫu nhiên rồi tự gọi tiếp
-    const delay = Math.floor(800 + Math.random()*1200)
-    setTimeout(spawnOne, delay)
   }
 
-  // bắt đầu
-  spawnOne()
-}
+  console.log(
+    "[TIME RACE] Round",
+    roundId,
+    "- Simulated bots:",
+    botCount
+  );
 
+  // Bắt đầu tạo bot sau 3 giây kể từ đầu phiên
+setTimeout(() => {
+
+  // Chỉ chạy nếu vẫn đúng phiên hiện tại
+  if (timeRaceRound !== round) return;
+
+  spawnOne();
+
+}, 3000);
+}
 
 
 
@@ -3787,6 +3869,8 @@ function createTimeRaceRound(){
 
 let timeRaceRound = createTimeRaceRound();
 
+// Tạo bot ngay cho vòng đầu tiên khi server khởi động
+startFakeBotFlow();
 
 function emitTimeRacePlayers(){
 
@@ -3935,10 +4019,14 @@ io.emit("time-race-crash",{
       count: timeRaceRoundCount
     });
 
-    timeRaceRound = createTimeRaceRound();
+    
 
-    startFakeBotFlow()
-    io.emit("time-race-bet-list", [])
+timeRaceRound = createTimeRaceRound();
+
+// Xóa danh sách cũ trước khi tạo bot mới
+io.emit("time-race-bet-list", []);
+
+// Phát thông tin vòng mới như logic phía dưới
 
 
     emitTimeRacePlayers();
@@ -3960,6 +4048,9 @@ io.emit("time-race-crash",{
       betEndAt: timeRaceRound.betEndAt,
       serverNow: Date.now()
     });
+
+    // Tạo 20-30 bot cho phiên vừa bắt đầu
+startFakeBotFlow();
 
     io.emit("time-race-tick",{
       multiplier:1
@@ -6263,16 +6354,7 @@ socket.on("time-race-bet", data=>{
   // =========================
   // 📊 DANH SÁCH NGƯỜI CƯỢC
   // =========================
-  const betList = timeRaceRound.bets.map(b => ({
-    name: users[b.uid]?.profile?.name || "Player",
-    bet: b.bet
-  }));
 
-  // 🔥 sort lớn → nhỏ
-  betList.sort((a,b)=>b.bet - a.bet);
-
-  // 🔔 emit realtime cho ALL
-  io.emit("time-race-bet-list", betList);
 
   // (giữ lại nếu bạn đang dùng UI cũ)
   emitTimeRacePlayers();
@@ -6757,6 +6839,80 @@ kickOldSessions(uid, socket); // kick sau
 
 
 
+/* ==========================================
+   LIVESTREAM PRO - MAINTENANCE SYSTEM
+========================================== */
+
+const LSP_MAINTENANCE =
+  process.env.LSP_MAINTENANCE === "true";
+
+const LSP_MAINTENANCE_PAGE =
+  path.join(__dirname, "public", "maintenance.html");
+
+// Health endpoint for browser recovery checks
+app.get("/api/lsp-status", (req, res) => {
+  res.set("Cache-Control", "no-store");
+
+  if (LSP_MAINTENANCE) {
+    return res.status(503).json({
+      ready: false,
+      maintenance: true
+    });
+  }
+
+  return res.status(200).json({
+    ready: true,
+    maintenance: false
+  });
+});
+
+// Render HTTP health check
+// Only reports success when maintenance is disabled
+app.get("/healthz", (req, res) => {
+  res.set("Cache-Control", "no-store");
+
+  if (LSP_MAINTENANCE) {
+    return res.status(503).send("MAINTENANCE");
+  }
+
+  return res.status(200).send("OK");
+});
+
+// Block HTTP requests during manual maintenance
+app.use((req, res, next) => {
+  if (!LSP_MAINTENANCE) return next();
+
+  if (
+    req.path === "/maintenance.html" &&
+    (req.method === "GET" || req.method === "HEAD")
+  ) {
+    return res.sendFile(LSP_MAINTENANCE_PAGE);
+  }
+
+  res.set("Cache-Control", "no-store");
+  res.set("Retry-After", "30");
+
+  const isPageRequest =
+    req.method === "GET" &&
+    (
+      req.accepts(["html", "json"]) === "html" ||
+      req.headers["sec-fetch-mode"] === "navigate"
+    );
+
+  if (isPageRequest) {
+    return res.status(503).sendFile(LSP_MAINTENANCE_PAGE);
+  }
+
+  return res.status(503).json({
+    ok: false,
+    error: "SYSTEM_MAINTENANCE",
+    message: "Livestream Pro is temporarily unavailable."
+  });
+});
+
+
+
+
 // 🔧 Parse JSON body (BẮT BUỘC cho admin API)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -7054,22 +7210,46 @@ app.use("/api/admin", (req, res, next) => {
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// 🔥 SERVE FILE DATA (CHO GAME PHÁ ÁN)
-app.use("/data", express.static(path.join(__dirname, "data")));
+
+app.use("/data", (req, res, next) => {
+  const blockedFiles = new Set([
+    "users.json",
+    "social_posts.json",
+    "inbox.json"
+  ]);
+
+  const fileName = path.posix.basename(req.path).toLowerCase();
+
+  if (blockedFiles.has(fileName)) {
+    return res.sendStatus(403);
+  }
+
+  next();
+}, express.static(path.join(__dirname, "data")));
 
 
 
 
-app.post("/api/deposit",(req,res)=>{
 
-const { username, amount } = req.body
+app.post("/api/admin/deposit",(req,res)=>{
 
-if(!username || !amount || amount <= 0){
-return res.json({
-success:false,
-message:"Invalid request"
-})
+
+const { username, amount } = req.body;
+
+const uid = String(username || "").trim();
+const add = Number(amount);
+
+if (
+  !uid ||
+  !Number.isSafeInteger(add) ||
+  add <= 0
+) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid member UID or deposit amount."
+  });
 }
+
 
 const users = loadUsers()
 
@@ -7082,8 +7262,7 @@ message:"User not found"
 })
 }
 
-// 🔒 chuẩn hóa số nạp
-const add = Math.floor(Number(amount))
+
 
 if(add <= 0){
 return res.json({
@@ -7525,6 +7704,68 @@ app.get("/api/deposit-history",(req,res)=>{
 
   res.json({
     history: user.profile.depositLogs || []
+  });
+
+});
+
+
+
+
+
+/* ==========================================
+   ADMIN - MEMBER ACCOUNT OVERVIEW
+   Trả dữ liệu nhân vật cho phiên Admin
+========================================== */
+
+app.get("/api/admin/deposit-user-info", (req, res) => {
+
+  res.set("Cache-Control", "no-store");
+
+  const uid = String(req.query.uid || "").trim();
+
+  if (!uid || uid.length > 100) {
+    return res.status(400).json({
+      ok: false,
+      error: "INVALID_UID"
+    });
+  }
+
+  const users = loadUsers();
+
+  // Tra cứu đúng UID trong users.json.
+  const account = users[uid];
+
+  if (!account || !account.profile) {
+    return res.status(404).json({
+      ok: false,
+      error: "MEMBER_NOT_FOUND"
+    });
+  }
+
+  const p = account.profile;
+
+  const safeNumber = (value, fallback = 0) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  };
+
+  return res.json({
+    ok: true,
+
+    user: {
+      uid: uid,
+      name: p.name || uid,
+      avatar: p.avatar || "/avatar-default.png",
+
+      level: safeNumber(p.level, 1),
+      exp: safeNumber(p.exp),
+
+      coinDeposit: safeNumber(p.coinDeposit),
+      coinSent: safeNumber(p.coinSent),
+      coinReceived: safeNumber(p.coinReceived),
+
+      coins: safeNumber(p.coins)
+    }
   });
 
 });
@@ -9604,12 +9845,18 @@ app.post("/api/admin/delete-comment", (req, res) => {
       saveInbox(Object.fromEntries(userInbox));
     }
 
-    io.emit("social-update", {
-      type: "reply-deleted",
-      postId,
-      commentId,
-      replyId
-    });
+   
+emitPrivateSocialEvent(
+  "social-update",
+  post,
+  {
+    type: "reply-deleted",
+    postId,
+    commentId,
+    replyId
+  }
+);
+
 
     return res.json({ ok: true });
   }
@@ -9632,11 +9879,17 @@ app.post("/api/admin/delete-comment", (req, res) => {
     saveInbox(Object.fromEntries(userInbox));
   }
 
-  io.emit("social-update", {
+
+emitPrivateSocialEvent(
+  "social-update",
+  post,
+  {
     type: "comment-deleted",
     postId,
     commentId
-  });
+  }
+);
+
 
   res.json({ ok: true });
 });
@@ -9689,8 +9942,16 @@ app.post("/api/admin/delete-post", (req, res) => {
     saveInbox(Object.fromEntries(userInbox));
   }
 
-  // 🔁 realtime cập nhật feed
-  io.emit("social-update", { type: "post-deleted", postId });
+  
+emitPrivateSocialEvent(
+  "social-update",
+  post,
+  {
+    type: "post-deleted",
+    postId
+  }
+);
+
 
   res.json({ ok: true });
 });
@@ -10273,6 +10534,107 @@ function getPost(id){
 }
 
 
+
+/* ==========================================
+   LIVESTREAM PRO - SOCIAL POST PRIVACY
+========================================== */
+
+function canViewSocialPost(viewerUid, post, db) {
+  if (!viewerUid || !post?.uid) return false;
+
+  const viewerId = String(viewerUid);
+  const ownerId = String(post.uid);
+
+  const viewer = db[viewerId];
+  const owner = db[ownerId];
+
+  if (!viewer || !owner) return false;
+
+  // Chủ bài luôn được xem
+  if (viewerId === ownerId) return true;
+
+  // Admin có quyền quản lý và xem tất cả
+  if (viewer.role === "admin") return true;
+
+  // Bài của Admin công khai cho mọi tài khoản
+  if (owner.role === "admin") return true;
+
+  const viewerFriends = Array.isArray(viewer.profile?.friends)
+    ? viewer.profile.friends.map(String)
+    : [];
+
+  const ownerFriends = Array.isArray(owner.profile?.friends)
+    ? owner.profile.friends.map(String)
+    : [];
+
+  // Bắt buộc kết bạn hai chiều
+  return (
+    viewerFriends.includes(ownerId) &&
+    ownerFriends.includes(viewerId)
+  );
+}
+
+function getVisibleSocialPosts(uid, db = loadUsers()) {
+  return lpPosts
+    .filter(post => canViewSocialPost(uid, post, db))
+    .slice(0, 50);
+}
+
+function emitSocialPostToAllowedUsers(event, post, payload) {
+  const db = loadUsers();
+
+  for (const client of io.sockets.sockets.values()) {
+    if (!client.data.uid) continue;
+
+    if (canViewSocialPost(client.data.uid, post, db)) {
+      client.emit(event, payload);
+    }
+  }
+}
+
+function refreshSocialFeedForUser(uid) {
+  const db = loadUsers();
+
+  for (const client of io.sockets.sockets.values()) {
+    if (String(client.data.uid || "") === String(uid)) {
+      client.emit("lp-init", getVisibleSocialPosts(uid, db));
+    }
+  }
+}
+
+
+
+/* ==========================================
+   SOCIAL - CHECK INTERACTION PERMISSION
+========================================== */
+
+function canInteractSocialPost(socket, post) {
+  const uid = String(socket.data.uid || "");
+
+  if (!uid || !post) return false;
+
+  const db = loadUsers();
+
+  return canViewSocialPost(uid, post, db);
+}
+
+/* ==========================================
+   SOCIAL - SEND PRIVATE REALTIME EVENTS
+========================================== */
+
+function emitPrivateSocialEvent(event, post, data) {
+  if (!post) return;
+
+  emitSocialPostToAllowedUsers(
+    event,
+    post,
+    data
+  );
+}
+
+
+
+
 function getActiveUserList(){
   const list = [];
 
@@ -10362,6 +10724,92 @@ function pushNotify(uid, payload){
 
 
 const USERS_FILE = path.join("/opt/render/project/data", "users.json");
+
+
+
+
+
+/* ==========================================
+   LIVESTREAM PRO
+   DAILY SOCIAL POST REWARD
+   1 POST / DAY = 100 DIAMONDS
+========================================== */
+
+const DAILY_SOCIAL_REWARD = 100;
+
+function getSocialMissionDay() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
+function rewardDailySocialPost(user, postId) {
+
+  if (!user?.profile || !postId) {
+    return {
+      rewarded: false,
+      reason: "INVALID_ACCOUNT"
+    };
+  }
+
+  const profile = user.profile;
+  const day = getSocialMissionDay();
+
+  const existing =
+    profile.dailyMissions?.socialPost;
+
+  // Đã nhận thưởng hôm nay.
+  if (existing?.day === day) {
+    return {
+      rewarded: false,
+      reason: "ALREADY_COMPLETED"
+    };
+  }
+
+  const balance = Number(profile.coins ?? 0);
+
+  if (
+    !Number.isSafeInteger(balance) ||
+    balance < 0 ||
+    !Number.isSafeInteger(
+      balance + DAILY_SOCIAL_REWARD
+    )
+  ) {
+    return {
+      rewarded: false,
+      reason: "INVALID_BALANCE"
+    };
+  }
+
+  if (
+    !profile.dailyMissions ||
+    typeof profile.dailyMissions !== "object"
+  ) {
+    profile.dailyMissions = {};
+  }
+
+  // Cộng Diamonds vào ví hiện tại.
+  profile.coins =
+    balance + DAILY_SOCIAL_REWARD;
+
+  // Ghi nhận đã hoàn thành trong ngày.
+  profile.dailyMissions.socialPost = {
+    day,
+    postId: String(postId),
+    reward: DAILY_SOCIAL_REWARD,
+    completedAt: new Date().toISOString()
+  };
+
+  return {
+    rewarded: true,
+    amount: DAILY_SOCIAL_REWARD,
+    balance: profile.coins,
+    day
+  };
+}
 
 
 
@@ -11581,6 +12029,22 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
 
   if (!from || !to || !post) return;
 
+
+if (!socket.data.uid) return;
+
+if (String(fromUid) !== String(socket.data.uid)) {
+  return;
+}
+
+if (String(toUid) !== String(post.uid)) {
+  return;
+}
+
+if (!canInteractSocialPost(socket, post)) {
+  return;
+}
+
+
   // 🚫 không cho tự tặng chính mình
   if (fromUid === toUid) return;
 
@@ -11646,12 +12110,18 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
   // =========================
   // 🔄 REALTIME UPDATE
   // =========================
-  io.emit("lp-gift-post", {
+
+emitPrivateSocialEvent(
+  "lp-gift-post",
+  post,
+  {
     postId,
     total: post.gifts.total,
     fromUid,
     amount: cost
-  });
+  }
+);
+
 
   emitCoinUpdate(fromUid);
   emitCoinUpdate(toUid);
@@ -11975,6 +12445,13 @@ uMe.profile.blockedUsers ||= [];
 
   saveUsers(db);
 
+/* =====================================
+   REFRESH SOCIAL FEED AFTER BLOCK
+===================================== */
+
+refreshSocialFeedForUser(me);
+refreshSocialFeedForUser(uid);
+
 
   // 🔔 REALTIME: BLOCK (BÁO CHO NGƯỜI BỊ BLOCK)
 const sockets = activeUsers.get(uid);
@@ -12097,6 +12574,12 @@ socket.on("friend-respond", ({ from, accept }) => {
 
   saveUsers(db);
 
+  if (accept) {
+  refreshSocialFeedForUser(from);
+  refreshSocialFeedForUser(to);
+}
+
+
   // báo realtime cho người gửi
   const sockets = activeUsers.get(from);
   if (sockets) {
@@ -12170,6 +12653,9 @@ socket.on("friend-remove", ({ uid }) => {
 
   saveUsers(db);
 
+  refreshSocialFeedForUser(me);
+refreshSocialFeedForUser(uid);
+
   // 🔁 realtime nếu người kia online
   const sockets = activeUsers.get(uid);
   if (sockets) {
@@ -12185,6 +12671,13 @@ socket.on("friend-remove", ({ uid }) => {
 socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
   const post = getPost(postId);
   if (!post) return;
+
+
+if (!socket.data.uid) return;
+if (String(uid) !== String(socket.data.uid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
+
 
   const c = post.comments?.[commentIndex];
   if (!c || !c.replies) return;
@@ -12202,12 +12695,18 @@ socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
 
   saveSocial();
 
-  io.emit("lp-like-reply", {
+
+emitPrivateSocialEvent(
+  "lp-like-reply",
+  post,
+  {
     postId,
     commentIndex,
     replyId,
     likes: r.likes.length
-  });
+  }
+);
+
 
   // 🔔 PUSH cho chủ reply
   if (liked && r.uid && r.uid !== uid) {
@@ -12222,6 +12721,12 @@ socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
 socket.on("lp-reply-child", ({ postId, commentIndex, replyId, uid, name, avatar, text })=>{
   const post = getPost(postId);
   if(!post) return;
+
+
+if (!socket.data.uid) return;
+if (String(uid) !== String(socket.data.uid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
 
   const c = post.comments?.[commentIndex];
   if(!c || !c.replies) return;
@@ -12243,17 +12748,29 @@ socket.on("lp-reply-child", ({ postId, commentIndex, replyId, uid, name, avatar,
   parent.replies.push(child);
   saveSocial();
 
-  io.emit("lp-reply-child", {
+
+emitPrivateSocialEvent(
+  "lp-reply-child",
+  post,
+  {
     postId,
     commentIndex,
     replyId,
     child
-  });
+  }
+);
+
 });
 
 socket.on("lp-like-comment", async ({ postId, index, uid }) => {
   const post = getPost(postId);
   if (!post || !post.comments || !post.comments[index]) return;
+
+  
+if (!socket.data.uid) return;
+if (String(uid) !== String(socket.data.uid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
 
   const c = post.comments[index];
   c.likes = c.likes || [];
@@ -12266,11 +12783,17 @@ socket.on("lp-like-comment", async ({ postId, index, uid }) => {
 
   saveSocial();
 
-  io.emit("lp-like-comment", {
+
+emitPrivateSocialEvent(
+  "lp-like-comment",
+  post,
+  {
     postId,
     index,
     likes: c.likes.length
-  });
+  }
+);
+
 
   // 🔔 PUSH cho chủ comment
   if (liked && c.uid && c.uid !== uid) {
@@ -12282,21 +12805,65 @@ socket.on("lp-like-comment", async ({ postId, index, uid }) => {
   }
 });
 
-socket.on("lp-delete", ({ postId, uid })=>{
-  const idx = lpPosts.findIndex(p => p.id === postId && p.uid === uid);
-  if(idx < 0) return;  // không phải chủ bài → không cho
 
-  lpPosts.splice(idx,1);
+socket.on("lp-delete", ({ postId, uid }) => {
+  const actorUid = socket.data.uid;
+
+  if (!actorUid) return;
+  if (String(uid) !== String(actorUid)) return;
+
+  const idx = lpPosts.findIndex(
+    p => String(p.id) === String(postId)
+  );
+
+  if (idx < 0) return;
+
+  const post = lpPosts[idx];
+  const db = loadUsers();
+
+  const isOwner =
+    String(post.uid) === String(actorUid);
+
+  const isAdmin =
+    db[actorUid]?.role === "admin";
+
+  if (!isOwner && !isAdmin) return;
+
+  // Gửi sự kiện trước khi xóa bài
+  emitPrivateSocialEvent(
+    "lp-delete",
+    post,
+    { postId }
+  );
+
+  lpPosts.splice(idx, 1);
   saveSocial();
-
-  io.emit("lp-delete", { postId });
 });
+
 
 
   // ===== LIVESTREAM PRO SOCIAL =====
 
-// gửi feed khi user vừa kết nối
-socket.emit("lp-init", lpPosts.slice(0, 50));
+
+/* ==========================================
+   LOAD SOCIAL FEED - FRIENDS ONLY
+========================================== */
+
+socket.on("lp-request-feed", () => {
+  const uid = socket.data.uid;
+  if (!uid) {
+    socket.emit("lp-init", []);
+    return;
+  }
+
+  const db = loadUsers();
+
+  socket.emit(
+    "lp-init",
+    getVisibleSocialPosts(uid, db)
+  );
+});
+
 
 
 
@@ -12304,8 +12871,10 @@ socket.on("lp-edit-post", ({ postId, uid, text, images })=>{
   const post = getPost(postId);
   if(!post) return;
 
-  // 🔐 chỉ chủ bài mới được sửa
-  if(post.uid !== uid) return;
+if (!socket.data.uid ||
+    String(post.uid) !== String(socket.data.uid)) {
+  return;
+}
 
   post.text = String(text || "").slice(0,500);
 
@@ -12319,46 +12888,161 @@ socket.on("lp-edit-post", ({ postId, uid, text, images })=>{
 
   saveSocial();
 
-  // 🔥 EMIT ĐẦY ĐỦ
-  io.emit("lp-edit-post", {
+emitSocialPostToAllowedUsers(
+  "lp-edit-post",
+  post,
+  {
     postId,
     text: post.text,
     images: post.images || []
-  });
+  }
+);
 });
 
 
 
 
+
 socket.on("lp-post", post => {
- if(!post || !post.uid || (!post.text && !post.image && !post.video)) return;
+  const uid = socket.data.uid;
+
+  const db = loadUsers();
+  const user = db[uid];
+
+  if (!uid || !user || !post) return;
+
+  const text = String(post.text || "").trim();
+
+  const images = Array.isArray(post.images)
+    ? post.images.slice(0, 5)
+    : [];
+
+  const video = String(post.video || "");
+
+  if (!text && !images.length && !video) return;
 
   const clean = {
-    id: Date.now() + "_" + Math.random().toString(36).slice(2),
-    uid: String(post.uid),
-    name: String(post.name || "User").slice(0,20),
-    avatar: String(post.avatar || ""),
-    text: String(post.text || "").slice(0, 500),
-    images: post.images || [],   // 🔥 MẢNG ẢNH
-    video: String(post.video || ""),   // 👈 THÊM
+    id: Date.now() + "_" +
+      Math.random().toString(36).slice(2),
+
+    uid: String(uid),
+
+    name: String(
+      user.profile?.name || "User"
+    ).slice(0, 20),
+
+    avatar: String(
+      user.profile?.avatar || ""
+    ),
+
+    text: text.slice(0, 500),
+
+    images,
+    video,
+
     time: Date.now(),
     likes: [],
     comments: []
   };
 
   lpPosts.unshift(clean);
-  saveSocial();
 
-  if(lpPosts.length > 200) lpPosts.length = 200;
+  if (lpPosts.length > 200) {
+    lpPosts.length = 200;
+  }
 
-  io.emit("lp-post", clean);
+
+
+// Chỉ tiếp tục nếu bài viết đã được lưu.
+if (!saveSocial()) {
+
+  const index = lpPosts.findIndex(
+    item => item.id === clean.id
+  );
+
+  if (index !== -1) {
+    lpPosts.splice(index, 1);
+  }
+
+  socket.emit("lp-post-save-error", {
+    message: "Unable to save your post."
+  });
+
+  return;
+}
+
+
+// Chỉ phát bài mới tới người có quyền xem.
+emitSocialPostToAllowedUsers(
+  "lp-post",
+  clean,
+  clean
+);
+
+/* =====================================
+   DAILY SOCIAL POST REWARD
+===================================== */
+
+try {
+
+  const reward = rewardDailySocialPost(
+    user,
+    clean.id
+  );
+
+  if (reward.rewarded) {
+
+    // Lưu số dư và nhiệm vụ vào users.json.
+    saveUsers(db);
+
+    // Đồng bộ số dư tới các thiết bị.
+    emitCoinUpdate(uid);
+
+    // Chỉ thông báo tới người vừa đăng bài.
+    socket.emit("daily-social-reward", {
+      amount: reward.amount,
+      balance: reward.balance,
+      day: reward.day,
+
+      message:
+        "Daily mission completed! " +
+        "+100 Diamonds have been added to your wallet."
+    });
+
+    console.log(
+      "[DAILY SOCIAL REWARD]",
+      uid,
+      reward.day,
+      reward.amount
+    );
+
+  }
+
+} catch (error) {
+
+  console.error(
+    "[DAILY SOCIAL REWARD ERROR]",
+    error
+  );
+
+}
+
+
 });
 
 
-socket.on("lp-like", async ({ postId, uid }) => {
-  const post = getPost(postId);
-  if (!post || !uid) return;
 
+socket.on("lp-like", async ({ postId, uid }) => {
+
+const post = getPost(postId);
+const actorUid = socket.data.uid;
+
+if (!actorUid || !post) return;
+if (String(uid) !== String(actorUid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
+
+  
   post.likes = post.likes || [];
 
   const i = post.likes.indexOf(uid);
@@ -12369,10 +13053,16 @@ socket.on("lp-like", async ({ postId, uid }) => {
 
   saveSocial();
 
-  io.emit("lp-like", {
+
+emitPrivateSocialEvent(
+  "lp-like",
+  post,
+  {
     postId,
     likes: post.likes.length
-  });
+  }
+);
+
 
   // 🔔 PUSH cho chủ bài (nếu like mới & không tự like)
   if (liked && post.uid !== uid) {
@@ -12386,29 +13076,44 @@ socket.on("lp-like", async ({ postId, uid }) => {
 
 
 socket.on("lp-comment", async ({ postId, uid, name, avatar, text }) => {
-  const post = getPost(postId);
-  if (!post || !uid || !text) return;
+ 
+const post = getPost(postId);
+const actorUid = socket.data.uid;
+
+if (!post || !actorUid || !text) return;
+if (String(uid) !== String(actorUid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
 
   post.comments = post.comments || [];
 
-  const c = {
-    uid,
-    name,
-    avatar,
-    text: text.slice(0,200),
-    time: Date.now(),
-    likes:[]
-  };
+
+const c = {
+  id: crypto.randomUUID(),
+  uid,
+  name,
+  avatar,
+  text: String(text).slice(0, 200),
+  time: Date.now(),
+  likes: []
+};
+
 
   post.comments.push(c);
   saveSocial();
 
-  io.emit("lp-comment", {
+ 
+emitPrivateSocialEvent(
+  "lp-comment",
+  post,
+  {
     postId,
     postOwnerUid: post.uid,
     comment: c,
     count: post.comments.length
-  });
+  }
+);
+
 
   // 🔔 PUSH cho chủ bài
   if (post.uid !== uid) {
@@ -12423,8 +13128,14 @@ socket.on("lp-comment", async ({ postId, uid, name, avatar, text }) => {
 
 
 socket.on("lp-reply", async ({ postId, commentIndex, uid, name, avatar, text }) => {
-  const post = getPost(postId);
-  if (!post || !text) return;
+
+const post = getPost(postId);
+const actorUid = socket.data.uid;
+
+if (!post || !actorUid || !text) return;
+if (String(uid) !== String(actorUid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
 
   const c = post.comments?.[commentIndex];
   if (!c) return;
@@ -12442,12 +13153,18 @@ socket.on("lp-reply", async ({ postId, commentIndex, uid, name, avatar, text }) 
   c.replies.push(r);
   saveSocial();
 
-  io.emit("lp-reply", {
+
+emitPrivateSocialEvent(
+  "lp-reply",
+  post,
+  {
     postId,
     commentIndex,
     reply: r,
     count: c.replies.length
-  });
+  }
+);
+
 
   // 🔔 PUSH cho người bị reply
   if (c.uid && c.uid !== uid) {
@@ -12465,6 +13182,10 @@ socket.on("lp-delete-comment", ({ postId, index, uid })=>{
   const post = getPost(postId);
   if(!post || !post.comments || !post.comments[index]) return;
 
+  if (!socket.data.uid) return;
+if (String(uid) !== String(socket.data.uid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
   const c = post.comments[index];
 
   // 🔐 chỉ cho chủ comment hoặc chủ bài
@@ -12473,7 +13194,16 @@ socket.on("lp-delete-comment", ({ postId, index, uid })=>{
   post.comments.splice(index,1);
   saveSocial();
 
-  io.emit("lp-delete-comment", { postId, index });
+  
+emitPrivateSocialEvent(
+  "lp-delete-comment",
+  post,
+  {
+    postId,
+    index
+  }
+);
+
 });
 
 
@@ -12481,6 +13211,10 @@ socket.on("lp-delete-comment", ({ postId, index, uid })=>{
 socket.on("lp-delete-reply", ({ postId, commentIndex, replyId, uid })=>{
   const post = getPost(postId);
   if(!post) return;
+
+  if (!socket.data.uid) return;
+if (String(uid) !== String(socket.data.uid)) return;
+if (!canInteractSocialPost(socket, post)) return;
 
   const c = post.comments?.[commentIndex];
   if(!c || !c.replies) return;
@@ -12496,11 +13230,17 @@ socket.on("lp-delete-reply", ({ postId, commentIndex, replyId, uid })=>{
   c.replies.splice(idx,1);
   saveSocial();
 
-  io.emit("lp-delete-reply", {
+
+emitPrivateSocialEvent(
+  "lp-delete-reply",
+  post,
+  {
     postId,
     commentIndex,
     replyId
-  });
+  }
+);
+
 });
 
 
@@ -12508,6 +13248,10 @@ socket.on("lp-delete-reply", ({ postId, commentIndex, replyId, uid })=>{
 socket.on("lp-delete-reply-child", ({ postId, commentIndex, replyId, childId, uid })=>{
   const post = getPost(postId);
   if(!post) return;
+
+  if (!socket.data.uid) return;
+if (String(uid) !== String(socket.data.uid)) return;
+if (!canInteractSocialPost(socket, post)) return;
 
   const c = post.comments?.[commentIndex];
   if(!c || !c.replies) return;
@@ -12526,18 +13270,30 @@ socket.on("lp-delete-reply-child", ({ postId, commentIndex, replyId, childId, ui
   parent.replies.splice(idx,1);
   saveSocial();
 
-  io.emit("lp-delete-reply-child", {
+
+emitPrivateSocialEvent(
+  "lp-delete-reply-child",
+  post,
+  {
     postId,
     commentIndex,
     replyId,
     childId
-  });
+  }
+);
+
 });
 
 
 socket.on("lp-like-reply-child", async ({ postId, commentIndex, replyId, childId, uid }) => {
   const post = getPost(postId);
   if (!post) return;
+
+
+if (!socket.data.uid) return;
+if (String(uid) !== String(socket.data.uid)) return;
+if (!canInteractSocialPost(socket, post)) return;
+
 
   const c = post.comments?.[commentIndex];
   if (!c || !c.replies) return;
@@ -12558,13 +13314,19 @@ socket.on("lp-like-reply-child", async ({ postId, commentIndex, replyId, childId
 
   saveSocial();
 
-  io.emit("lp-like-reply-child", {
+
+emitPrivateSocialEvent(
+  "lp-like-reply-child",
+  post,
+  {
     postId,
     commentIndex,
     replyId,
     childId,
     likes: child.likes.length
-  });
+  }
+);
+
 
   // 🔔 PUSH cho chủ reply-child
   if (liked && child.uid && child.uid !== uid) {
@@ -12916,18 +13678,21 @@ socket.on("msg-seen-all", ()=>{
 
 
 
-socket.on("auth-ping", ({ uid }) => {
-  if (!uid) return;
-  socket.data.uid = uid;
 
-  if (!activeUsers.has(uid)) {
-    activeUsers.set(uid, new Set([socket.id]));
-    emitActiveUsers(); // 🔥 chỉ emit khi uid mới
-    return;
+socket.on("auth-ping", ({ uid }) => {
+  const currentUid = socket.data.uid;
+
+  if (!currentUid) return;
+  if (String(uid) !== String(currentUid)) return;
+
+  if (!activeUsers.has(currentUid)) {
+    activeUsers.set(currentUid, new Set());
+    emitActiveUsers();
   }
 
-  activeUsers.get(uid).add(socket.id);
+  activeUsers.get(currentUid).add(socket.id);
 });
+
 
 
 
@@ -13210,7 +13975,7 @@ if(isGuest(socket)){
   profile = {
     uid: socket.data.uid,
     name: "Guest",
-    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest",
+    avatar: "https://i.ibb.co/GvJWn19q/icon-192.png",
     level: 1,
     coins: 0
   };
@@ -14102,12 +14867,64 @@ app.get("/lobby", (_, res) => {
 const wheel8ScreenShares = new Map();
 const W8_SHARE_LIMIT = 8;
 
+
+/* ==========================================
+   WHEEL8 ACTIVE SCREEN SHARE DIRECTORY
+========================================== */
+
+const W8_SHARE_DIRECTORY_ROOM = "w8share:directory";
+
+function getW8ActiveShareList() {
+  const users = loadUsers();
+  const result = [];
+
+  for (const [token, session] of wheel8ScreenShares) {
+
+    // Chỉ công bố phiên có người phát đang kết nối
+    if (
+      !session.hostId ||
+      !io.sockets.sockets.has(session.hostId)
+    ) continue;
+
+    const user = users[session.hostUid];
+    if (!user?.profile) continue;
+
+    result.push({
+      token,
+      uid: String(session.hostUid),
+      name: String(
+        user.profile.name || "Player"
+      ).slice(0, 60),
+      viewers: session.viewers.size
+    });
+  }
+
+  return result;
+}
+
+function emitW8ShareDirectory() {
+
+  io.to(W8_SHARE_DIRECTORY_ROOM).emit(
+    "w8share:directory:update",
+    getW8ActiveShareList()
+  );
+
+}
+
+
+
+// Keep disconnected broadcasters' sessions for 5 minutes.
+const W8_SHARE_GRACE_MS = 5 * 60 * 1000;
+
 function closeWheel8ScreenShare(token) {
   const session = wheel8ScreenShares.get(token);
   if (!session) return;
 
+  clearTimeout(session.releaseTimer);
+
   wheel8ScreenShares.delete(token);
 
+  
   for (const viewerId of session.viewers) {
     const viewer = io.sockets.sockets.get(viewerId);
 
@@ -14118,9 +14935,47 @@ function closeWheel8ScreenShare(token) {
 
   const host = io.sockets.sockets.get(session.hostId);
   if (host) host.data.w8Hosting = null;
+
+emitW8ShareDirectory();
+
+
 }
 
 io.on("connection", (socket) => {
+
+
+
+// ======================================
+// ACTIVE SCREEN SHARE DIRECTORY
+// ======================================
+
+socket.on("w8share:directory:join", (ack) => {
+
+  if (typeof ack !== "function") return;
+
+  const uid = socket.data.uid;
+
+  if (!uid || !loadUsers()[uid]?.profile) {
+    return ack({
+      ok: false,
+      error: "Login required."
+    });
+  }
+
+  socket.join(W8_SHARE_DIRECTORY_ROOM);
+
+  ack({
+    ok: true,
+    shares: getW8ActiveShareList()
+  });
+
+});
+
+socket.on("w8share:directory:leave", () => {
+  socket.leave(W8_SHARE_DIRECTORY_ROOM);
+});
+
+
 
   // Người chơi bắt đầu chia sẻ
   socket.on("w8share:start", (_data, ack) => {
@@ -14141,17 +14996,100 @@ io.on("connection", (socket) => {
 
     const token = crypto.randomBytes(18).toString("hex");
 
-    wheel8ScreenShares.set(token, {
-      hostId: socket.id,
-      viewers: new Set()
-    });
+ wheel8ScreenShares.set(token, {
+  hostId: socket.id,
+  hostUid: uid,
+  viewers: new Set(),
+  releaseTimer: null
+});
 
     socket.data.w8Hosting = token;
 
-    ack({ ok: true, token });
+    
+ack({ ok: true, token });
+
+emitW8ShareDirectory();
+
   });
 
-  // Người xem mở link
+
+
+// Restore an existing LIVE session after reconnecting.
+socket.on("w8share:resume", (data, ack) => {
+
+  if (typeof ack !== "function") return;
+
+  const token = String(data?.token || "");
+  const session = wheel8ScreenShares.get(token);
+  const uid = socket.data.uid;
+
+  if (!session) {
+    return ack({
+      ok: false,
+      expired: true,
+      error: "LIVE session has expired."
+    });
+  }
+
+  // Only the authenticated owner can restore the session.
+  if (
+    !uid ||
+    session.hostUid !== uid ||
+    !loadUsers()[uid]?.profile
+  ) {
+    return ack({
+      ok: false,
+      error: "Not authorized to restore this LIVE session."
+    });
+  }
+
+  if (
+    session.hostId &&
+    session.hostId !== socket.id &&
+    io.sockets.sockets.has(session.hostId)
+  ) {
+    return ack({
+      ok: false,
+      error: "This LIVE session is active on another connection."
+    });
+  }
+
+  clearTimeout(session.releaseTimer);
+  session.releaseTimer = null;
+
+  session.hostId = socket.id;
+  socket.data.w8Hosting = token;
+  emitW8ShareDirectory();
+  ack({
+    ok: true,
+    count: session.viewers.size
+  });
+
+  // Tell existing viewers that the broadcaster is back.
+  for (const viewerId of session.viewers) {
+
+    const viewer = io.sockets.sockets.get(viewerId);
+
+    if (
+      !viewer ||
+      viewer.data.w8Watching !== token
+    ) continue;
+
+    io.to(viewerId).emit("w8share:resumed");
+
+    // Ask the broadcaster to establish WebRTC again.
+    socket.emit("w8share:viewer", {
+      viewerId,
+      count: session.viewers.size
+    });
+
+  }
+
+});
+
+
+
+  // Viewer open link
   socket.on("w8share:join", (data, ack) => {
     if (typeof ack !== "function") return;
 
@@ -14166,13 +15104,12 @@ io.on("connection", (socket) => {
 
     const session = wheel8ScreenShares.get(token);
 
-    if (!session ||
-        !io.sockets.sockets.has(session.hostId)) {
-      return ack({
-        ok: false,
-        error: "This sharing session has ended."
-      });
-    }
+if (!session) {
+  return ack({
+    ok: false,
+    error: "This LIVE session has ended."
+  });
+}
 
     if (
       session.viewers.size >= W8_SHARE_LIMIT &&
@@ -14203,13 +15140,24 @@ io.on("connection", (socket) => {
     session.viewers.add(socket.id);
     socket.data.w8Watching = token;
 
-    ack({ ok: true });
+const hostOnline = Boolean(
+  session.hostId &&
+  io.sockets.sockets.has(session.hostId)
+);
 
-    // Yêu cầu máy chủ chia sẻ gửi video
-    io.to(session.hostId).emit("w8share:viewer", {
-      viewerId: socket.id,
-      count: session.viewers.size
-    });
+ack({
+  ok: true,
+  paused: !hostOnline
+});
+
+if (hostOnline) {
+  io.to(session.hostId).emit("w8share:viewer", {
+    viewerId: socket.id,
+    count: session.viewers.size
+  });
+}
+
+
   });
 
 
@@ -14403,11 +15351,45 @@ socket.on("w8share:frame", (data) => {
     }
   });
 
-  // Dọn dẹp khi mất kết nối
-  socket.on("disconnect", () => {
-    if (socket.data.w8Hosting) {
-      closeWheel8ScreenShare(socket.data.w8Hosting);
+
+// Keep the session temporarily when the broadcaster disconnects.
+socket.on("disconnect", () => {
+
+  const token = socket.data.w8Hosting;
+
+  if (token) {
+
+    const session = wheel8ScreenShares.get(token);
+
+    if (session && session.hostId === socket.id) {
+
+      session.hostId = null;
+
+emitW8ShareDirectory();
+
+      clearTimeout(session.releaseTimer);
+
+      // The sharing link remains valid during this period.
+      session.releaseTimer = setTimeout(() => {
+
+        if (
+          wheel8ScreenShares.get(token) === session &&
+          !session.hostId
+        ) {
+          closeWheel8ScreenShare(token);
+        }
+
+      }, W8_SHARE_GRACE_MS);
+
+      // Tell viewers the broadcast is temporarily offline.
+      for (const viewerId of session.viewers) {
+        io.to(viewerId).emit("w8share:paused");
+      }
+
     }
+
+  }
+
 
     if (socket.data.w8Watching) {
       const session = wheel8ScreenShares.get(

@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+ content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d18">
+<title>System Maintenance | Livestream Pro</title>
+
+
+<link
+  rel="icon"
+  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080d18'/%3E%3Ctext x='50%25' y='54%25' font-size='30' fill='%23e7c38a' text-anchor='middle' dominant-baseline='middle'%3ELP%3C/text%3E%3C/svg%3E"
+>
+
+
+<style>
+:root {
+  color-scheme: dark;
+  --gold: #e7c38a;
+  --text: #f5f1e9;
+  --muted: #9aa4b4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100%;
+  background: #080d18;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* BACKGROUND */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(26px,env(safe-area-inset-top))
+    22px
+    max(24px,env(safe-area-inset-bottom));
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 30%,
+      rgba(72,92,138,.22),transparent 58%),
+    radial-gradient(ellipse at 50% 75%,
+      rgba(159,111,53,.09),transparent 60%),
+    #080d18;
+}
+
+.page::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .35;
+  background-image:
+    linear-gradient(#ffffff07 1px,transparent 1px),
+    linear-gradient(90deg,#ffffff07 1px,transparent 1px);
+  background-size: 55px 55px;
+  mask-image: radial-gradient(
+    ellipse at center,#000,transparent 80%
+  );
+}
+
+.container {
+  width: 100%;
+  max-width: 440px;
+  margin: auto 0;
+  text-align: center;
+  animation: appear .6s ease both;
+}
+
+/* HEADER */
+
+.brand {
+  color: #f0d29d;
+  font-family: Georgia,serif;
+  font-size: clamp(21px,5vw,27px);
+  font-weight: 700;
+  letter-spacing: 2.8px;
+  text-shadow: 0 2px 22px #dfab5c28;
+}
+
+.brand-sub {
+  margin-top: 8px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #8d97a7;
+}
+
+/* MAINTENANCE ILLUSTRATION */
+
+.hero {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 19px auto 23px;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 18% 12%;
+  border-radius: 50%;
+  background: rgba(209,153,78,.1);
+  filter: blur(45px);
+  pointer-events: none;
+}
+
+.hero img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  mask-image: radial-gradient(
+    ellipse at center,
+    #000 59%,
+    rgba(0,0,0,.9) 72%,
+    transparent 100%
+  );
+  filter: drop-shadow(
+    0 10px 22px rgba(194,141,64,.13)
+  );
+  animation: float 5s ease-in-out infinite;
+}
+
+/* MAIN MESSAGE */
+
+.eyebrow {
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+}
+
+h1 {
+  margin: 15px 0 15px;
+  font-size: clamp(32px,7.8vw,43px);
+  letter-spacing: -1.4px;
+  line-height: 1.18;
+  font-weight: 700;
+}
+
+h1 span {
+  display: block;
+  background: linear-gradient(
+    100deg,#b3864c,#fff0ce,#d6a96d
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.description {
+  max-width: 350px;
+  margin: 0 auto;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+/* STATUS PANEL */
+
+.status-panel {
+  margin-top: 30px;
+  padding: 19px;
+  border: 1px solid #e4b97e30;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,.055),
+    rgba(255,255,255,.012)
+  );
+  box-shadow: 0 14px 45px #0003;
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #efbf77;
+  box-shadow: 0 0 12px #dfac64;
+  animation: pulse 1.6s infinite;
+}
+
+.status-badge {
+  padding: 6px 10px;
+  border: 1px solid #d7aa6b4d;
+  border-radius: 20px;
+  background: #bf894817;
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.progress {
+  height: 4px;
+  position: relative;
+  margin: 20px 0 14px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #303440;
+}
+
+.progress-fill {
+  position: absolute;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,transparent,#bc8b4d,#ffe1ac
+  );
+  border-radius: inherit;
+  animation: loading 2.8s ease-in-out infinite;
+}
+
+.status-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+  color: #8d97a6;
+}
+
+.status-bottom span:last-child {
+  color: #d1ac77;
+}
+
+/* CONNECTION */
+
+.connection {
+  margin-top: 25px;
+}
+
+.connection-text {
+  color: #9aa3b2;
+  font-size: 12px;
+}
+
+.connection-text strong {
+  display: inline-block;
+  min-width: 21px;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+}
+
+.retry-btn {
+  margin-top: 17px;
+  width: 100%;
+  height: 48px;
+  border: 1px solid #e3ba7c69;
+  border-radius: 12px;
+  color: #f1d19d;
+  background: linear-gradient(
+    110deg,#c796511e,#d4a56c0c
+  );
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.retry-btn:hover {
+  background: #c9975138;
+}
+
+.retry-btn:disabled {
+  opacity: .65;
+  cursor: default;
+}
+
+/* FOOTER */
+
+.footer {
+  width: 100%;
+  max-width: 440px;
+  margin-top: 28px;
+  padding-top: 17px;
+  border-top: 1px solid #e8c79320;
+  color: #788395;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.footer span:last-child {
+  color: #b0936c;
+}
+
+/* ANIMATIONS */
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse {
+  50% { opacity: .3; }
+}
+
+@keyframes loading {
+  from { left: -35%; }
+  to { left: 100%; }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* SMALL PHONE */
+
+@media (max-width: 480px) {
+  .hero {
+    max-width: 370px;
+    margin: 16px auto 19px;
+  }
+
+  .status-panel {
+    margin-top: 25px;
+  }
+
+  .footer {
+    font-size: 8px;
+    letter-spacing: .6px;
+  }
+}
+
+/* SHORT SCREEN */
+
+@media (max-height: 750px) {
+  .hero {
+    max-width: 290px;
+    margin: 12px auto;
+  }
+
+  .status-panel {
+    margin-top: 18px;
+  }
+
+  .connection {
+    margin-top: 16px;
+  }
+
+  .footer {
+    margin-top: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+  <div class="container">
+
+    <!-- BRAND -->
+    <header>
+      <div class="brand">
+        LIVESTREAM PRO
+      </div>
+
+      <div class="brand-sub">
+        PREMIUM DIGITAL EXPERIENCE
+      </div>
+    </header>
+
+    <!-- SINGLE MAINTENANCE IMAGE -->
+    <div class="hero">
+ 
+<img
+  src="https://livestream-pro-maintenance.onrender.com/maintenance-hero.png"
+  alt="Livestream Pro maintenance illustration"
+  loading="eager"
+  decoding="async"
+  width="787"
+  height="399"
+>
+
+    </div>
+
+    <!-- MESSAGE -->
+    <section class="message">
+      <div class="eyebrow">
+        PLATFORM MAINTENANCE
+      </div>
+
+      <h1>
+        We'll Be
+        <span>Back Soon.</span>
+      </h1>
+
+      <p class="description">
+        We're performing a system upgrade to improve
+        stability, performance and your overall
+        experience. Thank you for your patience.
+      </p>
+    </section>
+
+    <!-- STATUS -->
+    <section class="status-panel"
+             aria-label="System maintenance status">
+
+      <div class="status-header">
+        <div class="status-title">
+          <span class="status-dot"></span>
+          SYSTEM STATUS
+        </div>
+
+        <span class="status-badge">
+          MAINTENANCE
+        </span>
+      </div>
+
+      <div class="progress" aria-hidden="true">
+        <div class="progress-fill"></div>
+      </div>
+
+      <div class="status-bottom">
+        <span>Temporarily unavailable</span>
+        <span>UPDATING</span>
+      </div>
+    </section>
+
+    <!-- RECONNECTION -->
+    <section class="connection">
+      <p class="connection-text" aria-live="polite">
+        Checking availability in
+        <strong id="countdown">15</strong>
+        seconds
+      </p>
+
+      <button
+        id="retryButton"
+        class="retry-btn"
+        type="button">
+        CHECK CONNECTION NOW
+      </button>
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>© LIVESTREAM PRO</span>
+    <span>ENGINEERED FOR EXCELLENCE</span>
+  </footer>
+
+</main>
+
+<script>
+(() => {
+  const APP_URL =
+    "https://livestreampro.onrender.com/";
+
+  const RETRY_SECONDS = 15;
+
+  const counter =
+    document.getElementById("countdown");
+
+  const button =
+    document.getElementById("retryButton");
+
+  let remaining = RETRY_SECONDS;
+  let connecting = false;
+
+  function reconnect() {
+    if (connecting) return;
+
+    connecting = true;
+    button.disabled = true;
+    button.textContent = "CONNECTING...";
+
+    window.location.replace(APP_URL);
+  }
+
+  button.addEventListener("click", reconnect);
+
+  const timer = setInterval(() => {
+    if (connecting) {
+      clearInterval(timer);
+      return;
+    }
+
+    remaining = Math.max(0, remaining - 1);
+    counter.textContent = remaining;
+
+    if (remaining === 0) {
+      clearInterval(timer);
+      reconnect();
+    }
+  }, 1000);
+})();
+</script>
+
+</body>
+</html>

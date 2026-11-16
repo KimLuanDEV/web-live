@@ -1987,12 +1987,787 @@ html, body{
 }
 
 
+
+/* ============================================
+   RPS ROYAL ARENA - PREMIUM INTERFACE
+   DESIGN SIZE: 430 x 870
+   ============================================ */
+
+:root {
+  --rps-green: #65edbb;
+  --rps-gold: #dec58c;
+  --rps-line: rgba(132, 216, 178, .30);
+  --rps-panel: rgba(9, 29, 26, .94);
+  --rps-text: #e9f8ee;
+}
+
+/* 1. VIEWPORT */
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #030d0b !important;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+#rpsGameFrame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 430px;
+  height: 870px;
+  overflow: hidden;
+  isolation: isolate;
+  transform-origin: 0 0;
+
+  color: var(--rps-text);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(2, 15, 13, .28),
+      rgba(2, 15, 13, .08) 38%,
+      rgba(2, 11, 10, .82) 100%
+    ),
+    url("/assets/bg/rps1.jpg")
+      center center / cover no-repeat;
+
+  box-shadow: 0 0 90px rgba(0, 0, 0, .6);
+}
+
+/* 2. HEADER */
+
+#rpsGameFrame .rps-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 430px;
+  height: 68px;
+  padding: 0 17px;
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+
+  background: linear-gradient(
+    180deg,
+    #122d27 0%,
+    #071b17 100%
+  );
+
+  border-bottom: 1px solid var(--rps-line);
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  backdrop-filter: none;
+}
+
+#rpsGameFrame .back-btn {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--rps-line);
+
+  font-size: 20px;
+  color: var(--rps-gold);
+}
+
+#rpsGameFrame .rps-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--rps-gold);
+  white-space: nowrap;
+}
+
+#rpsGameFrame .rps-wallet {
+  flex: 0 0 auto;
+  min-width: 85px;
+  max-width: 120px;
+  padding: 10px 9px;
+
+  background: rgba(0,0,0,.32);
+  border: 1px solid var(--rps-line);
+  border-radius: 11px;
+
+  font-size: 12px;
+  text-align: center;
+  color: var(--rps-green);
+  text-shadow: none;
+}
+
+/* 3. GAME STAGE */
+
+#rpsGameFrame .rps-stage {
+  position: absolute;
+  inset: 68px 0 0;
+  width: 430px;
+  height: 802px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* 4. ROUND INFORMATION */
+
+#rpsGameFrame .rps-status {
+  position: absolute;
+  top: 19px;
+  left: 23px;
+  width: 384px;
+  margin: 0;
+  z-index: 10;
+}
+
+#rpsGameFrame .rps-status-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 83px;
+  padding: 13px 18px;
+  border-radius: 16px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(14,46,38,.97),
+    rgba(4,23,20,.96)
+  );
+
+  border: 1px solid var(--rps-line);
+
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.35),
+    inset 0 1px rgba(255,255,255,.08);
+
+  backdrop-filter: none;
+}
+
+#rpsGameFrame .rps-round {
+  font-size: 11px;
+  color: var(--rps-gold);
+  letter-spacing: 1.5px;
+}
+
+#rpsGameFrame .rps-divider {
+  margin: 8px 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(222,197,140,.55),
+    transparent
+  );
+}
+
+#rpsGameFrame .rps-msg {
+  margin-top: 0;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #f1f8f1;
+  text-shadow: none;
+}
+
+/* 5. BATTLE ARENA */
+
+#rpsGameFrame .rps-stage::before {
+  content: "";
+  position: absolute;
+  top: 129px;
+  left: 19px;
+  width: 392px;
+  height: 189px;
+  border-radius: 25px;
+  z-index: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 48%,
+      rgba(41,128,97,.25),
+      transparent 75%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(9,35,29,.82),
+      rgba(3,19,17,.85)
+    );
+
+  border: 1px solid rgba(137,214,175,.24);
+  box-shadow:
+    inset 0 0 35px rgba(32,144,103,.1),
+    0 18px 32px rgba(0,0,0,.25);
+}
+
+#rpsGameFrame .rps-stage::after {
+  content: "YOU                                      OPPONENT";
+  position: absolute;
+  top: 290px;
+  left: 46px;
+  width: 338px;
+  z-index: 2;
+  pointer-events: none;
+
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-weight: 900;
+  color: rgba(213,234,216,.8);
+}
+
+/* 6. HAND SELECTION */
+
+#rpsGameFrame .rps-hands {
+  position: absolute;
+  top: 358px;
+  left: 21px;
+
+  width: 388px;
+  height: 123px;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 8;
+}
+
+#rpsGameFrame .rps-hand {
+  position: relative;
+  flex: 0 0 116px;
+
+  width: 116px;
+  height: 116px;
+  padding: 15px;
+  border-radius: 19px;
+
+  background: linear-gradient(
+    150deg,
+    rgba(30,76,60,.96),
+    rgba(6,30,25,.98)
+  );
+
+  border: 1px solid rgba(131,213,173,.5);
+
+  box-shadow:
+    0 12px 20px rgba(0,0,0,.4),
+    inset 0 1px rgba(255,255,255,.1);
+
+  transition:
+    opacity .35s,
+    transform .2s,
+    box-shadow .2s;
+}
+
+#rpsGameFrame .rps-hand::after {
+  border-radius: inherit;
+  box-shadow: inset 0 0 20px rgba(52,170,115,.1);
+}
+
+#rpsGameFrame .rps-hand.img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 9px rgba(0,0,0,.5));
+}
+
+#rpsGameFrame .rps-hand.active {
+  outline: 2px solid var(--rps-gold);
+  outline-offset: 1px;
+  transform: translateY(-7px);
+  box-shadow:
+    0 0 25px rgba(222,197,140,.35),
+    0 12px 25px rgba(0,0,0,.5);
+}
+
+#rpsGameFrame .rps-hand.confirmed {
+  outline: 2px solid var(--rps-green);
+  box-shadow: 0 0 25px rgba(101,237,187,.5);
+  opacity: 1 !important;
+}
+
+/* 7. BATTLE TARGET */
+
+#rpsGameFrame #rpsHandTarget {
+  position: fixed;
+  top: 230px;
+  left: 65px;
+  width: 116px;
+  height: 116px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+#rpsGameFrame .rps-hand.enemy {
+  position: fixed;
+  top: 230px;
+  left: 249px;
+  right: auto;
+  width: 116px;
+  height: 116px;
+  z-index: 6;
+
+  background: linear-gradient(
+    145deg,
+    #442c28,
+    #211715
+  );
+
+  border-color: rgba(244,155,126,.45);
+}
+
+#rpsGameFrame .rps-vs {
+  position: fixed;
+  top: 288px;
+  left: 215px;
+  width: 50px;
+  height: 50px;
+  z-index: 7;
+
+  color: #271c08;
+  background: linear-gradient(
+    145deg,
+    #f1d9a1,
+    #ba9559
+  );
+
+  box-shadow: 0 0 25px rgba(226,187,111,.32);
+}
+
+#rpsGameFrame .rps-vs .vs-icon {
+  font-size: 24px;
+  color: #271c08;
+  text-shadow: none;
+}
+
+/* 8. BOTTOM PANEL */
+
+#rpsGameFrame .bet-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 430px;
+  z-index: 50;
+  padding: 0;
+
+  background: #071914;
+  border-top: 1px solid var(--rps-line);
+  box-shadow: 0 -15px 38px rgba(0,0,0,.45);
+}
+
+#rpsGameFrame .rps-history {
+  width: 100%;
+  padding: 10px 18px 9px;
+  margin: 0;
+
+  background: #102d25;
+  border: 0;
+  border-bottom: 1px solid var(--rps-line);
+  box-shadow: none;
+}
+
+#rpsGameFrame .rh-title {
+  margin-bottom: 7px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: var(--rps-gold);
+}
+
+#rpsGameFrame .rh-list {
+  gap: 8px;
+  min-height: 42px;
+  scrollbar-width: none;
+}
+
+#rpsGameFrame .rh-item {
+  flex: 0 0 41px;
+  min-width: 41px;
+  height: 41px;
+  border-radius: 10px;
+  background: #19382e;
+  border: 1px solid rgba(151,208,166,.2);
+}
+
+#rpsGameFrame .bet-sheet .rps-bet.pro {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 12px 17px 15px;
+
+  border: 0;
+  border-radius: 0;
+
+  background: linear-gradient(
+    180deg,
+    #0d2922,
+    #061a15
+  );
+
+  box-shadow: none;
+}
+
+/* 9. BET AMOUNT */
+
+#rpsGameFrame .bet-info.big {
+  height: 60px;
+  margin: 0 48px 10px;
+  padding: 3px 0;
+
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  color: #9fcbba;
+}
+
+#rpsGameFrame .bet-amount {
+  margin-top: 3px;
+  font-size: 25px;
+  font-weight: 900;
+  color: var(--rps-gold);
+  text-shadow: none;
+}
+
+/* 10. TIMER AND HISTORY BUTTON */
+
+#rpsGameFrame .bet-timer.ring {
+  top: 19px;
+  left: 19px;
+  width: 44px;
+  height: 44px;
+}
+
+#rpsGameFrame .ring-progress {
+  stroke: var(--rps-green);
+}
+
+#rpsGameFrame .timer-text {
+  color: var(--rps-green);
+  text-shadow: none;
+}
+
+#rpsGameFrame .bet-history-btn {
+  top: 21px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+
+  border-radius: 12px;
+  color: var(--rps-gold);
+  background: #1b4034;
+  border: 1px solid var(--rps-line);
+  box-shadow: none;
+}
+
+/* 11. BET CHIPS */
+
+#rpsGameFrame .grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+#rpsGameFrame .bet-pct,
+#rpsGameFrame .bet-btn {
+  min-width: 0;
+  height: 37px;
+  padding: 0 8px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(120,193,158,.3);
+
+  background: #1a3e32;
+  color: #e5f3eb;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+#rpsGameFrame .bet-pct.active,
+#rpsGameFrame .bet-btn.active {
+  color: #082017;
+  border-color: var(--rps-green);
+  background: linear-gradient(
+    180deg,
+    #8df2c9,
+    #53bc90
+  );
+}
+
+#rpsGameFrame .bet-pct.allin {
+  color: var(--rps-gold);
+  border-color: rgba(222,197,140,.45);
+  background: rgba(123,94,38,.22);
+}
+
+#rpsGameFrame .bet-btn.reset {
+  grid-column: 1 / -1;
+  height: 32px;
+  color: #e0a29a;
+  background: rgba(105,42,40,.2);
+  border: 1px solid rgba(194,104,94,.25);
+  font-size: 12px;
+}
+
+#rpsGameFrame .bet-locked:not(.enemy) {
+  opacity: .45;
+  pointer-events: none;
+}
+
+/* 12. CONFIRM BUTTON */
+
+#rpsGameFrame .bet-sheet .rps-action {
+  margin-top: 5px;
+  width: 100%;
+}
+
+#rpsGameFrame .bet-sheet .rps-btn {
+  display: block;
+  height: 48px;
+  padding: 0;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    180deg,
+    #a0f4cd,
+    #50b78a
+  );
+
+  color: #06251a;
+  font-size: 15px;
+  font-weight: 950;
+  letter-spacing: 1.5px;
+  box-shadow: 0 6px 19px rgba(0,0,0,.3);
+}
+
+#rpsGameFrame .rps-btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 13. RESULT MODAL */
+
+#rpsGameFrame .rps-result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,9,7,.78);
+}
+
+#rpsGameFrame .rps-result-sheet {
+  width: 430px;
+  padding: 20px 16px 28px;
+  border-radius: 24px 24px 0 0;
+
+  background: linear-gradient(
+    180deg,
+    #194738,
+    #071d17 65%
+  );
+
+  border-top: 1px solid var(--rps-line);
+}
+
+#rpsGameFrame .rps-server-result {
+  width: 100%;
+  max-width: none;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(3,20,16,.85);
+  border: 1px solid var(--rps-line);
+  box-shadow: none;
+}
+
+#rpsGameFrame .sr-title {
+  color: var(--rps-gold);
+  text-shadow: none;
+}
+
+#rpsGameFrame .sr-outcome {
+  font-size: 30px;
+  letter-spacing: 2px;
+}
+
+#rpsGameFrame .sr-ok {
+  width: 100%;
+  background: #64d8a6;
+  color: #052318;
+}
+
+/* 14. HISTORY MODAL */
+
+#rpsGameFrame .bet-history-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,.8);
+}
+
+#rpsGameFrame .bet-history-sheet {
+  width: 430px;
+  height: 870px;
+  background: linear-gradient(
+    180deg,
+    #153a2d,
+    #061510
+  );
+}
+
+#rpsGameFrame .bh-header.pro {
+  height: 76px;
+  flex: 0 0 76px;
+  background: #102e25;
+  border-bottom: 1px solid var(--rps-line);
+  box-shadow: none;
+}
+
+#rpsGameFrame .bh-title {
+  color: var(--rps-gold);
+  text-shadow: none;
+}
+
+#rpsGameFrame .bh-body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+#rpsGameFrame .bh-item {
+  padding: 14px;
+  border-radius: 13px;
+
+  background: rgba(29,65,52,.75);
+  border: 1px solid var(--rps-line);
+}
+
+#rpsGameFrame .bh-close {
+  color: #f3e4cf;
+  background: #234438;
+  border: 1px solid var(--rps-line);
+  box-shadow: none;
+}
+
+/* 15. LOADING AND INTRO */
+
+#rpsGameFrame .loading-overlay,
+#rpsGameFrame .ultraIntro,
+#rpsGameFrame #loseOverlay {
+  position: fixed;
+  inset: 0;
+  width: 430px;
+  height: 870px;
+}
+
+#rpsGameFrame .loading-bg,
+#rpsGameFrame .intro-bg {
+  background:
+    linear-gradient(rgba(2,14,11,.45),rgba(2,14,11,.8)),
+    url("/assets/bg/rps1.jpg") center / cover no-repeat;
+}
+
+#rpsGameFrame .loading-logo {
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--rps-gold);
+}
+
+#rpsGameFrame .loading-bar {
+  width: 265px;
+  height: 5px;
+}
+
+#rpsGameFrame .loading-progress {
+  background: linear-gradient(
+    90deg,
+    #477d63,
+    #9af3c7
+  );
+}
+
+#rpsGameFrame .loading-vs img,
+#rpsGameFrame .intro-hand img {
+  object-fit: contain;
+}
+
+/* 16. SAFETY */
+
+#rpsGameFrame img {
+  max-width: 100%;
+}
+
+#rpsGameFrame button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+
+
+
+
+/* HAND SELECTION - NO OVERLAP */
+
+#rpsGameFrame .rps-hands {
+  top: 298px;
+}
+
+/* Keep image ratio */
+
+#rpsGameFrame .rps-hand.img img,
+#rpsGameFrame .rh-item img,
+#rpsGameFrame .sr-enemy img {
+  object-fit: contain;
+}
+
+/* Keep interactive states visually correct */
+
+#rpsGameFrame .rps-hand.to-target {
+  z-index: 999;
+}
+
+#rpsGameFrame .rps-hand.hide-hand {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#rpsGameFrame .rps-hand.enemy.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#rpsGameFrame .rps-result-overlay.hidden,
+#rpsGameFrame .bet-history-overlay.hidden {
+  display: none;
+}
+
+
+
+
 </style>
 </head>
 
 <body>
   
-
+<div id="rpsGameFrame"></div>
 
 
 
@@ -2283,9 +3058,76 @@ html, body{
 </div>
 
 
+
+</div>
+
 <script>
 
   /* ================= SOCKET INIT ================= */
+
+
+
+/* ========================================
+   RPS FIXED FRAME - 430 x 870
+   ======================================== */
+
+const RPS_WIDTH = 430;
+const RPS_HEIGHT = 870;
+
+let rpsFrameScale = 1;
+
+function resizeRpsFrame() {
+  const frame = document.getElementById("rpsGameFrame");
+  if (!frame) return;
+
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Thu nhỏ đồng tỷ lệ, không phóng lớn quá 430x870.
+  rpsFrameScale = Math.min(
+    1,
+    viewportWidth / RPS_WIDTH,
+    viewportHeight / RPS_HEIGHT
+  );
+
+  const actualWidth = RPS_WIDTH * rpsFrameScale;
+  const actualHeight = RPS_HEIGHT * rpsFrameScale;
+
+  frame.style.width = RPS_WIDTH + "px";
+  frame.style.height = RPS_HEIGHT + "px";
+
+  frame.style.transform =
+    `scale(${rpsFrameScale})`;
+
+  // Căn giữa màn hình.
+  frame.style.left =
+    Math.max(0, (viewportWidth - actualWidth) / 2) + "px";
+
+  frame.style.top =
+    Math.max(0, (viewportHeight - actualHeight) / 2) + "px";
+}
+
+/* Chuyển tọa độ màn hình về tọa độ khung 430x870 */
+function rpsPoint(rect) {
+  const frame = document.getElementById("rpsGameFrame");
+  const bounds = frame.getBoundingClientRect();
+
+  return {
+    left: (rect.left - bounds.left) / rpsFrameScale,
+    top: (rect.top - bounds.top) / rpsFrameScale
+  };
+}
+
+resizeRpsFrame();
+
+window.addEventListener("resize", resizeRpsFrame);
+
+window.addEventListener(
+  "orientationchange",
+  resizeRpsFrame
+);
+
+
 
 const socket = io({
   auth:{
@@ -2462,12 +3304,15 @@ socket.on("rps-round-state", data => {
         // 📌 SNAP ĐÚNG – KHÔNG RESIZE
         if (target) {
           requestAnimationFrame(() => {
-            const t = target.getBoundingClientRect();
+            
+const t = rpsPoint(
+  target.getBoundingClientRect()
+);
 
-            h.style.position = "fixed";
-            h.style.left = t.left + "px";
-            h.style.top  = t.top  + "px";
-            h.style.transform = "translate(0,0)";
+h.style.position = "fixed";
+h.style.left = t.left + "px";
+h.style.top = t.top + "px";
+h.style.transform = "translate(0,0)";
           });
         }
 
@@ -2930,8 +3775,13 @@ hands.forEach(h => {
     // 🔥 2. ĐỢI DOM ÁP DỤNG → LẤY RECT CHUẨN
     requestAnimationFrame(() => {
 
-      const rect = h.getBoundingClientRect();
-      const t    = target.getBoundingClientRect();
+const rect = rpsPoint(
+  h.getBoundingClientRect()
+);
+
+const t = rpsPoint(
+  target.getBoundingClientRect()
+);
 
       // 🔥 3. GIỮ VỊ TRÍ BAN ĐẦU (SIZE CHUẨN)
       h.style.position = "fixed";

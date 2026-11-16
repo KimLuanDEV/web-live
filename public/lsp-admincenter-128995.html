@@ -1,169 +1,1024 @@
-<!doctype html>
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<meta charset="utf-8">
-<title>ADMIN CONTROL CENTER</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#0b0c10">
+
+<title>Executive Admin Center | Livestream Pro</title>
 
 <style>
-body{
-  margin:0;
-  background:#050505;
-  color:#fff;
-  font-family:system-ui;
+
+/* ==========================================
+   LIVESTREAM PRO
+   EXECUTIVE ADMIN CONTROL CENTER
+   STANDALONE DESIGN
+========================================== */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #0b0c10;
+  --surface: #17181c;
+  --surface-2: #202023;
+  --border: rgba(217,180,120,.24);
+
+  --gold: #dfbd86;
+  --gold-light: #f2dfbd;
+
+  --text: #f0e4d0;
+  --muted: #9f968b;
 }
 
-.header{
-  padding:20px;
-  background:#0b0b0b;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.08);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-.header h1{
-  margin:0;
-  font-size:20px;
-  letter-spacing:2px;
+html {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
 }
 
-.tabs{
-  display:flex;
-  gap:10px;
-  padding:15px;
-  background:#070707;
-  border-bottom:1px solid rgba(255,255,255,.05);
+body {
+  margin: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+
+  background: var(--bg);
+  color: var(--text);
+
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
 
-.tab{
-  padding:10px 18px;
-  border-radius:12px;
-  background:#111;
-  cursor:pointer;
-  font-weight:700;
-  border:1px solid rgba(255,255,255,.1);
+button {
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.tab.active{
-  background:#00e5ff;
-  color:#000;
+/* MAIN SHELL */
+
+.admin-app {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background:
+    radial-gradient(
+      ellipse 65% 25% at 50% 0%,
+      rgba(183,132,65,.10),
+      transparent 85%
+    ),
+    #0b0c10;
 }
 
-.content{
-  padding:20px;
+/* ==========================================
+   HEADER
+========================================== */
+
+.admin-header {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  min-height: 76px;
+
+  padding:
+    calc(12px + env(safe-area-inset-top,0px))
+    18px
+    12px;
+
+  border-bottom: 1px solid var(--border);
+
+  background: rgba(17,18,21,.92);
+
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
-iframe{
-  width:100%;
-  height:calc(100vh - 140px);
-  border:none;
-  border-radius:16px;
-  background:#000;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
 }
 
+.brand-mark {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
 
-.back-btn{
-  background:#111;
-  color:#fff;
-  border:1px solid rgba(255,255,255,.15);
-  padding:8px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #98774e;
+  border-radius: 11px;
+
+  background:
+    linear-gradient(145deg,#332a20,#1a1b1e);
+
+  color: #f0d7a9;
+
+  font-family: Georgia,serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
-.back-btn:hover{
-  background:#00e5ff;
-  color:#000;
+.brand-info {
+  min-width: 0;
+}
+
+.brand-info strong {
+  display: block;
+
+  color: #f0e0c5;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
+
+.brand-info small {
+  display: block;
+  margin-top: 5px;
+
+  color: #c2a47a;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1.15px;
+}
+
+/* BACK BUTTON */
+
+.back-btn {
+  flex: 0 0 39px;
+
+  width: 39px;
+  height: 39px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+  margin: 0;
+
+  border: 1px solid rgba(219,183,122,.30);
+  border-radius: 10px;
+
+  background: #29241e;
+  color: #e9cfa3;
+
+  transition:
+    background .2s,
+    transform .2s;
+}
+
+.back-btn svg {
+  width: 19px;
+  height: 19px;
+}
+
+.back-btn:active {
+  transform: scale(.95);
+}
+
+.back-btn:hover {
+  background: #3a3025;
+}
+
+/* ==========================================
+   INTRO
+========================================== */
+
+.admin-intro {
+  flex: 0 0 auto;
+
+  padding: 21px 18px 18px;
+}
+
+.intro-kicker {
+  color: #b99b72;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.3px;
+}
+
+.admin-intro h1 {
+  margin: 9px 0 7px;
+
+  color: var(--gold-light);
+
+  font-family: Georgia,"Times New Roman",serif;
+  font-size: clamp(24px, 3.5vw, 31px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-intro p {
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+/* ADMIN UID */
+
+.admin-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  max-width: 100%;
+
+  margin-top: 14px;
+  padding: 7px 10px;
+
+  border: 1px solid rgba(215,181,126,.16);
+  border-radius: 7px;
+
+  background: rgba(255,255,255,.025);
+}
+
+.admin-identity-label {
+  color: #b99b71;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .7px;
+}
+
+#adminUid {
+  min-width: 0;
+  max-width: 280px;
+
+  color: #ddceba;
+  font-size: 11px;
+  font-weight: 650;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================
+   MODULE SECTION
+========================================== */
+
+.modules {
+  flex: 0 0 auto;
+  padding: 0 18px 18px;
+}
+
+.module-box {
+  padding: 14px;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #201f1f,
+      #17181c
+    );
+}
+
+.module-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin-bottom: 14px;
+}
+
+.module-heading strong {
+  color: #eedfc5;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.module-heading span {
+  color: #ad977a;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .6px;
+}
+
+/* TABS */
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: 8px;
+}
+
+.tab {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+  min-height: 47px;
+
+  padding: 10px 7px;
+  margin: 0;
+
+  border: 1px solid #4d4338;
+  border-radius: 9px;
+
+  background: #242427;
+  color: #c4b4a0;
+
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .2px;
+
+  transition:
+    border-color .2s,
+    background .2s,
+    color .2s;
+}
+
+.tab:hover {
+  border-color: #ad875b;
+  color: #f1d9ad;
+}
+
+.tab.active {
+  background: #dfbd86;
+  color: #281e12;
+
+  border-color: #efce99;
+  font-weight: 850;
+}
+
+.tab:focus-visible,
+.back-btn:focus-visible {
+  outline: 2px solid #f5d39f;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   ACTIVE MODULE HEADING
+========================================== */
+
+.workspace-header {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 0 18px 12px;
+}
+
+.workspace-title {
+  min-width: 0;
+}
+
+.workspace-title strong {
+  display: block;
+
+  color: #eedac0;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.workspace-title small {
+  display: block;
+  margin-top: 4px;
+
+  color: #958c82;
+  font-size: 10px;
+}
+
+.workspace-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #afd3b6;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.workspace-status::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+  background: #9ac3a4;
+}
+
+/* ==========================================
+   IFRAME WORKSPACE
+========================================== */
+
+.content {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+
+  padding: 0 18px 12px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.frame-shell {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(221,182,117,.27);
+  border-radius: 13px;
+
+  background: #101115;
+}
+
+#frame {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: #101115;
+}
+
+/* LOADING INDICATOR */
+
+.frame-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  background: #101115;
+}
+
+.frame-loader.hidden {
+  display: none;
+}
+
+.loader-line {
+  width: 85px;
+  height: 2px;
+
+  overflow: hidden;
+  border-radius: 99px;
+
+  background: #3c342a;
+}
+
+.loader-line::before {
+  content: "";
+  display: block;
+
+  width: 40%;
+  height: 100%;
+
+  background: #deb77c;
+  animation: loaderMove 1s ease-in-out infinite alternate;
+}
+
+@keyframes loaderMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(130px); }
+}
+
+.frame-loader span {
+  color: #bda37e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.admin-footer {
+  flex: 0 0 auto;
+
+  padding:
+    11px
+    18px
+    calc(12px + env(safe-area-inset-bottom,0px));
+
+  border-top: 1px solid rgba(215,176,110,.15);
+
+  color: #8d7d66;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:768px) {
+
+  .admin-header {
+    min-height: 65px;
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .admin-intro {
+    padding: 15px 13px 14px;
+  }
+
+  .admin-intro h1 {
+    font-size: 25px;
+  }
+
+  .modules {
+    padding: 0 13px 13px;
+  }
+
+  .module-box {
+    padding: 11px;
+  }
+
+  .tabs {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 7px;
+  }
+
+  .tab {
+    min-height: 42px;
+    font-size: 11px;
+  }
+
+  .workspace-header {
+    padding: 0 13px 10px;
+  }
+
+  .content {
+    padding: 0 13px 10px;
+  }
+
+  .admin-footer {
+    font-size: 8px;
+  }
+}
+
+/* SMALL HEIGHT PHONE */
+
+@media(max-height:710px) {
+
+  .admin-intro {
+    padding-top: 11px;
+    padding-bottom: 10px;
+  }
+
+  .admin-intro h1 {
+    margin: 5px 0;
+    font-size: 22px;
+  }
+
+  .admin-intro p {
+    display: none;
+  }
+
+  .admin-identity {
+    margin-top: 8px;
+  }
+
+  .module-heading {
+    margin-bottom: 9px;
+  }
+
+  .modules {
+    padding-bottom: 10px;
+  }
+
+  .tab {
+    min-height: 38px;
+  }
+
+  .workspace-header {
+    padding-bottom: 8px;
+  }
+}
+
+@media(max-width:350px) {
+
+  .brand-info strong {
+    font-size: 11px;
+  }
+
+  .brand-info small {
+    font-size: 8px;
+  }
+
+  .module-box {
+    padding: 9px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .loader-line::before {
+    animation: none;
+  }
+
+  .tab,
+  .back-btn {
+    transition: none;
+  }
 }
 
 </style>
+
 </head>
 
 <body>
 
+<div class="admin-app">
 
-<div class="header">
-  <button class="back-btn" onclick="goBackProfile()">
-    ←
-  </button>
+  <!-- ==================================
+       HEADER
+  ================================== -->
 
-  <h1>ADMIN CENTER</h1>
+  <header class="admin-header">
 
-  <div id="adminUid"></div>
+    <div class="header-left">
+
+      <div class="brand-mark">LP</div>
+
+      <div class="brand-info">
+        <strong>LIVESTREAM PRO</strong>
+        <small>EXECUTIVE ADMINISTRATION</small>
+      </div>
+
+    </div>
+
+    <button
+      class="back-btn"
+      type="button"
+      onclick="goBackProfile()"
+      aria-label="Return to profile">
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+
+        <path d="M15 18l-6-6 6-6"></path>
+
+      </svg>
+
+    </button>
+
+  </header>
+
+
+  <!-- ==================================
+       DASHBOARD INTRO
+  ================================== -->
+
+  <section class="admin-intro">
+
+    <div class="intro-kicker">
+      MANAGEMENT / GAME OPERATIONS
+    </div>
+
+    <h1>Admin Control Center</h1>
+
+    <p>
+      Manage game operations from a unified console.
+    </p>
+
+    <div class="admin-identity">
+      <span class="admin-identity-label">
+        ADMIN UID
+      </span>
+
+      <span id="adminUid">
+        LOADING
+      </span>
+    </div>
+
+  </section>
+
+
+  <!-- ==================================
+       GAME MODULES
+  ================================== -->
+
+  <section class="modules">
+
+    <div class="module-box">
+
+      <div class="module-heading">
+        <strong>Game Modules</strong>
+        <span>06 MODULES</span>
+      </div>
+
+      <nav class="tabs"
+           aria-label="Game administration modules">
+
+        <button class="tab active"
+                type="button"
+                data-type="egg"
+                aria-pressed="true">
+          EGG
+        </button>
+
+        <button class="tab"
+                type="button"
+                data-type="wheel"
+                aria-pressed="false">
+          WHEEL
+        </button>
+
+        <button class="tab"
+                type="button"
+                data-type="rps"
+                aria-pressed="false">
+          RPS
+        </button>
+
+        <button class="tab"
+                type="button"
+                data-type="boom"
+                aria-pressed="false">
+          BOOM
+        </button>
+
+        <button class="tab"
+                type="button"
+                data-type="dtp"
+                aria-pressed="false">
+          DTP
+        </button>
+
+        <button class="tab"
+                type="button"
+                data-type="wheel8"
+                aria-pressed="false">
+          WHEEL8
+        </button>
+
+      </nav>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==================================
+       ACTIVE MODULE
+  ================================== -->
+
+  <div class="workspace-header">
+
+    <div class="workspace-title">
+      <strong id="activeModuleTitle">
+        Egg Management
+      </strong>
+
+      <small id="activeModuleSubtitle">
+        Administration workspace
+      </small>
+    </div>
+
+    <div class="workspace-status">
+      ACTIVE
+    </div>
+
+  </div>
+
+
+  <!-- ==================================
+       IFRAME CONTENT
+  ================================== -->
+
+  <main class="content">
+
+    <div class="frame-shell">
+
+      <div id="frameLoader"
+           class="frame-loader hidden"
+           aria-live="polite">
+
+        <div class="loader-line"></div>
+
+        <span>LOADING MODULE</span>
+
+      </div>
+
+      <iframe
+        id="frame"
+        title="Game administration workspace"
+        src="/lsp-adminegg-128995.html">
+      </iframe>
+
+    </div>
+
+  </main>
+
+
+  <!-- ==================================
+       FOOTER
+  ================================== -->
+
+  <footer class="admin-footer">
+    © 2026 LIVESTREAM PRO · CONTROL CENTER
+  </footer>
+
 </div>
 
-
-
-
-<div class="tabs">
-  <div class="tab active" onclick="loadTab('egg')">🥚 Egg</div>
-  <div class="tab" onclick="loadTab('wheel')">🎡 Wheel</div>
-  <div class="tab" onclick="loadTab('rps')">✊ RPS</div>
-  <div class="tab" onclick="loadTab('boom')">💣 Boom</div>
-  <div class="tab" onclick="loadTab('dtp')">🦁 DTP</div>
-   <div class="tab" onclick="loadTab('wheel8')">🎡 Wheel8</div>
-</div>
-
-<div class="content">
-  <iframe id="frame" src="/lsp-adminegg-128995.html"></iframe>
-</div>
 
 <script>
 
+/* ==========================================
+   EXECUTIVE ADMIN CENTER
+   MODULE NAVIGATION
+========================================== */
 
+"use strict";
 
+/* DOM ELEMENTS */
 
+const tabs =
+  document.querySelectorAll(".tabs .tab");
 
+const frame =
+  document.getElementById("frame");
 
-const tabs = document.querySelectorAll(".tab");
-const frame = document.getElementById("frame");
+const frameLoader =
+  document.getElementById("frameLoader");
 
-const profile = JSON.parse(
-  localStorage.getItem("user_profile") || "{}"
-);
+const activeModuleTitle =
+  document.getElementById("activeModuleTitle");
 
-document.getElementById("adminUid").innerText =
-  "UID: " + (profile.uid || "UNKNOWN");
+const activeModuleSubtitle =
+  document.getElementById("activeModuleSubtitle");
 
+/* MODULE CONFIG */
 
-  
-function loadTab(type){
+const ADMIN_MODULES = {
 
-  tabs.forEach(t=>t.classList.remove("active"));
-  event.target.classList.add("active");
+  egg: {
+    title: "Egg Management",
+    url: "/lsp-adminegg-128995.html"
+  },
 
-  if(type === "egg"){
-    frame.src = "/lsp-adminegg-128995.html";
+  wheel: {
+    title: "Wheel Management",
+    url: "/lsp-adminwheel-128995.html"
+  },
+
+  rps: {
+    title: "RPS Management",
+    url: "/lsp-adminrps-128995.html"
+  },
+
+  boom: {
+    title: "Boom Management",
+    url: "/lsp-adminboom-128995.html"
+  },
+
+  dtp: {
+    title: "DTP Management",
+    url: "/lsp-admindtp-128995.html"
+  },
+
+  wheel8: {
+    title: "Wheel8 Management",
+    url: "/lsp-adminwheel8-128995.html"
   }
 
-  if(type === "wheel"){
-    frame.src = "/lsp-adminwheel-128995.html";
-  }
+};
 
-  if(type === "rps"){
-    frame.src = "/lsp-adminrps-128995.html";
-  }
+/* DISPLAY CURRENT UID */
 
-  if(type === "boom"){
-    frame.src = "/lsp-adminboom-128995.html"; // 🔥 sẽ tạo tiếp
-  }
+let profile = {};
 
-  if(type === "dtp"){
-    frame.src = "/lsp-admindtp-128995.html"; // 🔥 sẽ tạo tiếp
-  }
-
-   if(type === "wheel8"){
-    frame.src = "/lsp-adminwheel8-128995.html"; // 🔥 sẽ tạo tiếp
-  }
+try {
+  profile = JSON.parse(
+    localStorage.getItem("user_profile") || "{}"
+  ) || {};
+} catch (error) {
+  profile = {};
 }
 
+document.getElementById("adminUid").textContent =
+  profile.uid || "UNKNOWN";
 
-function goBackProfile(){
+/* MODULE SELECTION */
+
+let activeModule = "egg";
+
+function loadTab(type) {
+
+  const module = ADMIN_MODULES[type];
+
+  if (!module) return;
+
+  if (activeModule === type) return;
+
+  activeModule = type;
+
+  tabs.forEach(tab => {
+
+    const selected =
+      tab.dataset.type === type;
+
+    tab.classList.toggle(
+      "active",
+      selected
+    );
+
+    tab.setAttribute(
+      "aria-pressed",
+      String(selected)
+    );
+
+  });
+
+  activeModuleTitle.textContent =
+    module.title;
+
+  activeModuleSubtitle.textContent =
+    "Administration workspace";
+
+  frameLoader.classList.remove("hidden");
+
+  frame.src = module.url;
+
+}
+
+/* MODULE BUTTON EVENTS */
+
+tabs.forEach(tab => {
+
+  tab.addEventListener("click", () => {
+    loadTab(tab.dataset.type);
+  });
+
+});
+
+/* IFRAME LOAD EVENT */
+
+frame.addEventListener("load", () => {
+  frameLoader.classList.add("hidden");
+});
+
+/* RETURN TO PROFILE */
+
+function goBackProfile() {
   location.href = "/profile.html";
 }
-
 
 </script>
 

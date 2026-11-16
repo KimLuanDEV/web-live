@@ -1745,7 +1745,7 @@ async function getRtcConfig() {
 
   return {
     name:  (p.name  || "Host").slice(0,20),
-    avatar: p.avatar || "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
+    avatar: p.avatar || "https://i.ibb.co/GvJWn19q/icon-192.png",
     level:  Number(p.level) || 1
   };
 }
@@ -2444,7 +2444,7 @@ const level =
   const vip = getVipBadge(level);
   const avatar =
   (typeof msg.avatar === "string" && msg.avatar.trim()) ||
-  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+  "https://i.ibb.co/GvJWn19q/icon-192.png" +
     encodeURIComponent(name);
 
 

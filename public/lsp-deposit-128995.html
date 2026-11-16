@@ -2,12 +2,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#0b0c10">
+
 <title>Diamond Deposit</title>
 
 <link rel="manifest" href="/deposit-manifest.json">
 
-<meta name="theme-color" content="#0f172a">
+
 
 <link rel="apple-touch-icon" href="/assets/icon-192.png">
 
@@ -19,371 +23,2207 @@
 
 
 
-<style>
 
-*{
-box-sizing:border-box;
+<style>
+/* ==========================================
+   LIVESTREAM PRO
+   EXECUTIVE ADMIN DEPOSIT
+   OBSIDIAN / CHAMPAGNE GOLD
+========================================== */
+
+:root {
+  color-scheme: dark;
+  --ex-bg: #0b0c10;
+  --ex-panel: #1b1c20;
+  --ex-line: rgba(207,171,116,.24);
+  --ex-gold: #ddba82;
+  --ex-gold-light: #f3dfbc;
+  --ex-text: #f0e7da;
+  --ex-muted: #a89e91;
 }
 
-html,body{
-margin:0;
-padding:0;
-background:#060b16;
-color:#fff;
-font-family:system-ui;
-min-height:100vh;
-display:flex;
-flex-direction:column;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  min-height: 100%;
+  background: var(--ex-bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  margin: 0;
+
+  display: flex;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      ellipse 65% 25% at 50% 0%,
+      rgba(173,125,65,.14),
+      transparent 80%
+    ),
+    #0b0c10;
+
+  color: var(--ex-text);
+  font-family: system-ui,-apple-system,
+               "Segoe UI",sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* MAIN */
+
+.executive-app {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  padding:
+    calc(15px + env(safe-area-inset-top,0px))
+    18px
+    calc(15px + env(safe-area-inset-bottom,0px));
 }
 
 /* HEADER */
 
-.header{
-height:60px;
-background:#0f172a;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:bold;
-font-size:18px;
-letter-spacing:1px;
-border-bottom:1px solid #1f2937;
+.executive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  padding-bottom: 17px;
+  border-bottom: 1px solid var(--ex-line);
 }
 
-/* CONTAINER */
-
-.container{
-flex:1;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:20px;
+.executive-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-/* CARD */
+.executive-logo {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
 
-.box{
-background:#0f172a;
-padding:25px;
-border-radius:16px;
-width:100%;
-max-width:380px;
-text-align:center;
-border:1px solid #1f2937;
-box-shadow:0 15px 50px rgba(0,0,0,.7);
+  width: 38px;
+  height: 38px;
+
+  border: 1px solid #94754e;
+  border-radius: 10px;
+
+  background: #2b261e;
+  color: #efdbb6;
+
+  font-family: Georgia,serif;
+  font-weight: 800;
+  font-size: 14px;
 }
 
-.box h2{
-margin-top:0;
+.executive-brand strong {
+  display: block;
+  color: #f2e1c4;
+  font-size: 12px;
+  letter-spacing: .4px;
 }
 
-/* INPUT */
+.executive-brand small {
+  display: block;
+  margin-top: 4px;
 
-input{
-width:100%;
-padding:12px;
-border-radius:8px;
-margin:10px 0;
-font-size:16px;
-background:#020617;
-color:#fff;
-border:1px solid #1f2937;
+  color: #bfa078;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
-/* BUTTON */
-
-button{
-width:100%;
-padding:12px;
-border-radius:8px;
-margin-top:8px;
-background:#00e0ff;
-color:#000;
-font-weight:bold;
-cursor:pointer;
-border:none;
+.executive-header-type {
+  color: #c6aa81;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1px;
 }
 
-button:hover{
-background:#00c5e0;
+/* CONTENT */
+
+.executive-content {
+  flex: 1 0 auto;
+  min-width: 0;
+  padding: 26px 0 20px;
 }
 
-/* USER PREVIEW */
-
-#userPreview{
-margin-top:15px;
-padding:12px;
-background:#020617;
-border-radius:10px;
-border:1px solid #1f2937;
+.executive-intro {
+  margin-bottom: 23px;
 }
 
-#userAvatar{
-width:60px;
-height:60px;
-border-radius:50%;
-margin-bottom:5px;
+.executive-eyebrow {
+  color: #bd9c6c;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.3px;
+}
+
+.executive-intro h1 {
+  margin: 10px 0 8px;
+
+  color: var(--ex-gold-light);
+  font-family: Georgia,"Times New Roman",serif;
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.executive-intro p {
+  max-width: 340px;
+  margin: 0;
+
+  color: var(--ex-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* PANELS */
+
+.executive-panel {
+  margin-top: 13px;
+  padding: 18px;
+
+  border: 1px solid var(--ex-line);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      140deg,
+      #24221f 0%,
+      #1a1b1f 65%,
+      #15161a 100%
+    );
+
+  box-shadow: 0 12px 35px rgba(0,0,0,.16);
+}
+
+.executive-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+
+  padding-bottom: 15px;
+  margin-bottom: 17px;
+
+  border-bottom: 1px solid rgba(207,171,116,.16);
+}
+
+.executive-section-heading h2 {
+  margin: 0;
+  color: #f1dfc2;
+  font-family: Georgia,serif;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.executive-section-heading span {
+  color: #ac906b;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* INPUTS */
+
+.executive-label {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #c9a980;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .9px;
+}
+
+.executive-input {
+  display: block;
+
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  margin: 0;
+
+  border: 1px solid rgba(211,174,119,.27);
+  border-radius: 10px;
+  outline: none;
+
+  background: #111318;
+  color: #f4e9d7;
+  font-size: 16px;
+
+  transition:
+    border-color .2s,
+    box-shadow .2s;
+}
+
+.executive-input::placeholder {
+  color: #8c847a;
+}
+
+.executive-input:focus {
+  border-color: #d8b57f;
+  box-shadow: 0 0 0 3px rgba(216,181,127,.1);
+}
+
+.executive-amount-input {
+  font-size: 20px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+/* BUTTONS */
+
+.executive-btn {
+  width: 100%;
+  min-height: 47px;
+  padding: 11px 14px;
+
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .8px;
+
+  transition: filter .16s, transform .16s;
+}
+
+.executive-btn:active:not(:disabled) {
+  transform: scale(.985);
+}
+
+.executive-btn:disabled {
+  cursor: not-allowed;
+  opacity: .38;
+}
+
+.executive-btn-secondary {
+  margin-top: 11px;
+
+  color: #e6cc9e;
+  border: 1px solid rgba(213,174,111,.35);
+  background: #2d2922;
+}
+
+.executive-btn-primary {
+  margin-top: 15px;
+
+  color: #2a1d0f;
+  border: 1px solid #e5c894;
+  background: linear-gradient(
+    125deg,#f4e0bb,#c69a5e
+  );
+}
+
+/* MEMBER STATUS */
+
+.executive-member-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 15px;
+  padding: 12px;
+
+  border: 1px solid #464038;
+  border-radius: 10px;
+
+  background: #15171a;
+}
+
+.executive-status-dot {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9c8f7d;
+}
+
+.executive-status-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.executive-status-copy strong {
+  display: block;
+  color: #e5d8c5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.executive-status-copy small {
+  display: block;
+  margin-top: 4px;
+
+  color: #9e9589;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+#memberStatusTag {
+  color: #b1a08c;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .5px;
+}
+
+.executive-member-status.verified {
+  border-color: rgba(130,182,139,.38);
+}
+
+.executive-member-status.verified
+.executive-status-dot {
+  background: #9fcea7;
+}
+
+.executive-member-status.verified
+#memberStatusTag {
+  color: #b4ddba;
+}
+
+.executive-member-status.failed {
+  border-color: rgba(204,115,115,.35);
+}
+
+.executive-member-status.failed
+.executive-status-dot {
+  background: #dc9792;
+}
+
+.executive-member-status.failed
+#memberStatusTag {
+  color: #e1a6a0;
+}
+
+/* VERIFIED MEMBER CARD */
+
+#userPreview {
+  margin-top: 12px;
+  padding: 13px;
+
+  border: 1px solid #4c4438;
+  border-radius: 11px;
+
+  background: #111317;
+}
+
+.executive-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#userAvatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  object-fit: cover;
+
+  border: 1px solid #a7885b;
+}
+
+.executive-user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.executive-user-info small {
+  display: block;
+  margin-bottom: 5px;
+
+  color: #b79a70;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .5px;
+}
+
+#userName {
+  display: block;
+  color: #ecddc5;
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+#userCoins {
+  display: block;
+  margin-top: 5px;
+
+  color: #a89e91;
+  font-size: 11px;
+}
+
+/* SUMMARY */
+
+.executive-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin-top: 15px;
+  padding: 15px;
+
+  border: 1px solid #454037;
+  border-radius: 10px;
+
+  background: #121418;
+}
+
+.executive-summary span {
+  display: block;
+  color: #bda17b;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .8px;
+}
+
+.executive-summary small {
+  display: block;
+  margin-top: 6px;
+  color: #a69b8d;
+  font-size: 11px;
+}
+
+#depositSummaryAmount {
+  color: #f1dbb5;
+  font-size: 25px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 
 /* RESULT */
 
-.result{
-margin-top:10px;
-font-size:14px;
+.result {
+  display: none;
+  margin-top: 13px;
+  padding: 12px 13px;
+
+  border-radius: 9px;
+  border: 1px solid #50483a;
+
+  color: #dacbb5;
+  background: #17191b;
+
+  font-size: 12px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.result.show {
+  display: block;
+}
+
+.result.success {
+  border-color: rgba(127,184,141,.35);
+  color: #b7dfc1;
+}
+
+.result.error {
+  border-color: rgba(210,113,113,.33);
+  color: #e6aaa3;
 }
 
 /* FOOTER */
 
-.footer{
-height:50px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:13px;
-color:#9ca3af;
-border-top:1px solid #1f2937;
-background:#0f172a;
+.executive-footer {
+  margin-top: auto;
+  padding-top: 14px;
+
+  border-top: 1px solid rgba(209,174,121,.16);
+
+  color: #9b876a;
+  text-align: center;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.5;
 }
 
-/* CONFIRM MODAL */
+/* MODAL */
 
-.confirm-modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.7);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:999;
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    calc(16px + env(safe-area-inset-top,0px))
+    16px
+    calc(16px + env(safe-area-inset-bottom,0px));
+
+  background: rgba(0,0,0,.84);
+
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
-.confirm-box{
-background:#0f172a;
-padding:25px;
-border-radius:14px;
-width:320px;
-text-align:center;
-border:1px solid #1f2937;
-box-shadow:0 0 40px rgba(0,0,0,.8);
+.confirm-box {
+  width: 100%;
+  max-width: 390px;
+  max-height: 100%;
+
+  overflow-y: auto;
+
+  padding: 25px 19px 20px;
+
+  border: 1px solid rgba(225,184,115,.4);
+  border-radius: 17px;
+
+  background: linear-gradient(
+    150deg,#29241f,#16181c
+  );
+
+  box-shadow: 0 30px 80px rgba(0,0,0,.7);
 }
 
-.confirm-title{
-font-size:18px;
-margin-bottom:15px;
-font-weight:bold;
+.confirm-title {
+  margin: 10px 0 8px;
+
+  color: #f1dbb6;
+  font-family: Georgia,serif;
+  font-size: 26px;
 }
 
-.confirm-user{
-margin:10px 0;
-font-size:14px;
+.confirm-description {
+  margin: 0 0 20px;
+
+  color: #a89e91;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-.confirm-buttons{
-display:flex;
-gap:10px;
-margin-top:20px;
+.executive-confirm-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 13px 0;
+  border-bottom: 1px solid #474039;
 }
 
-.btn-cancel{
-flex:1;
-background:#374151;
-color:#fff;
+.executive-confirm-row span {
+  color: #b49a76;
+  font-size: 10px;
+  font-weight: 750;
 }
 
-.btn-confirm{
-flex:1;
-background:#00e0ff;
-color:#000;
-font-weight:bold;
+.executive-confirm-row strong {
+  color: #f2e0c3;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.executive-confirm-notice {
+  margin-top: 16px;
+  color: #a9a096;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.confirm-buttons {
+  display: grid;
+  grid-template-columns: .8fr 1.4fr;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.btn-cancel,
+.btn-confirm {
+  min-height: 46px;
+  padding: 10px;
+
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #282729;
+  border: 1px solid #574b3d;
+  color: #d1c2ad;
+}
+
+.btn-confirm {
+  background: linear-gradient(
+    125deg,#f3ddb7,#c49a61
+  );
+  border: 1px solid #e6c792;
+  color: #2a1e13;
+}
+
+.btn-confirm:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 
 /* MOBILE */
 
-@media(max-width:480px){
+@media(max-width:370px) {
+  .executive-app {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
 
-.header{
-font-size:16px;
+  .executive-panel {
+    padding: 14px;
+  }
+
+  .executive-intro h1 {
+    font-size: 27px;
+  }
 }
 
-.box{
-padding:20px;
+@media(max-height:740px) {
+  .executive-content {
+    padding-top: 17px;
+  }
+
+  .executive-intro {
+    margin-bottom: 16px;
+  }
+
+  .executive-panel {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .executive-section-heading {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
 }
 
+
+
+/* ==========================================
+   EXECUTIVE CHARACTER OVERVIEW
+========================================== */
+
+#userPreview {
+  margin-top: 15px;
+  padding: 15px;
+
+  background: linear-gradient(
+    150deg,
+    #22201d 0%,
+    #14161a 100%
+  );
+
+  border: 1px solid rgba(223,185,121,.32);
+  border-radius: 14px;
 }
+
+.character-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  padding-bottom: 13px;
+  margin-bottom: 14px;
+
+  border-bottom: 1px solid rgba(215,178,120,.18);
+}
+
+.character-heading > span:first-child {
+  color: #c9a878;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.character-verified {
+  padding: 5px 8px;
+
+  border: 1px solid rgba(139,190,146,.34);
+  border-radius: 6px;
+
+  background: rgba(80,135,93,.12);
+  color: #aad8b2;
+
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .5px;
+}
+
+.character-identity {
+  padding: 3px 0 15px;
+}
+
+.character-identity #userAvatar {
+  width: 58px;
+  height: 58px;
+  border: 2px solid #bc995d;
+}
+
+.character-identity #userName {
+  color: #f1dfc0;
+  font-size: 15px;
+}
+
+.character-identity #userCoins {
+  color: #b6a896;
+  font-size: 11px;
+}
+
+/* STATS GRID */
+
+.character-stats {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 9px;
+}
+
+.character-stat {
+  min-width: 0;
+  min-height: 99px;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 12px 11px;
+
+  border: 1px solid #4c4030;
+  border-radius: 10px;
+
+  background: #1b1c1f;
+}
+
+.character-stat span {
+  color: #bda17d;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .45px;
+  line-height: 1.5;
+}
+
+.character-stat strong {
+  display: block;
+  margin-top: 9px;
+
+  color: #f0d8b0;
+  font-size: clamp(17px, 4vw, 23px);
+  font-weight: 800;
+  line-height: 1.15;
+
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.character-stat small {
+  margin-top: auto;
+  padding-top: 8px;
+
+  color: #948c80;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+/* HIGHLIGHT WALLET */
+
+.character-wallet {
+  background: linear-gradient(
+    145deg,
+    #32291c,
+    #211e1a
+  );
+
+  border-color: rgba(226,184,113,.48);
+}
+
+.character-wallet strong {
+  color: #f5dfb2;
+}
+
+/* FOOTER */
+
+.character-info-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top: 1px solid rgba(216,177,111,.15);
+
+  color: #95866f;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 360px) {
+  #userPreview {
+    padding: 11px;
+  }
+
+  .character-stats {
+    gap: 7px;
+  }
+
+  .character-stat {
+    min-height: 94px;
+    padding: 10px 8px;
+  }
+
+  .character-stat span {
+    font-size: 8px;
+  }
+
+  .character-stat strong {
+    font-size: 18px;
+  }
+}
+
+
+
+
+/* ==========================================
+   EXECUTIVE DEPOSIT AUTHENTICATION
+   BLACK & CHAMPAGNE GOLD
+========================================== */
+
+/* Khóa nội dung trước khi xác thực */
+
+body.deposit-locked {
+  overflow: hidden;
+}
+
+body.deposit-locked .executive-app,
+body.deposit-locked #confirmModal {
+  display: none !important;
+}
+
+/* AUTH SCREEN */
+
+.deposit-auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    calc(20px + env(safe-area-inset-top,0px))
+    18px
+    calc(20px + env(safe-area-inset-bottom,0px));
+
+  overflow-y: auto;
+
+  background:
+    radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(180,130,63,.17),
+      transparent 80%
+    ),
+    #0b0c10;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+
+.deposit-auth-screen[hidden] {
+  display: none !important;
+}
+
+/* AUTH CARD */
+
+.deposit-auth-card {
+  width: 100%;
+  max-width: 390px;
+
+  padding: 31px 23px 24px;
+
+  border: 1px solid rgba(224,184,118,.37);
+  border-radius: 21px;
+
+  background: linear-gradient(
+    155deg,
+    #28241f 0%,
+    #18191d 52%,
+    #111216 100%
+  );
+
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.62),
+    inset 0 1px rgba(255,255,255,.05);
+
+  text-align: center;
+}
+
+/* BRAND MARK */
+
+.deposit-auth-mark {
+  display: grid;
+  place-items: center;
+
+  width: 68px;
+  height: 68px;
+
+  margin: 0 auto 23px;
+
+  border: 1px solid #c7a16a;
+  border-radius: 18px;
+
+  background: linear-gradient(
+    145deg,
+    #3b3022,
+    #17181a
+  );
+
+  box-shadow: 0 0 0 5px rgba(205,164,102,.06);
+}
+
+.deposit-auth-mark span {
+  color: #f0d8b1;
+
+  font-family: Georgia,serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.deposit-auth-kicker {
+  color: #c7a777;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.45px;
+}
+
+.deposit-auth-card h1 {
+  margin: 12px 0;
+
+  color: #f0dcb9;
+
+  font-family: Georgia,"Times New Roman",serif;
+  font-size: clamp(25px, 6vw, 30px);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.deposit-auth-description {
+  max-width: 310px;
+  margin: 0 auto 25px;
+
+  color: #aaa095;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* FORM */
+
+#depositAuthForm {
+  text-align: left;
+}
+
+#depositAuthForm label {
+  display: block;
+  margin-bottom: 9px;
+
+  color: #d3b486;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.deposit-auth-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+#depositAdminPassword {
+  display: block;
+
+  width: 100%;
+  height: 51px;
+
+  margin: 0;
+  padding: 0 76px 0 15px;
+
+  border: 1px solid rgba(216,176,113,.36);
+  border-radius: 11px;
+  outline: none;
+
+  background: #101216;
+  color: #f4e7cf;
+
+  font-size: 16px;
+}
+
+#depositAdminPassword::placeholder {
+  color: #807b75;
+}
+
+#depositAdminPassword:focus {
+  border-color: #e2bd83;
+  box-shadow: 0 0 0 3px rgba(224,185,123,.10);
+}
+
+.deposit-password-toggle {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 62px;
+  height: 35px;
+
+  padding: 0;
+
+  border: 1px solid rgba(224,185,123,.23);
+  border-radius: 7px;
+
+  background: #2c2822;
+  color: #e3c28d;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* ERROR MESSAGE */
+
+.deposit-auth-error {
+  margin: 11px 0 0;
+  padding: 10px 12px;
+
+  border: 1px solid rgba(209,113,113,.32);
+  border-radius: 9px;
+
+  background: rgba(133,51,51,.10);
+  color: #eca9a3;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.deposit-auth-error[hidden] {
+  display: none !important;
+}
+
+/* SUBMIT */
+
+.deposit-auth-submit {
+  width: 100%;
+  min-height: 49px;
+
+  margin-top: 17px;
+  padding: 12px 15px;
+
+  border: 1px solid #e9c996;
+  border-radius: 11px;
+
+  background: linear-gradient(
+    125deg,
+    #f4dfb8,
+    #c39a60
+  );
+
+  color: #281d10;
+
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .7px;
+}
+
+.deposit-auth-submit:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* FOOTER */
+
+.deposit-auth-footer {
+  margin-top: 23px;
+  padding-top: 17px;
+
+  border-top: 1px solid rgba(218,177,114,.18);
+
+  color: #978366;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1.2px;
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 360px) {
+  .deposit-auth-card {
+    padding: 25px 17px 20px;
+  }
+
+  .deposit-auth-description {
+    font-size: 11px;
+  }
+}
+
 
 </style>
+
 </head>
 
-<body>
 
-<div class="header">
- DIAMOND DEPOSIT
+
+<body class="deposit-locked">
+
+<!-- ==========================================
+     EXECUTIVE ADMIN PASSWORD SCREEN
+========================================== -->
+
+<div id="depositAuthScreen" class="deposit-auth-screen">
+
+  <div class="deposit-auth-card">
+
+    <div class="deposit-auth-mark">
+      <span>LP</span>
+    </div>
+
+    <div class="deposit-auth-kicker">
+      LIVESTREAM PRO · SECURE ACCESS
+    </div>
+
+    <h1>Admin Authentication</h1>
+
+    <p class="deposit-auth-description">
+      Enter your administrator password to unlock
+      the Diamond Deposit console.
+    </p>
+
+    <form id="depositAuthForm" autocomplete="on">
+
+      <label for="depositAdminPassword">
+        ADMIN PASSWORD
+      </label>
+
+      <div class="deposit-auth-input-wrap">
+
+        <input
+          id="depositAdminPassword"
+          type="password"
+          placeholder="Enter administrator password"
+          autocomplete="current-password"
+          required
+          maxlength="256"
+        >
+
+        <button
+          type="button"
+          id="depositPasswordToggle"
+          class="deposit-password-toggle"
+          aria-label="Show password"
+          aria-pressed="false">
+          SHOW
+        </button>
+
+      </div>
+
+      <p id="depositAuthError"
+         class="deposit-auth-error"
+         role="alert"
+         hidden></p>
+
+      <button
+        type="submit"
+        id="depositAuthSubmit"
+        class="deposit-auth-submit">
+        LOGIN
+      </button>
+
+    </form>
+
+    <div class="deposit-auth-footer">
+      AUTHORIZED ADMINISTRATORS ONLY
+    </div>
+
+  </div>
+
 </div>
 
+<!-- EXISTING DEPOSIT INTERFACE -->
+
+<main class="executive-app">
 
 
-<div class="container">
+  <!-- HEADER -->
+  <header class="executive-header">
 
-<div class="box">
+    <div class="executive-brand">
+      <div class="executive-logo">LP</div>
 
-<input id="username" placeholder="UserID">
+      <div>
+        <strong>LIVESTREAM PRO</strong>
+        <small>EXECUTIVE CONSOLE</small>
+      </div>
+    </div>
 
-<button onclick="checkUser()">CHECK USER</button>
+    <span class="executive-header-type">DEPOSIT</span>
+
+  </header>
+
+  <!-- CONTENT -->
+  <div class="executive-content">
+
+    <div class="executive-intro">
+      <span class="executive-eyebrow">
+        ADMINISTRATION / FINANCE
+      </span>
+
+      <h1>Diamond Deposit</h1>
+
+      <p>
+        Verify the recipient and review the transaction
+        before processing.
+      </p>
+    </div>
+
+    <!-- MEMBER -->
+    <section class="executive-panel">
+
+      <div class="executive-section-heading">
+        <h2>Recipient Details</h2>
+        <span>STEP 01 / 02</span>
+      </div>
+
+      <label class="executive-label" for="username">
+        MEMBER UID
+      </label>
+
+      <input
+        id="username"
+        class="executive-input"
+        type="text"
+        placeholder="Enter member UID"
+        autocomplete="off"
+        autocapitalize="none"
+        spellcheck="false"
+      >
+
+      <button
+        id="checkUserBtn"
+        type="button"
+        class="executive-btn executive-btn-secondary"
+        onclick="checkUser()">
+        VERIFY MEMBER
+      </button>
+
+      <div class="executive-member-status" id="memberStatus">
+
+        <span class="executive-status-dot"></span>
+
+        <div class="executive-status-copy">
+          <strong id="memberStatusTitle">
+            Awaiting Verification
+          </strong>
+
+          <small id="memberStatusText">
+            Enter a member UID to continue.
+          </small>
+        </div>
+
+        <span id="memberStatusTag">PENDING</span>
+
+      </div>
+
+
+<!-- ==========================================
+     VERIFIED CHARACTER PROFILE
+========================================== -->
 
 <div id="userPreview" style="display:none">
 
-<img id="userAvatar">
+  <div class="character-heading">
 
-<div id="userName"></div>
-<div id="userCoins"></div>
+    <span>CHARACTER OVERVIEW</span>
+
+    <span class="character-verified">
+      VERIFIED
+    </span>
+
+  </div>
+
+  <!-- ACCOUNT IDENTITY -->
+
+  <div class="executive-user-row character-identity">
+
+    <img
+      id="userAvatar"
+      src="/avatar-default.png"
+      alt="Member avatar"
+      onerror="this.onerror=null;this.src='/avatar-default.png';"
+    >
+
+    <div class="executive-user-info">
+
+      <small>REGISTERED MEMBER</small>
+
+      <strong id="userName">—</strong>
+
+      <span id="userCoins"></span>
+
+    </div>
+
+  </div>
+
+  <!-- ACCOUNT STATISTICS -->
+
+  <div class="character-stats">
+
+    <div class="character-stat character-wallet">
+      <span>WALLET BALANCE</span>
+      <strong id="userWallet">0</strong>
+      <small>Available Diamonds</small>
+    </div>
+
+    <div class="character-stat">
+      <span>CHARACTER LEVEL</span>
+      <strong id="userLevel">1</strong>
+      <small>Current level</small>
+    </div>
+
+    <div class="character-stat">
+      <span>TOTAL DEPOSITED</span>
+      <strong id="userTotalDeposit">0</strong>
+      <small>Accumulated deposits</small>
+    </div>
+
+    <div class="character-stat">
+      <span>TOTAL SENT</span>
+      <strong id="userTotalSent">0</strong>
+      <small>Recorded outgoing Coins</small>
+    </div>
+
+    <div class="character-stat">
+      <span>TOTAL RECEIVED</span>
+      <strong id="userTotalReceived">0</strong>
+      <small>Recorded received Coins</small>
+    </div>
+
+    <div class="character-stat">
+      <span>EXPERIENCE</span>
+      <strong id="userExp">0</strong>
+      <small>Current EXP</small>
+    </div>
+
+  </div>
+
+  <div class="character-info-footer">
+    LIVESTREAM PRO · ACCOUNT RECORD
+  </div>
 
 </div>
 
-<input id="amount" type="number" placeholder="Diamond">
+    </section>
 
-<button onclick="deposit()">CONFIRM</button>
+    <!-- AMOUNT -->
+    <section class="executive-panel">
 
-<div class="result" id="result"></div>
+      <div class="executive-section-heading">
+        <h2>Transaction Details</h2>
+        <span>STEP 02 / 02</span>
+      </div>
+
+      <label class="executive-label" for="amount">
+        DIAMOND AMOUNT
+      </label>
+
+      <input
+        id="amount"
+        class="executive-input executive-amount-input"
+        type="number"
+        min="1"
+        step="1"
+        inputmode="numeric"
+        placeholder="Enter deposit amount"
+      >
+
+      <div class="executive-summary">
+        <div>
+          <span>TRANSACTION SUMMARY</span>
+          <small>Diamonds to credit</small>
+        </div>
+
+        <strong id="depositSummaryAmount">0</strong>
+      </div>
+
+      <button
+        id="depositBtn"
+        type="button"
+        class="executive-btn executive-btn-primary"
+        onclick="deposit()"
+        disabled>
+        REVIEW DEPOSIT
+      </button>
+
+      <div class="result" id="result"
+           role="status"
+           aria-live="polite"></div>
+
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="executive-footer">
+    © 2026 LIVESTREAM PRO · FINANCIAL OPERATIONS
+  </footer>
+
+</main>
+
+
+<!-- CONFIRMATION MODAL -->
+
+<div id="confirmModal"
+     class="confirm-modal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="confirmTitle">
+
+  <div class="confirm-box">
+
+    <span class="executive-eyebrow">
+      FINAL VERIFICATION
+    </span>
+
+    <h2 class="confirm-title" id="confirmTitle">
+      Confirm Deposit
+    </h2>
+
+    <p class="confirm-description">
+      Please verify the recipient and deposit amount.
+    </p>
+
+    <div class="executive-confirm-row">
+      <span>RECIPIENT</span>
+      <strong id="confirmUser"></strong>
+    </div>
+
+    <div class="executive-confirm-row">
+      <span>DIAMONDS TO CREDIT</span>
+      <strong id="confirmAmount"></strong>
+    </div>
+
+    <div class="executive-confirm-notice">
+      This action will submit a diamond credit request.
+      Please confirm all details are correct.
+    </div>
+
+    <div class="confirm-buttons">
+
+      <button class="btn-cancel"
+              type="button"
+              onclick="closeConfirm()">
+        CANCEL
+      </button>
+
+      <button id="confirmDepositBtn"
+              class="btn-confirm"
+              type="button"
+              onclick="confirmDeposit()">
+        CONFIRM DEPOSIT
+      </button>
+
+    </div>
+
+  </div>
 
 </div>
 
-</div>
-
-<div class="footer">
-Livestream Pro
-</div>
-
-
-<div id="confirmModal" class="confirm-modal">
-
-<div class="confirm-box">
-
-<div class="confirm-title">
-CONFIRM DEPOSIT
-</div>
-
-<div class="confirm-user" id="confirmUser"></div>
-
-<div class="confirm-user" id="confirmAmount"></div>
-
-<div class="confirm-buttons">
-
-<button class="btn-cancel" onclick="closeConfirm()">
-CANCEL
-</button>
-
-<button class="btn-confirm" onclick="confirmDeposit()">
-CONFIRM
-</button>
-
-</div>
-
-</div>
-
-</div>
 
 
 <script>
+/* ==========================================
+   EXECUTIVE ADMIN DEPOSIT
+   MEMBER VERIFICATION + DEPOSIT
+========================================== */
 
-function deposit(){
+const $ = id => document.getElementById(id);
 
-const username =
-document.getElementById("username").value
 
-const amount =
-Number(document.getElementById("amount").value)
+/* ==========================================
+   DEPOSIT ADMIN PASSWORD AUTHENTICATION
+========================================== */
 
-if(!username || !amount){
-alert("Nhập username và số kim cương")
-return
+let depositAccessGranted = false;
+let depositAuthBusy = false;
+
+const depositAuthScreen =
+  document.getElementById("depositAuthScreen");
+
+const depositAuthForm =
+  document.getElementById("depositAuthForm");
+
+const depositAdminPassword =
+  document.getElementById("depositAdminPassword");
+
+const depositAuthSubmit =
+  document.getElementById("depositAuthSubmit");
+
+const depositAuthError =
+  document.getElementById("depositAuthError");
+
+const depositPasswordToggle =
+  document.getElementById("depositPasswordToggle");
+
+/* DISPLAY ERROR */
+
+function showDepositAuthError(message) {
+  depositAuthError.textContent = message;
+  depositAuthError.hidden = !message;
 }
 
-document.getElementById("confirmUser").innerText =
-"User: " + username
+/* LOCK PAGE */
 
-document.getElementById("confirmAmount").innerText =
-"Deposit: 💎 " + amount
+function lockDepositPage(message = "") {
+  depositAccessGranted = false;
 
-document.getElementById("confirmModal").style.display =
-"flex"
+  document.body.classList.add("deposit-locked");
+  depositAuthScreen.hidden = false;
+
+  depositAdminPassword.value = "";
+  showDepositAuthError(message);
+
+  // Close any unfinished confirmation.
+  const modal = document.getElementById("confirmModal");
+  if (modal) modal.style.display = "none";
+}
+
+/* UNLOCK PAGE */
+
+function unlockDepositPage() {
+  depositAccessGranted = true;
+
+  depositAdminPassword.value = "";
+
+  depositAuthScreen.hidden = true;
+  document.body.classList.remove("deposit-locked");
+
+  showDepositAuthError("");
+}
+
+/* CHECK SERVER SESSION */
+
+async function checkDepositAdminSession() {
+  try {
+    const response = await fetch(
+      "/api/admin/auth/status",
+      {
+        credentials: "same-origin",
+        cache: "no-store"
+      }
+    );
+
+    const data = await response.json();
+
+    return Boolean(
+      response.ok &&
+      data.ok &&
+      data.authenticated
+    );
+
+  } catch (error) {
+    return false;
+  }
+}
+
+/* PASSWORD SUBMISSION */
+
+depositAuthForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (depositAuthBusy) return;
+
+  const password = depositAdminPassword.value;
+
+  if (!password) {
+    showDepositAuthError(
+      "Please enter your administrator password."
+    );
+    return;
+  }
+
+  depositAuthBusy = true;
+  depositAuthSubmit.disabled = true;
+  depositAuthSubmit.textContent = "AUTHENTICATING...";
+
+  showDepositAuthError("");
+
+  try {
+    const response = await fetch(
+      "/api/admin/auth/login",
+      {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      let message =
+        data.message || "Incorrect administrator password.";
+
+      if (response.status === 429) {
+        message =
+          "Too many attempts. Please try again later.";
+      }
+
+      showDepositAuthError(message);
+      depositAdminPassword.value = "";
+      return;
+    }
+
+    // Verify that the server actually issued
+    // an authenticated admin session.
+    const authenticated =
+      await checkDepositAdminSession();
+
+    if (!authenticated) {
+      showDepositAuthError(
+        "Admin session could not be established."
+      );
+      return;
+    }
+
+    unlockDepositPage();
+
+  } catch (error) {
+    showDepositAuthError(
+      "Unable to connect to the authentication server."
+    );
+
+  } finally {
+    depositAuthBusy = false;
+    depositAuthSubmit.disabled = false;
+    depositAuthSubmit.textContent = "UNLOCK CONSOLE";
+  }
+});
+
+/* SHOW / HIDE PASSWORD */
+
+depositPasswordToggle.addEventListener("click", () => {
+  const show =
+    depositAdminPassword.type === "password";
+
+  depositAdminPassword.type =
+    show ? "text" : "password";
+
+  depositPasswordToggle.textContent =
+    show ? "HIDE" : "SHOW";
+
+  depositPasswordToggle.setAttribute(
+    "aria-pressed",
+    String(show)
+  );
+
+  depositPasswordToggle.setAttribute(
+    "aria-label",
+    show ? "Hide password" : "Show password"
+  );
+});
+
+/* REQUIRE PASSWORD ON EVERY PAGE LOAD */
+
+lockDepositPage();
+
+
+
+let verifiedUid = null;
+let verificationVersion = 0;
+let depositPending = false;
+let pendingDeposit = null;
+
+/* MESSAGE */
+
+function showResult(message, type = "error") {
+  const el = $("result");
+  if (!el) return;
+
+  el.textContent = String(message || "");
+  el.className = "result show " + type;
+}
+
+function clearResult() {
+  const el = $("result");
+  if (!el) return;
+
+  el.textContent = "";
+  el.className = "result";
+}
+
+/* VERIFICATION STATUS */
+
+function setMemberStatus(type, title, description, tag) {
+  const box = $("memberStatus");
+
+  box.className = "executive-member-status";
+
+  if (type === "verified" || type === "failed") {
+    box.classList.add(type);
+  }
+
+  $("memberStatusTitle").textContent = title;
+  $("memberStatusText").textContent = description;
+  $("memberStatusTag").textContent = tag;
+}
+
+/* VALID AMOUNT */
+
+function getAmount() {
+  const raw = $("amount").value.trim();
+
+  if (!raw) return null;
+
+  const amount = Number(raw);
+
+  if (
+    !Number.isSafeInteger(amount) ||
+    amount <= 0
+  ) {
+    return null;
+  }
+
+  return amount;
+}
+
+/* UPDATE SUMMARY AND BUTTON */
+
+function updateDepositUI() {
+  const amount = getAmount();
+
+  $("depositSummaryAmount").textContent =
+    amount === null
+      ? "0"
+      : amount.toLocaleString("en-US");
+
+  $("depositBtn").disabled =
+    depositPending ||
+    !verifiedUid ||
+    verifiedUid !== $("username").value.trim() ||
+    amount === null;
+
+  $("checkUserBtn").disabled = depositPending;
+}
+
+/* RESET MEMBER VERIFICATION */
+
+function resetMemberVerification() {
+  verificationVersion++;
+  verifiedUid = null;
+
+  $("userPreview").style.display = "none";
+
+  setMemberStatus(
+    "pending",
+    "Awaiting Verification",
+    "Verify the member UID before continuing.",
+    "PENDING"
+  );
+
+  clearResult();
+  updateDepositUI();
+}
+
+/* LOOKUP MEMBER */
+
+
+/* ==========================================
+   VERIFY USER + LOAD CHARACTER STATISTICS
+========================================== */
+
+async function checkUser() {
+
+  if (!depositAccessGranted) {
+    lockDepositPage("Admin authentication required.");
+    return;
+  }
+
+  if (depositPending) return;
+
+ 
+
+  const username = $("username").value.trim();
+
+  resetMemberVerification();
+
+  if (username.length < 2) {
+    setMemberStatus(
+      "failed",
+      "Invalid Member UID",
+      "Please enter a valid member UID.",
+      "INVALID"
+    );
+    return;
+  }
+
+  const requestVersion = verificationVersion;
+  const checkBtn = $("checkUserBtn");
+
+  checkBtn.disabled = true;
+  checkBtn.textContent = "VERIFYING...";
+
+  setMemberStatus(
+    "pending",
+    "Verifying Member",
+    "Retrieving character details...",
+    "CHECKING"
+  );
+
+  try {
+
+    const res = await fetch(
+      "/api/admin/deposit-user-info?uid=" +
+      encodeURIComponent(username),
+      {
+        credentials: "same-origin",
+        cache: "no-store"
+      }
+    );
+
+    const data = await res.json();
+
+    // Bỏ qua phản hồi cũ nếu UID đã thay đổi.
+    if (
+      requestVersion !== verificationVersion ||
+      username !== $("username").value.trim()
+    ) {
+      return;
+    }
+
+    if (res.status === 401 || res.status === 403) {
+      setMemberStatus(
+        "failed",
+        "Admin Access Required",
+        "Please authenticate your admin session.",
+        "DENIED"
+      );
+      return;
+    }
+
+    if (!res.ok || !data.ok || !data.user) {
+      setMemberStatus(
+        "failed",
+        "Member Not Found",
+        "No account matches the entered UID.",
+        "NOT FOUND"
+      );
+      return;
+    }
+
+    const user = data.user;
+
+    if (String(user.uid) !== username) {
+      throw new Error("Member UID mismatch");
+    }
+
+    // Xác minh thành công.
+    verifiedUid = username;
+
+    // Định dạng số liệu.
+    const fmt = value => {
+      const n = Number(value);
+      return Number.isFinite(n)
+        ? n.toLocaleString("en-US")
+        : "0";
+    };
+
+    // AVATAR + NAME
+    $("userAvatar").src =
+      user.avatar || "/avatar-default.png";
+
+    $("userName").textContent =
+      user.name || "Unknown Member";
+
+    $("userCoins").textContent =
+      "UID: " + user.uid;
+
+    // LEVEL + EXPERIENCE
+    $("userLevel").textContent =
+      fmt(user.level ?? 1);
+
+    $("userExp").textContent =
+      fmt(user.exp);
+
+    // DEPOSIT / SENT / RECEIVED
+    $("userTotalDeposit").textContent =
+      fmt(user.coinDeposit);
+
+    $("userTotalSent").textContent =
+      fmt(user.coinSent);
+
+    $("userTotalReceived").textContent =
+      fmt(user.coinReceived);
+
+    // CURRENT WALLET BALANCE
+    $("userWallet").textContent =
+      fmt(user.coins);
+
+    // Hiển thị toàn bộ thông tin nhân vật.
+    $("userPreview").style.display = "block";
+
+    setMemberStatus(
+      "verified",
+      "Member Verified",
+      "Character details loaded successfully.",
+      "VERIFIED"
+    );
+
+  } catch (error) {
+
+    if (requestVersion === verificationVersion) {
+      setMemberStatus(
+        "failed",
+        "Verification Failed",
+        "Unable to retrieve character details.",
+        "FAILED"
+      );
+    }
+
+  } finally {
+
+    if (requestVersion === verificationVersion) {
+      checkBtn.textContent = "VERIFY MEMBER";
+      updateDepositUI();
+    }
+
+  }
 
 }
 
+/* REVIEW DEPOSIT */
 
-function closeConfirm(){
-document.getElementById("confirmModal").style.display="none"
+function deposit() {
+
+  if (!depositAccessGranted) {
+    lockDepositPage("Admin authentication required.");
+    return;
+  }
+
+  if (depositPending) return;
+
+ 
+
+  const username = $("username").value.trim();
+  const amount = getAmount();
+
+  if (!verifiedUid || verifiedUid !== username) {
+    showResult(
+      "Please verify the recipient account first."
+    );
+    return;
+  }
+
+  if (amount === null) {
+    showResult(
+      "Please enter a valid whole-number diamond amount."
+    );
+    return;
+  }
+
+  pendingDeposit = { username, amount };
+
+  $("confirmUser").textContent = username;
+
+  $("confirmAmount").textContent =
+    amount.toLocaleString("en-US") + " Diamonds";
+
+  clearResult();
+
+  $("confirmModal").style.display = "flex";
 }
 
+/* CLOSE REVIEW */
 
-async function confirmDeposit(){
+function closeConfirm() {
+  if (depositPending) return;
 
-const username =
-document.getElementById("username").value
-
-const amount =
-Number(document.getElementById("amount").value)
-
-closeConfirm()
-
-const res = await fetch("/api/deposit",{
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body:JSON.stringify({username,amount})
-})
-
-const data = await res.json()
-
-document.getElementById("result").innerText =
-data.message
-
+  $("confirmModal").style.display = "none";
+  pendingDeposit = null;
 }
 
+/* SUBMIT DEPOSIT */
 
-async function checkUser(){
+async function confirmDeposit() {
 
-const username =
-document.getElementById("username").value
+  if (!depositAccessGranted) {
+    lockDepositPage("Admin authentication required.");
+    return;
+  }
 
-if(username.length < 2){
-document.getElementById("userPreview").style.display="none"
-return
+  if (depositPending || !pendingDeposit) return;
+
+ 
+
+  const { username, amount } = pendingDeposit;
+
+  // Ensure the recipient has not changed
+  // since the confirmation was opened.
+  if (
+    verifiedUid !== username ||
+    $("username").value.trim() !== username ||
+    getAmount() !== amount
+  ) {
+    $("confirmModal").style.display = "none";
+    pendingDeposit = null;
+
+    showResult(
+      "Transaction details changed. Please review again."
+    );
+    return;
+  }
+
+  depositPending = true;
+
+  const confirmBtn = $("confirmDepositBtn");
+
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = "PROCESSING...";
+
+  updateDepositUI();
+
+  try {
+    const res = await fetch("/api/admin/deposit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        amount
+      })
+    });
+
+    const data = await res.json();
+
+    const success =
+      res.ok &&
+      data.ok !== false &&
+      data.success !== false &&
+      !data.error;
+
+    $("confirmModal").style.display = "none";
+
+    showResult(
+      data.message ||
+        (success
+          ? "Deposit request completed."
+          : "Deposit request was not completed."),
+      success ? "success" : "error"
+    );
+
+    if (success) {
+      $("amount").value = "";
+
+      // Require a new verification before
+      // another deposit is submitted.
+      resetMemberVerification();
+
+      showResult(
+        data.message || "Deposit request completed.",
+        "success"
+      );
+    }
+
+  } catch (error) {
+    $("confirmModal").style.display = "none";
+
+    showResult(
+      "The transaction status could not be confirmed. " +
+      "Check the account balance before retrying.",
+      "error"
+    );
+
+  } finally {
+    depositPending = false;
+    pendingDeposit = null;
+
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = "CONFIRM DEPOSIT";
+
+    updateDepositUI();
+  }
 }
 
-const res = await fetch("/api/user-info?uid="+username)
+/* INPUT EVENTS */
 
-if(!res.ok) return
+$("username").addEventListener(
+  "input",
+  resetMemberVerification
+);
 
-const data = await res.json()
+$("amount").addEventListener("input", () => {
+  clearResult();
+  updateDepositUI();
+});
 
-if(!data.success){
-document.getElementById("userPreview").style.display="none"
-return
-}
+/* INITIAL STATE */
 
-document.getElementById("userPreview").style.display="block"
+setMemberStatus(
+  "pending",
+  "Awaiting Verification",
+  "Enter a member UID to continue.",
+  "PENDING"
+);
 
-document.getElementById("userAvatar").src =
-data.user.avatar
+updateDepositUI();
 
-document.getElementById("userName").innerText =
-data.user.name + " (" + data.user.uid + ")"
+/* SERVICE WORKER */
 
-document.getElementById("userCoins").innerText =
-"💎 " + data.user.coins
-
-}
-
-if("serviceWorker" in navigator){
+if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/deposit-sw.js")
-      .catch(err => console.log("SW register failed:", err))
-  })
+      .catch(error => {
+        console.warn("Service worker:", error);
+      });
+  });
 }
 
-
-
 </script>
-
 </body>
 </html>

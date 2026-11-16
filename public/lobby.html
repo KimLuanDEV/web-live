@@ -3269,13 +3269,13 @@ body.lobby-page
           LIVESTREAM PRO · COMMUNITY
         </div>
 
-        <h2 id="playerLobbyTitle" class="title">
-          Sảnh thành viên
-        </h2>
+<h2 id="playerLobbyTitle" class="title">
+  Member Directory
+</h2>
 
-        <p class="player-lobby-description">
-          Khám phá và kết nối cộng đồng
-        </p>
+<p class="player-lobby-description">
+  Connect with your friends
+</p>
 
       </div>
 
@@ -3290,23 +3290,23 @@ body.lobby-page
 
     </header>
 
-    <!-- SEARCH -->
-    <div class="player-search">
 
-      <input
-        id="playerSearch"
-        type="search"
-        placeholder="Tìm theo tên hoặc UID..."
-        autocomplete="off"
-        aria-label="Tìm thành viên"
-      >
-
-    </div>
+<!-- SEARCH ALL PLAYERS -->
+<div class="player-search">
+  <input
+    id="playerSearch"
+    type="search"
+    placeholder="Search players by name or UID..."
+    autocomplete="off"
+    aria-label="Search players"
+  >
+</div>
 
     <!-- LIST HEADING -->
 
 <div class="player-list-heading">
-  <span>Danh sách thành viên</span>
+  <span>My Friends</span>
+  <span id="playerResultCount"></span>
 </div>
 
 
@@ -4278,15 +4278,21 @@ function render(list){
     const hostName   = r.host?.name   || (r.__virtual ? "Virtual Room" : "Host");
     const verified = r.host?.verified;
 
-    const hostAvatar = fixAvatar(r.host?.avatar) || `https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg`;
+    const hostAvatar = fixAvatar(r.host?.avatar) || `https://i.ibb.co/GvJWn19q/icon-192.png`;
 
     const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
 
    a.innerHTML = `
-  <div class="lobby-cardBg">
-    <img src="${hostAvatar}" alt="avatar" loading="lazy">
-    <div class="lobby-cardShade"></div>
-  </div>
+   
+<div class="lobby-cardBg">
+  <img
+    src="${hostAvatar}"
+    alt="Room cover"
+    loading="eager"
+    decoding="async"
+  >
+  <div class="lobby-cardShade"></div>
+</div>
 
   <!-- TOP OVERLAY -->
   <div class="lobby-cardOverlay top">
@@ -4639,9 +4645,75 @@ const btnPlayerLobby = document.getElementById("btnPlayerLobby");
 const playerLobby = document.getElementById("playerLobby");
 const closePlayerLobby = document.getElementById("closePlayerLobby");
 
-btnPlayerLobby.onclick = () => {
+
+btnPlayerLobby.onclick = async () => {
+
   playerLobby.classList.remove("hidden");
+
+  const box = document.getElementById("playerList");
+
+  if (!profile.uid || isGuest) {
+    MY_FRIENDS = [];
+    renderPlayerLobbyAll();
+    return;
+  }
+
+  if (box) {
+    box.innerHTML = `
+      <div class="player-lobby-empty">
+        Loading your friends...
+      </div>
+    `;
+  }
+
+  try {
+
+    const response = await fetch(
+      "/api/friends/" + encodeURIComponent(profile.uid),
+      {
+        cache: "no-store",
+        credentials: "same-origin"
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to load friends");
+    }
+
+    const data = await response.json();
+
+    MY_FRIENDS = Array.isArray(data.friends)
+      ? data.friends
+          .map(f => String(f.uid || ""))
+          .filter(Boolean)
+      : [];
+
+    MY_REQUESTS = Array.isArray(data.requests)
+      ? data.requests.map(r => String(r.uid || ""))
+      : [];
+
+    MY_BLOCKED = Array.isArray(data.blocked)
+      ? data.blocked
+      : [];
+
+    renderPlayerLobbyAll();
+
+  } catch (error) {
+
+    console.error("Member Directory:", error);
+
+    if (box) {
+      box.innerHTML = `
+        <div class="player-lobby-empty">
+          Unable to load friends. Please try again.
+        </div>
+      `;
+    }
+
+  }
+
 };
+
 
 closePlayerLobby.onclick = () => {
   playerLobby.classList.add("hidden");
@@ -4663,45 +4735,76 @@ function renderPlayerLobbyAll() {
 
   if (!box) return;
 
-  if (!ALL_USERS.length) {
-  
 
-    box.innerHTML = `
-      <div class="player-lobby-empty">
-        Chưa có người dùng nào.
-      </div>
-    `;
-    return;
-  }
 
-  // Giữ nguyên cách sắp xếp cũ
-  let list = sortUsersForLobby(ALL_USERS);
+  // ======================================
+  // MEMBER DIRECTORY + GLOBAL SEARCH
+  // ======================================
 
-  // Ẩn các tài khoản đã chặn
-  list = list.filter(
-    u => !MY_BLOCKED.includes(u.uid)
+  const myUid = String(profile.uid || "");
+
+  const keyword = String(PLAYER_SEARCH || "")
+    .trim()
+    .toLowerCase();
+
+  const friendSet = new Set(
+    MY_FRIENDS.map(uid => String(uid))
   );
 
-  // Lọc theo tên hoặc UID
-  if (PLAYER_SEARCH) {
-    list = list.filter(u => {
-      const name = String(u.name || "").toLowerCase();
-      const uid = String(u.uid || "").toLowerCase();
+  const blockedSet = new Set(
+    MY_BLOCKED.map(uid => String(uid))
+  );
 
-      return name.includes(PLAYER_SEARCH) ||
-             uid.includes(PLAYER_SEARCH);
-    });
-  }
+  let list = ALL_USERS.filter(u => {
+
+    const uid = String(u.uid || "");
+
+   
+    if (
+      !uid ||
+      uid === myUid ||
+      blockedSet.has(uid)
+    ) {
+      return false;
+    }
+
+    if (!keyword) {
+      return friendSet.has(uid);
+    }
 
 
-  if (!list.length) {
-    box.innerHTML = `
-      <div class="player-lobby-empty">
-        Không tìm thấy thành viên phù hợp.
-      </div>
-    `;
-    return;
-  }
+    const name = String(u.name || "")
+      .toLowerCase();
+
+    return (
+      name.includes(keyword) ||
+      uid.toLowerCase().includes(keyword)
+    );
+
+  });
+
+  
+  list = sortUsersForLobby(list);
+
+
+
+
+
+if (!list.length) {
+
+  box.innerHTML = `
+    <div class="player-lobby-empty">
+      ${
+        PLAYER_SEARCH.trim()
+          ? "No players found."
+          : "You haven't added any friends yet."
+      }
+    </div>
+  `;
+
+  return;
+}
+
 
   box.innerHTML = list.map(u => {
 
@@ -4737,12 +4840,13 @@ function renderPlayerLobbyAll() {
             </span>
 
             ${avatar ? `
-              <img
-                src="${escapeHtml(avatar)}"
-                alt=""
-                loading="lazy"
-                onerror="this.remove()"
-              >
+<img
+  src="${escapeHtml(avatar)}"
+  alt="Player avatar"
+  loading="eager"
+  decoding="async"
+  onerror="this.remove()"
+>
             ` : ""}
 
             <span class="dot ${isOn ? "on" : "off"}"></span>

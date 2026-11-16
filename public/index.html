@@ -1,70 +1,3243 @@
-<!doctype html>
-<html lang="vi">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Livestream Web</title>
-  <link rel="stylesheet" href="/style.css" />
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#0b0c10">
+
+<meta name="description"
+      content="Livestream Pro brings live streaming, real-time interaction, community and entertainment together in one experience.">
+
+<title>Livestream Pro | Experience More. Live Together.</title>
+
+<style>
+/* ==========================================
+   LIVESTREAM PRO
+   OFFICIAL LANDING PAGE
+   BLACK OBSIDIAN & CHAMPAGNE GOLD
+========================================== */
+
+:root {
+  color-scheme: dark;
+  --bg: #0b0c10;
+  --panel: #17181c;
+  --panel2: #202023;
+  --gold: #d8b47b;
+  --gold-light: #f1ddba;
+  --text: #f4eadb;
+  --muted: #aaa195;
+  --line: rgba(215,177,114,.22);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+
+  background:
+    radial-gradient(
+      ellipse 80% 560px at 50% 0%,
+      rgba(159,112,52,.14),
+      transparent 80%
+    ),
+    #0b0c10;
+
+  color: var(--text);
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.container {
+  width: min(1160px, calc(100% - 40px));
+  margin-inline: auto;
+}
+
+.section {
+  padding: 94px 0;
+}
+
+.section-label {
+  display: block;
+  margin-bottom: 15px;
+
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 2.1px;
+}
+
+.section-title {
+  margin: 0;
+
+  color: var(--gold-light);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(31px, 4vw, 48px);
+  font-weight: 700;
+  line-height: 1.17;
+}
+
+.section-description {
+  max-width: 610px;
+  margin: 20px auto 0;
+
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.section-heading {
+  margin-bottom: 46px;
+  text-align: center;
+}
+
+.gold-text {
+  color: var(--gold);
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  border-bottom: 1px solid var(--line);
+
+  background: rgba(12,13,16,.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  width: 43px;
+  height: 43px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #a78a60;
+  border-radius: 11px;
+
+  background:
+    linear-gradient(145deg,#33291e,#16171a);
+
+  color: #f4ddba;
+  font-family: Georgia,serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.brand-name strong {
+  display: block;
+
+  color: #f2e4ce;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.brand-name small {
+  display: block;
+  margin-top: 4px;
+
+  color: #af946e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-links a {
+  color: #b4ab9e;
+  font-size: 13px;
+  font-weight: 650;
+  transition: color .2s;
+}
+
+.nav-links a:hover {
+  color: var(--gold-light);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 45px;
+  padding: 12px 20px;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .5px;
+
+  transition:
+    transform .2s,
+    background .2s,
+    border-color .2s;
+}
+
+.btn:active {
+  transform: scale(.97);
+}
+
+.btn-primary {
+  color: #281d10;
+  border-color: #e8c995;
+
+  background: linear-gradient(
+    125deg,
+    #f5e1be,
+    #c79d63
+  );
+}
+
+.btn-secondary {
+  color: #ead5b3;
+  border-color: rgba(219,178,110,.4);
+  background: rgba(215,174,112,.06);
+}
+
+.btn-secondary:hover {
+  background: rgba(215,174,112,.13);
+}
+
+.btn-small {
+  min-height: 39px;
+  padding: 10px 16px;
+}
+
+/* ==========================================
+   HERO
+========================================== */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+
+  padding: 114px 0 105px;
+  text-align: center;
+}
+
+.hero::before {
+  content: "";
+
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  transform: translateX(-50%);
+
+  width: min(760px, 110vw);
+  height: 420px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(172,124,60,.16),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 10px 16px;
+
+  border: 1px solid rgba(219,181,119,.24);
+  border-radius: 999px;
+
+  background: rgba(217,174,110,.045);
+  color: #d5b580;
+
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.5px;
+}
+
+.hero h1 {
+  max-width: 900px;
+  margin: 34px auto 23px;
+
+  color: #f3e3c9;
+  font-family: Georgia,"Times New Roman",serif;
+
+  font-size: clamp(43px, 7vw, 88px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.8px;
+}
+
+.hero h1 span {
+  color: var(--gold);
+}
+
+.hero-description {
+  max-width: 630px;
+  margin: 0 auto;
+
+  color: #b5aa9d;
+  font-size: clamp(14px, 2vw, 17px);
+  line-height: 1.9;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 13px;
+
+  margin-top: 36px;
+}
+
+.hero-actions .btn {
+  min-width: 170px;
+  min-height: 51px;
+}
+
+.hero-bottom {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px 32px;
+
+  margin-top: 70px;
+
+  color: #a59681;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.4px;
+}
+
+.hero-bottom span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.hero-bottom span::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c5a26f;
+}
+
+/* ==========================================
+   ABOUT
+========================================== */
+
+.about-section {
+  border-top: 1px solid var(--line);
+  background: #0e1013;
+}
+
+.about-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 65px;
+}
+
+.about-copy .section-description {
+  margin: 23px 0 0;
+}
+
+.about-points {
+  margin-top: 30px;
+  display: grid;
+  gap: 14px;
+}
+
+.about-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  color: #cbbba7;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.about-point::before {
+  content: "";
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 1px;
+
+  margin-top: 10px;
+  background: #d0ac76;
+}
+
+.about-showcase {
+  position: relative;
+
+  min-height: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 35px;
+
+  border: 1px solid var(--line);
+  border-radius: 22px;
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(209,157,84,.17),
+      transparent 60%
+    ),
+    linear-gradient(145deg,#24211e,#131418);
+}
+
+.showcase-inner {
+  width: 100%;
+  max-width: 390px;
+
+  padding: 37px 27px;
+
+  border: 1px solid rgba(225,185,117,.32);
+  border-radius: 18px;
+
+  background: rgba(12,13,15,.78);
+  text-align: center;
+}
+
+.showcase-mark {
+  width: 90px;
+  height: 90px;
+
+  display: grid;
+  place-items: center;
+
+  margin: 0 auto 27px;
+
+  border: 1px solid #ac8955;
+  border-radius: 22px;
+
+  background: linear-gradient(
+    145deg,#453420,#17181a
+  );
+
+  color: #f3ddb5;
+  font: 800 31px Georgia,serif;
+}
+
+.showcase-inner h3 {
+  margin: 0 0 12px;
+
+  font: 700 27px Georgia,serif;
+  color: var(--gold-light);
+}
+
+.showcase-inner p {
+  margin: 0;
+
+  color: #a99c8b;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.showcase-divider {
+  height: 1px;
+  margin: 30px 0;
+
+  background: var(--line);
+}
+
+.showcase-tags {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.showcase-tags span {
+  padding: 8px 10px;
+
+  border: 1px solid rgba(215,177,114,.25);
+  border-radius: 7px;
+
+  color: #d1b184;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+/* ==========================================
+   FEATURES
+========================================== */
+
+.features-section {
+  background: #0b0c10;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 16px;
+}
+
+.feature-card {
+  position: relative;
+  min-height: 238px;
+
+  padding: 28px 25px;
+
+  border: 1px solid var(--line);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(150deg,#211f1e,#15161a);
+
+  transition:
+    transform .25s,
+    border-color .25s;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(217,176,111,.52);
+}
+
+.feature-number {
+  display: block;
+  margin-bottom: 36px;
+
+  color: #b99768;
+  font-family: Georgia,serif;
+  font-size: 25px;
+}
+
+.feature-card h3 {
+  margin: 0 0 12px;
+
+  color: #eed7b2;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.feature-card p {
+  margin: 0;
+
+  color: #a79d91;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   EXPERIENCE
+========================================== */
+
+.experience-section {
+  border-block: 1px solid var(--line);
+  background: #101114;
+}
+
+.experience-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.experience-card {
+  min-height: 280px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  padding: 35px;
+
+  border: 1px solid rgba(216,178,117,.3);
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(186,137,69,.16),
+      transparent 65%
+    ),
+    linear-gradient(145deg,#25221e,#17181c);
+}
+
+.experience-card small {
+  margin-bottom: 14px;
+
+  color: #d0ac77;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.5px;
+}
+
+.experience-card h3 {
+  margin: 0 0 12px;
+
+  color: #f0dbb8;
+  font: 700 28px Georgia,serif;
+}
+
+.experience-card p {
+  max-width: 440px;
+  margin: 0;
+
+  color: #b1a598;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   HOW IT WORKS
+========================================== */
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 25px;
+}
+
+.step {
+  padding: 16px;
+  text-align: center;
+}
+
+.step-number {
+  display: grid;
+  place-items: center;
+
+  width: 56px;
+  height: 56px;
+
+  margin: 0 auto 24px;
+
+  border: 1px solid rgba(224,183,113,.4);
+  border-radius: 50%;
+
+  background: #262119;
+
+  color: #e1bd86;
+  font: 700 21px Georgia,serif;
+}
+
+.step h3 {
+  margin: 0 0 12px;
+
+  color: #ecdbc1;
+  font-size: 17px;
+}
+
+.step p {
+  max-width: 300px;
+  margin: 0 auto;
+
+  color: #a89d90;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   FINAL CTA
+========================================== */
+
+.cta-section {
+  padding: 90px 0;
+  background: #101114;
+}
+
+.cta-box {
+  padding: 76px 25px;
+
+  border: 1px solid rgba(224,183,113,.34);
+  border-radius: 23px;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(198,142,69,.16),
+      transparent 70%
+    ),
+    linear-gradient(145deg,#24211e,#141519);
+
+  text-align: center;
+}
+
+.cta-box h2 {
+  max-width: 680px;
+  margin: 0 auto;
+
+  color: #f2dfbd;
+  font: 700 clamp(33px, 5vw, 57px)/1.16 Georgia,serif;
+}
+
+.cta-box p {
+  max-width: 510px;
+  margin: 22px auto 30px;
+
+  color: #b1a699;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.footer {
+  border-top: 1px solid var(--line);
+  background: #090a0c;
+}
+
+.footer-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+
+  padding: 45px 0;
+}
+
+.footer-tagline {
+  margin: 13px 0 0;
+
+  color: #a39686;
+  font-size: 12px;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.footer-links a {
+  color: #ac9f8d;
+  font-size: 12px;
+}
+
+.footer-links a:hover {
+  color: #e8c995;
+}
+
+.footer-bottom {
+  padding: 20px 0
+    calc(20px + env(safe-area-inset-bottom,0px));
+
+  border-top: 1px solid rgba(217,180,120,.12);
+
+  color: #8e806d;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: .35px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 900px) {
+  .nav-links {
+    display: none;
+  }
+
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .about-showcase {
+    min-height: 360px;
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .container {
+    width: calc(100% - 30px);
+  }
+
+  .section {
+    padding: 65px 0;
+  }
+
+  .header-inner {
+    min-height: 67px;
+    gap: 10px;
+  }
+
+  .brand {
+    gap: 9px;
+  }
+
+  .brand-icon {
+    width: 37px;
+    height: 37px;
+  }
+
+  .brand-name strong {
+    font-size: 11px;
+    letter-spacing: .7px;
+  }
+
+  .brand-name small {
+    font-size: 8px;
+    letter-spacing: .8px;
+  }
+
+  .header-actions {
+    gap: 7px;
+  }
+
+  .header-actions .btn {
+    min-height: 35px;
+    padding: 9px 11px;
+    font-size: 10px;
+  }
+
+  .header-actions .btn-secondary {
+    display: none;
+  }
+
+  .hero {
+    padding: 87px 0 66px;
+  }
+
+  .hero h1 {
+    margin-top: 27px;
+    font-size: clamp(43px, 11vw, 63px);
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .hero-actions {
+    gap: 10px;
+  }
+
+  .hero-actions .btn {
+    min-width: 140px;
+  }
+
+  .hero-bottom {
+    gap: 14px 20px;
+    margin-top: 58px;
+    font-size: 9px;
+  }
+
+  .section-heading {
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-size: 32px;
+  }
+
+  .section-description {
+    font-size: 13px;
+  }
+
+  .about-showcase {
+    min-height: 340px;
+    padding: 20px;
+  }
+
+  .feature-grid,
+  .experience-grid,
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-card {
+    min-height: unset;
+    padding: 24px;
+  }
+
+  .feature-number {
+    margin-bottom: 22px;
+  }
+
+  .experience-card {
+    min-height: 235px;
+    padding: 25px;
+  }
+
+  .experience-card h3 {
+    font-size: 26px;
+  }
+
+  .cta-section {
+    padding: 60px 0;
+  }
+
+  .cta-box {
+    padding: 52px 20px;
+  }
+
+  .cta-box h2 {
+    font-size: 36px;
+  }
+
+  .footer-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 25px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero h1 {
+    font-size: 40px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .feature-card,
+  .btn {
+    transition: none;
+  }
+}
+
+
+
+
+/* ==========================================
+   PREMIUM LANDING PAGE - IMAGE UPGRADE
+========================================== */
+
+/* HERO BACKGROUND */
+
+.hero {
+  position: relative;
+  min-height: min(830px, 94svh);
+  display: flex;
+  align-items: center;
+
+  padding: 120px 0 110px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(8,10,13,.93) 0%,
+      rgba(8,10,13,.76) 42%,
+      rgba(8,10,13,.40) 100%
+    ),
+    linear-gradient(
+      0deg,
+      #0b0c10 0%,
+      transparent 32%
+    ),
+    url("/assets/landing/hero-live.jpg")
+      center center / cover no-repeat;
+}
+
+.hero::before {
+  display: none;
+}
+
+.hero-inner {
+  text-align: left;
+}
+
+.hero h1 {
+  max-width: 800px;
+  margin-left: 0;
+  margin-right: 0;
+
+  font-size: clamp(48px, 6.7vw, 86px);
+  text-shadow: 0 8px 30px rgba(0,0,0,.45);
+}
+
+.hero-description {
+  max-width: 590px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.hero-actions {
+  justify-content: flex-start;
+}
+
+.hero-bottom {
+  justify-content: flex-start;
+  margin-top: 75px;
+}
+
+/* PREMIUM FEATURE CARDS */
+
+.feature-card {
+  background:
+    linear-gradient(155deg,#22211f,#131519);
+
+  border-color: rgba(224,187,128,.18);
+  box-shadow: 0 15px 45px rgba(0,0,0,.12);
+}
+
+.feature-card:hover {
+  border-color: rgba(224,187,128,.46);
+}
+
+/* MOBILE */
+
+@media (max-width: 620px) {
+  .hero {
+    min-height: 730px;
+    min-height: 88svh;
+
+    padding: 94px 0 70px;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(8,10,13,.50) 0%,
+        rgba(8,10,13,.80) 48%,
+        #0b0c10 100%
+      ),
+      url("/assets/landing/hero-live.jpg")
+        62% center / cover no-repeat;
+  }
+
+  .hero-inner {
+    text-align: center;
+  }
+
+  .hero h1 {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: clamp(41px, 10vw, 58px);
+  }
+
+  .hero-description {
+    margin-inline: auto;
+  }
+
+  .hero-actions,
+  .hero-bottom {
+    justify-content: center;
+  }
+
+  .hero-bottom {
+    margin-top: 52px;
+  }
+}
+
+
+
+.premium-about-image {
+  position: relative;
+  min-height: 480px;
+
+  display: block;
+  overflow: hidden;
+  padding: 0;
+
+  border-radius: 20px;
+  background: #15161a;
+}
+
+.premium-about-image > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  position: absolute;
+  inset: 0;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+.premium-about-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    180deg,
+    transparent 15%,
+    rgba(8,9,12,.4) 48%,
+    rgba(8,9,12,.96) 100%
+  );
+}
+
+.premium-about-overlay {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  padding: 35px;
+}
+
+.premium-about-overlay span {
+  color: #dfbd86;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.premium-about-overlay h3 {
+  margin: 13px 0;
+
+  color: #f4e5ca;
+  font: 700 34px/1.2 Georgia,serif;
+}
+
+.premium-about-overlay p {
+  max-width: 340px;
+  margin: 0;
+
+  color: #c4b9a8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+
+
+.visual-experience-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  min-height: 390px;
+  padding: 0;
+
+  display: flex;
+  align-items: flex-end;
+
+  background: #18191d;
+}
+
+.visual-experience-card > img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition: transform .5s ease;
+}
+
+.visual-experience-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  background: linear-gradient(
+    180deg,
+    rgba(8,9,12,.05) 0%,
+    rgba(8,9,12,.38) 42%,
+    rgba(8,9,12,.96) 100%
+  );
+}
+
+.visual-experience-card:hover > img {
+  transform: scale(1.045);
+}
+
+.visual-experience-copy {
+  width: 100%;
+  padding: 30px;
+}
+
+.visual-experience-copy small {
+  display: block;
+  color: #e4bf87;
+}
+
+.visual-experience-copy h3 {
+  margin: 12px 0;
+  color: #fff0d7;
+  font: 700 clamp(24px,3vw,31px)/1.2 Georgia,serif;
+}
+
+.visual-experience-copy p {
+  max-width: 420px;
+  margin: 0;
+  color: #d1c6b6;
+  line-height: 1.75;
+  font-size: 13px;
+}
+
+@media (max-width:620px) {
+  .premium-about-image {
+    min-height: 390px;
+  }
+
+  .premium-about-overlay {
+    padding: 24px;
+  }
+
+  .premium-about-overlay h3 {
+    font-size: 28px;
+  }
+
+  .visual-experience-card {
+    min-height: 330px;
+  }
+
+  .visual-experience-copy {
+    padding: 24px;
+  }
+}
+
+
+
+/* ==========================================
+   SOCIAL EXPERIENCE CARD
+   LUXURY BLACK & CHAMPAGNE GOLD
+========================================== */
+
+.social-experience-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 25px;
+
+  min-height: 390px;
+  padding: 24px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 70% 0%,
+      rgba(184,137,73,.13),
+      transparent 70%
+    ),
+    linear-gradient(145deg,#24211d,#131519);
+
+  border: 1px solid rgba(218,178,114,.32);
+}
+
+/* SOCIAL MOCKUP */
+
+.social-preview {
+  width: 100%;
+  padding: 15px;
+
+  border: 1px solid rgba(213,172,107,.26);
+  border-radius: 14px;
+
+  background: #121418;
+  box-shadow: 0 14px 35px rgba(0,0,0,.23);
+}
+
+/* HEADER */
+
+.social-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(219,180,117,.16);
+}
+
+.social-preview-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.social-preview-mark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid #917449;
+  border-radius: 9px;
+
+  background: #332a20;
+  color: #f0d6a9;
+
+  font: 800 12px Georgia,serif;
+}
+
+.social-preview-brand strong {
+  display: block;
+  color: #f0dfc1;
+  font-size: 12px;
+}
+
+.social-preview-brand small {
+  display: block;
+  margin-top: 4px;
+
+  color: #b79a72;
+  font-size: 8px;
+  letter-spacing: .6px;
+}
+
+.social-online {
+  color: #abd7b4;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+
+/* MESSAGES */
+
+.social-preview-messages {
+  display: grid;
+  gap: 11px;
+  padding: 17px 0;
+}
+
+.social-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.social-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+  color: #f3e4d5;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.avatar-one {
+  background: #55445f;
+}
+
+.avatar-two {
+  background: #5f453e;
+}
+
+.avatar-three {
+  background: #394e62;
+}
+
+.social-message-bubble {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 10px;
+
+  background: #26272b;
+}
+
+.social-message-bubble strong {
+  display: block;
+
+  color: #e5c99d;
+  font-size: 10px;
+}
+
+.social-message-bubble p {
+  margin: 5px 0 0;
+
+  color: #e2d7c8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* DECORATIVE INPUT */
+
+.social-preview-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 11px 12px;
+
+  border: 1px solid rgba(209,173,119,.23);
+  border-radius: 9px;
+
+  background: #211f1d;
+
+  color: #a99c8a;
+  font-size: 11px;
+}
+
+.social-send {
+  color: #eacb98;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* BOTTOM CONTENT */
+
+.social-experience-copy {
+  padding: 5px 2px 0;
+}
+
+.social-experience-copy small {
+  color: #ddba83;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.social-experience-copy h3 {
+  margin: 13px 0;
+
+  color: #f0ddbc;
+  font: 700 clamp(25px,3vw,32px)/1.2 Georgia,serif;
+}
+
+.social-experience-copy p {
+  max-width: 420px;
+  margin: 0;
+
+  color: #b6a897;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+/* MOBILE */
+
+@media(max-width:620px) {
+  .social-experience-card {
+    min-height: 390px;
+    padding: 16px;
+    gap: 22px;
+  }
+
+  .social-preview {
+    padding: 12px;
+  }
+
+  .social-experience-copy h3 {
+    font-size: 26px;
+  }
+}
+
+
+
+
+/* ==========================================
+   LIVESTREAM PRO
+   SIGNATURE EDITION ENHANCEMENTS
+========================================== */
+
+/* GLOBAL REFINEMENTS */
+
+:root {
+  --signature-gold: #d9b681;
+  --signature-soft: #f4e5cd;
+  --signature-line: rgba(218,180,119,.20);
+}
+
+body {
+  overflow-x: clip;
+}
+
+::selection {
+  background: #b78c52;
+  color: #101114;
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid #f1d39f;
+  outline-offset: 4px;
+}
+
+.section-title {
+  letter-spacing: -.8px;
+}
+
+.section-description {
+  text-wrap: pretty;
+}
+
+/* PREMIUM HEADER */
+
+.site-header {
+  background: rgba(9,11,15,.94);
+  box-shadow: 0 8px 35px rgba(0,0,0,.12);
+}
+
+.header-inner {
+  position: relative;
+}
+
+.brand-icon {
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.08),
+    0 0 22px rgba(205,159,91,.06);
+}
+
+/* ==========================================
+   MOBILE NAVIGATION
+========================================== */
+
+.lsp-mobile-nav {
+  display: none;
+  flex-shrink: 0;
+}
+
+.lsp-mobile-nav > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+
+  width: 43px;
+  height: 43px;
+  list-style: none;
+
+  background: #201e1c;
+  border: 1px solid rgba(217,177,115,.35);
+  border-radius: 10px;
+
+  cursor: pointer;
+  color: #e1c291;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .8px;
+}
+
+.lsp-mobile-nav > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lsp-menu-bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.lsp-menu-bars i {
+  display: block;
+  width: 17px;
+  height: 1.5px;
+
+  border-radius: 99px;
+  background: #e4c591;
+}
+
+.lsp-mobile-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 9px);
+  z-index: 200;
+
+  width: min(345px, calc(100vw - 30px));
+
+  padding: 10px;
+
+  border: 1px solid rgba(216,175,110,.4);
+  border-radius: 15px;
+
+  background: #18191c;
+
+  box-shadow: 0 25px 65px rgba(0,0,0,.65);
+}
+
+.lsp-mobile-dropdown > a {
+  display: block;
+  padding: 13px 12px;
+
+  border-radius: 7px;
+
+  color: #e0d2bc;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.lsp-mobile-dropdown > a:hover {
+  background: #29251f;
+  color: #f2d7a8;
+}
+
+.lsp-mobile-nav-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 8px;
+
+  margin-top: 9px;
+  padding-top: 13px;
+
+  border-top: 1px solid var(--signature-line);
+}
+
+.lsp-mobile-nav-actions a {
+  display: grid;
+  place-items: center;
+
+  min-height: 42px;
+  padding: 9px 6px;
+
+  border: 1px solid #645039;
+  border-radius: 8px;
+
+  color: #e9d1a7;
+  background: #25211c;
+
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.lsp-mobile-nav-actions a:last-child {
+  color: #251c10;
+  border-color: #e7c58d;
+  background: linear-gradient(125deg,#f4dfb9,#c69a61);
+}
+
+/* ==========================================
+   SIGNATURE SHOWCASE SECTION
+========================================== */
+
+.lsp-signature-section {
+  padding: 105px 0;
+
+  border-top: 1px solid var(--signature-line);
+
+  background:
+    radial-gradient(
+      ellipse at 85% 5%,
+      rgba(183,136,72,.09),
+      transparent 45%
+    ),
+    #0c0e12;
+}
+
+.lsp-signature-heading {
+  display: grid;
+  grid-template-columns: 1.35fr .65fr;
+  align-items: end;
+  gap: 40px;
+
+  margin-bottom: 38px;
+}
+
+.lsp-signature-heading p {
+  max-width: 380px;
+  margin: 0 0 6px;
+
+  color: #aca294;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.lsp-signature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 18px;
+}
+
+/* FEATURED PANEL */
+
+.lsp-signature-featured {
+  grid-column: 1 / -1;
+
+  display: grid;
+  grid-template-columns: 1.16fr .84fr;
+
+  min-height: 395px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(221,183,119,.28);
+  border-radius: 18px;
+
+  background: linear-gradient(
+    140deg,#24211e,#16181b
+  );
+}
+
+.lsp-signature-image {
+  position: relative;
+  min-height: 350px;
+  overflow: hidden;
+
+  background: #18191c;
+}
+
+.lsp-signature-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    90deg,
+    transparent 45%,
+    rgba(15,16,19,.42) 100%
+  );
+
+  pointer-events: none;
+}
+
+.lsp-signature-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  position: absolute;
+  inset: 0;
+
+  object-fit: cover;
+  object-position: center 28%;
+}
+
+.lsp-image-label {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  z-index: 2;
+
+  padding: 9px 11px;
+
+  border: 1px solid rgba(238,209,162,.32);
+  border-radius: 7px;
+
+  color: #f3e3c8;
+  background: rgba(10,11,13,.67);
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.lsp-signature-featured-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding: clamp(25px,5vw,55px);
+}
+
+.lsp-signature-featured-copy > span {
+  color: #c6a16e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.lsp-signature-featured-copy h3 {
+  margin: 22px 0 14px;
+
+  color: #f2dfc1;
+  font: 700 clamp(30px,3.6vw,45px)/1.18 Georgia,serif;
+}
+
+.lsp-signature-featured-copy p {
+  margin: 0;
+
+  color: #aba093;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.lsp-signature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+
+  margin-top: 28px;
+  padding-bottom: 9px;
+
+  border-bottom: 1px solid rgba(224,186,125,.6);
+
+  color: #f0d19e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .8px;
+}
+
+.lsp-signature-link span {
+  font-size: 17px;
+}
+
+/* MINI PANELS */
+
+.lsp-signature-mini {
+  min-width: 0;
+  min-height: 370px;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 28px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--signature-line);
+  border-radius: 16px;
+
+  background:
+    linear-gradient(145deg,#211f1d,#14161a);
+}
+
+.lsp-signature-number {
+  color: #bc9d75;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.1px;
+}
+
+.lsp-signature-mini h3 {
+  margin: 4px 0 10px;
+
+  color: #f1dfc0;
+  font: 700 clamp(24px,3vw,30px)/1.2 Georgia,serif;
+}
+
+.lsp-signature-mini p {
+  max-width: 400px;
+  margin: 0;
+
+  color: #ada194;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* SOCIAL ORBIT ART */
+
+.lsp-signature-mini-art {
+  position: relative;
+
+  flex: 1;
+  min-height: 170px;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+}
+
+.lsp-orbit {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+
+  border: 1px solid rgba(218,176,111,.20);
+  border-radius: 50%;
+}
+
+.lsp-orbit-one {
+  transform: rotate(-24deg) scaleX(.62);
+}
+
+.lsp-orbit-two {
+  transform: rotate(35deg) scaleX(.62);
+}
+
+.lsp-orbit-core {
+  position: relative;
+  z-index: 2;
+
+  width: 100px;
+  height: 100px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #977343;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(circle at 30% 25%,#584329,#201d19);
+
+  box-shadow: 0 0 60px rgba(203,151,74,.12);
+
+  color: #edd3a9;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* PROFILE ILLUSTRATION */
+
+.lsp-profile-preview {
+  flex: 1;
+  min-height: 165px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: min(255px,100%);
+  margin: 14px auto 19px;
+  padding: 18px;
+
+  border: 1px solid #4d4032;
+  border-radius: 14px;
+
+  background: #17191d;
+}
+
+.lsp-profile-avatar {
+  display: grid;
+  place-items: center;
+
+  width: 52px;
+  height: 52px;
+
+  border: 1px solid #b18b55;
+  border-radius: 50%;
+
+  background: #3b3024;
+  color: #ebd3aa;
+
+  font: 800 16px Georgia,serif;
+}
+
+.lsp-profile-lines {
+  display: grid;
+  gap: 7px;
+
+  justify-items: center;
+  margin-top: 14px;
+}
+
+.lsp-profile-lines span {
+  width: 100px;
+  height: 6px;
+
+  border-radius: 10px;
+  background: #73624b;
+}
+
+.lsp-profile-lines span:last-child {
+  width: 65px;
+  background: #45403b;
+}
+
+.lsp-profile-divider {
+  width: 100%;
+  height: 1px;
+  margin: 17px 0;
+
+  background: #39342d;
+}
+
+.lsp-profile-data {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-around;
+  gap: 5px;
+
+  color: #c6ab84;
+  font-size: 8px;
+  font-weight: 750;
+}
+
+/* ==========================================
+   FAQ SECTION
+========================================== */
+
+.lsp-faq-section {
+  padding: 100px 0;
+
+  border-top: 1px solid var(--signature-line);
+  background: #101115;
+}
+
+.lsp-faq-layout {
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+  align-items: start;
+  gap: clamp(35px,6vw,90px);
+}
+
+.lsp-faq-intro p {
+  max-width: 370px;
+  margin: 20px 0;
+
+  color: #afa394;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.lsp-faq-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+
+  margin-top: 16px;
+  padding-bottom: 9px;
+
+  border-bottom: 1px solid #b89360;
+
+  color: #e8c997;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .6px;
+}
+
+.lsp-faq-action span {
+  font-size: 16px;
+}
+
+.lsp-faq-list {
+  border-top: 1px solid var(--signature-line);
+}
+
+.lsp-faq-item {
+  border-bottom: 1px solid var(--signature-line);
+}
+
+.lsp-faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  padding: 22px 0;
+
+  list-style: none;
+  cursor: pointer;
+
+  color: #eadac1;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.lsp-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.lsp-faq-item summary span {
+  position: relative;
+  flex: 0 0 26px;
+
+  width: 26px;
+  height: 26px;
+
+  border: 1px solid #766044;
+  border-radius: 50%;
+}
+
+.lsp-faq-item summary span::before,
+.lsp-faq-item summary span::after {
+  content: "";
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  background: #dcb986;
+  transform: translate(-50%,-50%);
+}
+
+.lsp-faq-item summary span::before {
+  width: 10px;
+  height: 1px;
+}
+
+.lsp-faq-item summary span::after {
+  width: 1px;
+  height: 10px;
+}
+
+.lsp-faq-item[open] summary span::after {
+  display: none;
+}
+
+.lsp-faq-item p {
+  margin: -5px 35px 23px 0;
+
+  color: #aea294;
+  font-size: 13px;
+  line-height: 1.85;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 900px) {
+  .lsp-mobile-nav {
+    display: block;
+  }
+
+  .lsp-signature-heading {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .lsp-faq-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-header {
+    padding-top: env(safe-area-inset-top,0px);
+  }
+
+  .header-inner {
+    gap: 8px;
+  }
+
+  .lsp-mobile-nav > summary {
+    width: 38px;
+    height: 38px;
+  }
+
+  .lsp-signature-section,
+  .lsp-faq-section {
+    padding: 65px 0;
+  }
+
+  .lsp-signature-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .lsp-signature-featured {
+    grid-template-columns: 1fr;
+  }
+
+  .lsp-signature-image {
+    min-height: 270px;
+  }
+
+  .lsp-signature-featured-copy {
+    padding: 24px;
+  }
+
+  .lsp-signature-featured-copy h3 {
+    font-size: 31px;
+  }
+
+  .lsp-signature-mini {
+    min-height: 310px;
+    padding: 23px;
+  }
+
+  .lsp-faq-item summary {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-name strong {
+    font-size: 10px;
+  }
+
+  .header-actions .btn {
+    padding-inline: 8px;
+    font-size: 9px;
+  }
+
+  .lsp-profile-data {
+    font-size: 7px;
+  }
+}
+
+
+
+
+/* =====================================
+   DAILY SOCIAL MISSION NOTICE
+===================================== */
+
+.daily-mission-notice {
+  padding: 24px 0;
+  background: #0b0c10;
+}
+
+.daily-notice-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding: 19px 23px;
+
+  background: linear-gradient(
+    120deg,
+    #25211c,
+    #16181c
+  );
+
+  border: 1px solid rgba(219,178,112,.38);
+  border-radius: 13px;
+}
+
+.daily-notice-icon {
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  width: 46px;
+  height: 46px;
+
+  border-radius: 11px;
+  background: #352b1e;
+
+  color: #e6c18a;
+  font-size: 24px;
+}
+
+.daily-notice-content {
+  min-width: 0;
+}
+
+.daily-notice-content strong {
+  display: block;
+
+  color: #f1dcba;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.daily-notice-content p {
+  margin: 6px 0 0;
+
+  color: #b8ac9c;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media(max-width:620px) {
+  .daily-mission-notice {
+    padding: 17px 0;
+  }
+
+  .daily-notice-box {
+    gap: 11px;
+    padding: 14px;
+  }
+
+  .daily-notice-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .daily-notice-content strong {
+    font-size: 13px;
+  }
+
+  .daily-notice-content p {
+    font-size: 11px;
+  }
+}
+
+
+
+
+</style>
 </head>
+
 <body>
-  <script src="/guard.js"></script>
-  
-  <div class="container">
-    <div class="card">
-      <h1>Livestream Pro</h1>
-      <small>Nhập Room ID để tạo link Livestream</small>
-      <hr />
-      <div class="row">
-        <div class="card">
-          <div class="kv">
-            <label>Room ID (viết liền không dấu)</label>
-            <input id="room" placeholder="ví dụ: abc123..." value="" />
-            <button id="make">Tạo link</button>
-          </div>
-          <hr />
-          <div class="kv">
-            <div class="badge">📱 Link phát (Host)</div>
-            <code id="broadLink">-</code>
-            <button id="copyBroad">Copy link phát</button>
 
-            <div class="badge">👀 Link xem (Viewer)</div>
-            <code id="viewLink">-</code>
-            <button id="copyView">Copy link xem</button>
-          </div>
-        </div>
+<!-- ==========================================
+     HEADER
+========================================== -->
 
-        <div class="card">
-          <div class="badge">⚠️ Tính năng</div>
-          <div class="log" style="margin-top:10px">
-- Livestream không bị delay thời gian.
-- Người livestream và người xem có thể giao lưu trò chuyện.
-- Chat live trực tiếp.
-          </div>
-        </div>
+<header class="site-header">
+
+  <div class="container header-inner">
+
+    <a href="/" class="brand" aria-label="Livestream Pro home">
+
+      <div class="brand-icon">LP</div>
+
+      <div class="brand-name">
+        <strong>LIVESTREAM PRO</strong>
+        <small>LIVE · CONNECT · EXPLORE</small>
       </div>
+
+    </a>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#experience">Experience</a>
+      <a href="#how-it-works">How It Works</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="/login.html" class="btn btn-secondary btn-small">
+        SIGN IN
+      </a>
+
+      <a href="/register.html" class="btn btn-primary btn-small">
+        JOIN NOW
+      </a>
     </div>
+
+
+
+<!-- MOBILE NAVIGATION -->
+
+<details class="lsp-mobile-nav">
+
+  <summary aria-label="Open navigation menu">
+    <span class="lsp-menu-bars" aria-hidden="true">
+      <i></i><i></i><i></i>
+    </span>
+    <span>MENU</span>
+  </summary>
+
+  <nav class="lsp-mobile-dropdown"
+       aria-label="Mobile navigation">
+
+    <a href="#about">About Livestream Pro</a>
+    <a href="#features">Platform Features</a>
+    <a href="#experience">Our Experience</a>
+    <a href="#platform-showcase">Explore Platform</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#faq">Frequently Asked Questions</a>
+
+    <div class="lsp-mobile-nav-actions">
+      <a href="/login.html">SIGN IN</a>
+      <a href="/register.html">CREATE ACCOUNT</a>
+    </div>
+
+  </nav>
+
+</details>
+
+
+
+
   </div>
 
-<script>
-  const roomEl = document.getElementById('room');
-  const broadEl = document.getElementById('broadLink');
-  const viewEl = document.getElementById('viewLink');
+</header>
 
-  function gen() {
-    const room = encodeURIComponent(roomEl.value.trim() || "abc123");
-    const base = location.origin;
-    broadEl.textContent = `${base}/broadcast.html?room=${room}`;
-    viewEl.textContent  = `${base}/viewer.html?room=${room}`;
-  }
-  document.getElementById('make').onclick = gen;
-  gen();
+<!-- ==========================================
+     HERO
+========================================== -->
 
-  async function copyText(text) {
-    try { await navigator.clipboard.writeText(text); alert("Đã copy!"); }
-    catch { prompt("Copy thủ công:", text); }
-  }
-  document.getElementById('copyBroad').onclick = () => copyText(broadEl.textContent);
-  document.getElementById('copyView').onclick = () => copyText(viewEl.textContent);
-</script>
+<section class="hero">
+
+  <div class="container hero-inner">
+
+    <div class="hero-eyebrow">
+      A NEW WORLD OF LIVE CONNECTION
+    </div>
+
+    <h1>
+      Experience More.<br>
+      <span>Live Together.</span>
+    </h1>
+
+    <p class="hero-description">
+      Welcome to Livestream Pro — a connected world
+      where live entertainment, real-time conversations,
+      interactive games, and communities come together.
+      Discover new experiences and make every moment count.
+    </p>
+
+    <div class="hero-actions">
+
+      <a href="/register.html" class="btn btn-primary">
+        GET STARTED
+      </a>
+
+      <a href="#about" class="btn btn-secondary">
+        EXPLORE PLATFORM
+      </a>
+
+    </div>
+
+    <div class="hero-bottom">
+      <span>LIVE ENTERTAINMENT</span>
+      <span>INTERACTIVE EXPERIENCES</span>
+      <span>CONNECTED COMMUNITY</span>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ==========================================
+     ABOUT
+========================================== -->
+
+<section class="section about-section" id="about">
+
+  <div class="container about-layout">
+
+    <div class="about-copy">
+
+      <span class="section-label">
+        ABOUT LIVESTREAM PRO
+      </span>
+
+      <h2 class="section-title">
+        More Than Streaming.<br>
+        <span class="gold-text">A Connected Experience.</span>
+      </h2>
+
+      <p class="section-description">
+        Livestream Pro brings people closer through
+        live interactions, social discovery, and
+        entertainment experiences in one unified platform.
+      </p>
+
+      <p class="section-description">
+        Whether you want to share a live moment,
+        communicate with others, discover new communities,
+        or participate in interactive games,
+        Livestream Pro offers a space to connect.
+      </p>
+
+      <div class="about-points">
+        <div class="about-point">
+          Connect with people through live experiences.
+        </div>
+
+        <div class="about-point">
+          Communicate and interact in real time.
+        </div>
+
+        <div class="about-point">
+          Discover games, communities, and new activities.
+        </div>
+      </div>
+
+    </div>
+
+
+<div class="about-showcase premium-about-image">
+
+  <img
+    src="/assets/landing/platform-live.jpg"
+    alt="Professional live streaming experience"
+    loading="lazy"
+    decoding="async"
+  >
+
+  <div class="premium-about-overlay">
+
+    <span>THE LIVESTREAM PRO EXPERIENCE</span>
+
+    <h3>
+      One Platform.<br>
+      Endless Connections.
+    </h3>
+
+    <p>
+      Connect, share, discover and experience
+      entertainment together.
+    </p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+</section>
+
+<!-- ==========================================
+     FEATURES
+========================================== -->
+
+<section class="section features-section" id="features">
+
+  <div class="container">
+
+    <div class="section-heading">
+
+      <span class="section-label">
+        DISCOVER THE PLATFORM
+      </span>
+
+      <h2 class="section-title">
+        Everything You Need.<br>
+        <span class="gold-text">All in One Place.</span>
+      </h2>
+
+      <p class="section-description">
+        Explore the features that make
+        Livestream Pro an interactive entertainment
+        and community platform.
+      </p>
+
+    </div>
+
+    <div class="feature-grid">
+
+      <article class="feature-card">
+        <span class="feature-number">01</span>
+        <h3>Live Streaming</h3>
+        <p>
+          Share live moments, watch broadcasts,
+          and connect with audiences through
+          live video experiences.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <span class="feature-number">02</span>
+        <h3>Real-Time Chat</h3>
+        <p>
+          Communicate with hosts, viewers,
+          and community members through
+          live conversations.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <span class="feature-number">03</span>
+        <h3>Interactive Games</h3>
+        <p>
+          Explore game experiences,
+          participate in activities,
+          and enjoy moments of entertainment.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <span class="feature-number">04</span>
+        <h3>Social Community</h3>
+        <p>
+          Discover members, make connections,
+          and build relationships within
+          the Livestream Pro community.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <span class="feature-number">05</span>
+        <h3>Personal Profiles</h3>
+        <p>
+          Create your member identity,
+          personalize your profile,
+          and enjoy a connected experience.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <span class="feature-number">06</span>
+        <h3>Virtual Diamonds</h3>
+        <p>
+          Explore supported in-platform
+          experiences using the virtual
+          credit system.
+        </p>
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ==========================================
+     EXPERIENCE
+========================================== -->
+
+<section class="section experience-section" id="experience">
+
+  <div class="container">
+
+    <div class="section-heading">
+
+      <span class="section-label">
+        THE LIVESTREAM PRO EXPERIENCE
+      </span>
+
+      <h2 class="section-title">
+        Designed for Connection.<br>
+        <span class="gold-text">Built for Entertainment.</span>
+      </h2>
+
+    </div>
+
+    <div class="experience-grid">
+
+
+<!-- LIVE COMMUNITY -->
+
+<article class="experience-card visual-experience-card">
+
+  <img
+    src="/assets/landing/community.jpg"
+    alt="People connecting through live community"
+    loading="lazy"
+    decoding="async"
+  >
+
+  <div class="visual-experience-copy">
+
+    <small>LIVE & COMMUNITY</small>
+
+    <h3>Connect Beyond Boundaries.</h3>
+
+    <p>
+      Share moments, join conversations and discover
+      new connections through live experiences.
+    </p>
+
+  </div>
+
+</article>
+
+
+
+
+<!-- =====================================
+     SOCIAL & MESSAGING EXPERIENCE
+===================================== -->
+
+<article class="experience-card social-experience-card">
+
+  <div class="social-preview">
+
+    <!-- HEADER -->
+    <div class="social-preview-header">
+
+      <div class="social-preview-brand">
+        <span class="social-preview-mark">LP</span>
+
+        <div>
+          <strong>Community Hub</strong>
+          <small>LIVE SOCIAL EXPERIENCE</small>
+        </div>
+      </div>
+
+      <span class="social-online">
+        CONNECTED
+      </span>
+
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="social-preview-messages">
+
+      <div class="social-message">
+
+        <div class="social-avatar avatar-one">AM</div>
+
+        <div class="social-message-bubble">
+          <strong>Alex Morgan</strong>
+          <p>Welcome to Livestream Pro!</p>
+        </div>
+
+      </div>
+
+      <div class="social-message">
+
+        <div class="social-avatar avatar-two">SK</div>
+
+        <div class="social-message-bubble">
+          <strong>Sarah Kim</strong>
+          <p>Great to connect with everyone.</p>
+        </div>
+
+      </div>
+
+      <div class="social-message">
+
+        <div class="social-avatar avatar-three">JD</div>
+
+        <div class="social-message-bubble">
+          <strong>Jordan Davis</strong>
+          <p>Let's discover something new today.</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- DECORATIVE MESSAGE INPUT -->
+    <div class="social-preview-input" aria-hidden="true">
+      <span>Join the conversation...</span>
+      <span class="social-send">SEND</span>
+    </div>
+
+  </div>
+
+  <div class="social-experience-copy">
+
+    <small>SOCIAL & MESSAGING</small>
+
+    <h3>Connect Beyond the Stream.</h3>
+
+    <p>
+      Discover new people, start conversations,
+      and build meaningful connections
+      within the Livestream Pro community.
+    </p>
+
+  </div>
+
+</article>
+
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     PREMIUM PLATFORM SHOWCASE
+========================================== -->
+
+<section class="lsp-signature-section"
+         id="platform-showcase">
+
+  <div class="container">
+
+    <div class="lsp-signature-heading">
+
+      <div>
+        <span class="section-label">
+          A CLOSER LOOK AT LIVESTREAM PRO
+        </span>
+
+        <h2 class="section-title">
+          A Platform Designed<br>
+          <span class="gold-text">Around Your Experience.</span>
+        </h2>
+      </div>
+
+      <p>
+        From live broadcasts to personal connections,
+        explore the experiences that bring
+        Livestream Pro together.
+      </p>
+
+    </div>
+
+    <div class="lsp-signature-grid">
+
+      <!-- FEATURED EXPERIENCE -->
+
+      <article class="lsp-signature-featured">
+
+        <div class="lsp-signature-image">
+
+          <img
+            src="/assets/landing/platform-live.jpg"
+            alt="Livestream production studio"
+            loading="lazy"
+            decoding="async"
+          >
+
+          <span class="lsp-image-label">
+            LIVE EXPERIENCES
+          </span>
+
+        </div>
+
+        <div class="lsp-signature-featured-copy">
+
+          <span>01 / LIVE STREAMING</span>
+
+          <h3>Be Part of Every Moment.</h3>
+
+          <p>
+            Discover live broadcasts, connect
+            with audiences and share experiences
+            as they happen.
+          </p>
+
+          <a href="/register.html"
+             class="lsp-signature-link">
+            DISCOVER LIVESTREAM PRO
+            <span aria-hidden="true">↗</span>
+          </a>
+
+        </div>
+
+      </article>
+
+      <!-- SOCIAL DISCOVERY -->
+
+      <article class="lsp-signature-mini">
+
+        <span class="lsp-signature-number">
+          02 / SOCIAL CONNECTIONS
+        </span>
+
+        <div class="lsp-signature-mini-art">
+          <span class="lsp-orbit lsp-orbit-one"></span>
+          <span class="lsp-orbit lsp-orbit-two"></span>
+
+          <div class="lsp-orbit-core">
+            CONNECT
+          </div>
+        </div>
+
+        <h3>Discover Your Community.</h3>
+
+        <p>
+          Meet other members, explore conversations
+          and discover new connections.
+        </p>
+
+      </article>
+
+      <!-- MEMBER IDENTITY -->
+
+      <article class="lsp-signature-mini">
+
+        <span class="lsp-signature-number">
+          03 / PERSONAL EXPERIENCE
+        </span>
+
+        <div class="lsp-profile-preview">
+
+          <div class="lsp-profile-avatar">
+            LP
+          </div>
+
+          <div class="lsp-profile-lines">
+            <span></span>
+            <span></span>
+          </div>
+
+          <div class="lsp-profile-divider"></div>
+
+          <div class="lsp-profile-data">
+            <span>PROFILE</span>
+            <span>COMMUNITY</span>
+            <span>ACTIVITY</span>
+          </div>
+
+        </div>
+
+        <h3>Make It Your Own.</h3>
+
+        <p>
+          Build your member profile and enjoy
+          a personalized space within the platform.
+        </p>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     HOW IT WORKS
+========================================== -->
+
+<section class="section" id="how-it-works">
+
+  <div class="container">
+
+    <div class="section-heading">
+
+      <span class="section-label">
+        GETTING STARTED
+      </span>
+
+      <h2 class="section-title">
+        Your Journey <span class="gold-text">Starts Here.</span>
+      </h2>
+
+      <p class="section-description">
+        Discover the Livestream Pro experience
+        in three simple steps.
+      </p>
+
+    </div>
+
+    <div class="steps-grid">
+
+      <div class="step">
+
+        <div class="step-number">01</div>
+
+        <h3>Create Your Account</h3>
+
+        <p>
+          Register and set up your profile
+          to begin your Livestream Pro journey.
+        </p>
+
+      </div>
+
+      <div class="step">
+
+        <div class="step-number">02</div>
+
+        <h3>Explore the Platform</h3>
+
+        <p>
+          Discover community features,
+          live experiences, and interactive games.
+        </p>
+
+      </div>
+
+      <div class="step">
+
+        <div class="step-number">03</div>
+
+        <h3>Connect & Participate</h3>
+
+        <p>
+          Engage with other members,
+          join activities, and enjoy
+          the Livestream Pro experience.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     FREQUENTLY ASKED QUESTIONS
+========================================== -->
+
+<section class="lsp-faq-section" id="faq">
+
+  <div class="container lsp-faq-layout">
+
+    <div class="lsp-faq-intro">
+
+      <span class="section-label">
+        GOOD TO KNOW
+      </span>
+
+      <h2 class="section-title">
+        Your Questions.<br>
+        <span class="gold-text">Answered.</span>
+      </h2>
+
+      <p>
+        Learn more about Livestream Pro
+        and how to get started with
+        the platform.
+      </p>
+
+      <a href="/register.html"
+         class="lsp-faq-action">
+        START YOUR EXPERIENCE
+        <span aria-hidden="true">↗</span>
+      </a>
+
+    </div>
+
+    <div class="lsp-faq-list">
+
+      <details class="lsp-faq-item">
+        <summary>
+          What is Livestream Pro?
+          <span aria-hidden="true"></span>
+        </summary>
+
+        <p>
+          Livestream Pro is a platform that
+          brings together live streaming,
+          social interaction, messaging
+          and interactive entertainment.
+        </p>
+      </details>
+
+      <details class="lsp-faq-item">
+        <summary>
+          How do I get started?
+          <span aria-hidden="true"></span>
+        </summary>
+
+        <p>
+          Create an account, sign in
+          and explore the available
+          features from your member account.
+        </p>
+      </details>
+
+      <details class="lsp-faq-item">
+        <summary>
+          Can I connect with other members?
+          <span aria-hidden="true"></span>
+        </summary>
+
+        <p>
+          Yes. The platform includes
+          community features and messaging
+          tools designed to help members
+          interact with one another.
+        </p>
+      </details>
+
+      <details class="lsp-faq-item">
+        <summary>
+          What are virtual Diamonds?
+          <span aria-hidden="true"></span>
+        </summary>
+
+        <p>
+          Diamonds are virtual credits used
+          in supported platform experiences.
+          They are not physical currency.
+          Availability and applicable rules
+          depend on the feature being used.
+        </p>
+      </details>
+
+      <details class="lsp-faq-item">
+        <summary>
+          Can I access Livestream Pro on mobile?
+          <span aria-hidden="true"></span>
+        </summary>
+
+        <p>
+          Livestream Pro includes
+          mobile-friendly web pages.
+          Some features, such as screen
+          sharing, depend on device and
+          browser compatibility.
+        </p>
+      </details>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- DAILY SOCIAL MISSION NOTICE -->
+
+<section class="daily-mission-notice">
+  <div class="container">
+
+    <div class="daily-notice-box">
+
+      <div class="daily-notice-icon">
+        ◆
+      </div>
+
+      <div class="daily-notice-content">
+        <strong>Daily Social Mission</strong>
+
+        <p>
+          Publish one post on Social every day
+          and earn 100 Diamonds.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+
+
+<!-- ==========================================
+     CALL TO ACTION
+========================================== -->
+
+<section class="cta-section">
+
+  <div class="container">
+
+    <div class="cta-box">
+
+      <span class="section-label">
+        JOIN THE EXPERIENCE
+      </span>
+
+      <h2>
+        Your World.<br>
+        Your Community. Your Moment.
+      </h2>
+
+      <p>
+        Become part of Livestream Pro.
+        Discover entertainment, connect with others,
+        and explore what the platform has to offer.
+      </p>
+
+      <div class="hero-actions">
+
+        <a href="/register.html" class="btn btn-primary">
+          CREATE AN ACCOUNT
+        </a>
+
+        <a href="/login.html" class="btn btn-secondary">
+          SIGN IN
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer class="footer">
+
+  <div class="container footer-main">
+
+    <div>
+
+      <a href="/" class="brand">
+
+        <div class="brand-icon">LP</div>
+
+        <div class="brand-name">
+          <strong>LIVESTREAM PRO</strong>
+          <small>LIVE · CONNECT · EXPLORE</small>
+        </div>
+
+      </a>
+
+      <p class="footer-tagline">
+        Experience More. Live Together.
+      </p>
+
+    </div>
+
+
+<nav class="footer-links" aria-label="Footer navigation">
+  <a href="#about">About</a>
+  <a href="#features">Features</a>
+  <a href="#platform-showcase">Explore</a>
+  <a href="#faq">FAQs</a>
+  <a href="/register.html">Register</a>
+  <a href="/login.html">Sign In</a>
+</nav>
+
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 LIVESTREAM PRO. ALL RIGHTS RESERVED.
+  </div>
+
+</footer>
+
 </body>
 </html>

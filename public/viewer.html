@@ -1079,7 +1079,7 @@ const stableUID = getStableUID();   // ✅ bật lại
 const sendProfile = isGuest ? {
   uid: stableUID,
   name: "Guest",
-  avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest",
+  avatar: "https://i.ibb.co/GvJWn19q/icon-192.png",
   level: 1,
   coins: 0
 } : {
@@ -2133,7 +2133,7 @@ const level =
 
 const avatar =
   (typeof msg.avatar === "string" && msg.avatar.trim()) ||
-  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+  "https://i.ibb.co/GvJWn19q/icon-192.png" +
     encodeURIComponent(name);
 
 
